@@ -5,6 +5,7 @@ go 1.22
 toolchain go1.23.0
 
 require (
+	github.com/Songmu/go-httpdate v1.0.0
 	github.com/abema/go-mp4 v1.2.0
 	github.com/goccy/go-yaml v1.12.0
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300

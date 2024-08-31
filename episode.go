@@ -4,9 +4,11 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/Songmu/go-httpdate"
 	"github.com/goccy/go-yaml"
 )
 
@@ -15,11 +17,34 @@ type episodeFrontMatter struct {
 	Description string `yaml:"description"`
 	Date        string `yaml:"date"`
 	Audio       string `yaml:"audio"`
+
+	pubDate time.Time
 }
 
 type episode struct {
 	episodeFrontMatter
 	Body string
+}
+
+func (ep *episode) init(loc *time.Location) error {
+	var err error
+	if ep.Audio == "" {
+		return errors.New("no audio")
+	}
+	if _, err := os.Stat(ep.AudioFilePath()); err != nil {
+		return err
+	}
+
+	ep.pubDate, err = httpdate.Str2Time(ep.Date, loc)
+	return err
+}
+
+func (epm *episodeFrontMatter) AudioFilePath() string {
+	return filepath.Join(audioDir, epm.Audio)
+}
+
+func (epm *episodeFrontMatter) PubDate() time.Time {
+	return epm.pubDate
 }
 
 func loadEpisodeFromFile(fname string, loc *time.Location) (*episode, error) {
@@ -33,6 +58,8 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*episode, error) {
 }
 
 func loadEpisode(r io.Reader, loc *time.Location) (*episode, error) {
+	// TODO: template
+
 	content, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -48,8 +75,12 @@ func loadEpisode(r io.Reader, loc *time.Location) (*episode, error) {
 		return nil, err
 	}
 
-	return &episode{
+	ep := &episode{
 		episodeFrontMatter: ef,
 		Body:               strings.TrimSpace(stuff[2]),
-	}, nil
+	}
+	if err := ep.init(loc); err != nil {
+		return nil, err
+	}
+	return ep, nil
 }
