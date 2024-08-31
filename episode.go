@@ -12,6 +12,27 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+func episodesItr(loc *time.Location) (func(func(*episode, error) bool), error) {
+	dir, err := os.ReadDir(episodeDir)
+	if err != nil {
+		return nil, err
+	}
+
+	return func(yield func(ep *episode, err error) bool) {
+		for _, f := range dir {
+			if f.IsDir() {
+				continue
+			}
+			e, err := loadEpisodeFromFile(filepath.Join(episodeDir, f.Name()), loc)
+			yield(e, err)
+			if err != nil {
+				return
+			}
+		}
+		return
+	}, nil
+}
+
 type episodeFrontMatter struct {
 	Title       string `yaml:"title"`
 	Description string `yaml:"description"`

@@ -27,8 +27,7 @@ type cmdDumpConfig struct {
 }
 
 func (dc *cmdDumpConfig) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-
-	var f = "primcast.yaml"
+	var f = configFile
 	if len(args) != 0 {
 		f = args[0]
 	}
@@ -54,5 +53,27 @@ func (de *cmdDumpEpisode) Command(ctx context.Context, args []string, outw, errw
 		return err
 	}
 	fmt.Printf("%#v\n", ep)
+	return nil
+}
+
+type cmdDumpEpisodes struct {
+}
+
+func (de *cmdDumpEpisodes) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
+	cfg, err := loadConfigFromFile(configFile)
+	if err != nil {
+		return err
+	}
+	itr, err := episodesItr(cfg.Site.Location())
+	if err != nil {
+		return err
+	}
+
+	for ep, err := range itr {
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%#v\n", ep)
+	}
 	return nil
 }

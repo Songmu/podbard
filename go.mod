@@ -1,8 +1,6 @@
 module github.com/Songmu/primcast
 
-go 1.22
-
-toolchain go1.23.0
+go 1.23.0
 
 require (
 	github.com/Songmu/go-httpdate v1.0.0

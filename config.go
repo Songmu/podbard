@@ -13,6 +13,7 @@ import (
 const (
 	episodeDir = "episode"
 	audioDir   = "audio"
+	configFile = "primcast.yaml"
 )
 
 type config struct {
