@@ -42,8 +42,9 @@ func printVersion(out io.Writer) error {
 }
 
 var commands = map[string]commander{
-	"init":  &cmdInit{},
-	"debug": &cmdDebug{},
+	"init":        &cmdInit{},
+	"debug":       &cmdDebug{},
+	"dump-config": &cmdDumpConfig{},
 }
 
 type commander interface {

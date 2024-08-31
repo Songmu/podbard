@@ -4,8 +4,8 @@ site:
   title: sample
   description: sample description
   language: ja-JP
-  keywords: []
-  category: []
+  keywords: ""
+  # category: []
   author: Songmu
   email: y.songmu@gmail.com
   timezone: Asia/Tokyo
