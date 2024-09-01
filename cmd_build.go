@@ -9,11 +9,11 @@ type cmdBuild struct {
 }
 
 func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-	cfg, err := LoadConfig()
+	cfg, err := LoadConfig(".")
 	if err != nil {
 		return err
 	}
-	episodes, err := LoadEpisodes(cfg.Location())
+	episodes, err := LoadEpisodes(".", cfg.Location())
 	if err != nil {
 		return err
 	}
@@ -21,5 +21,6 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 	return (&Builder{
 		Config:   cfg,
 		Episodes: episodes,
+		RootDir:  ".",
 	}).Build()
 }

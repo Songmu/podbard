@@ -15,11 +15,8 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-func LoadEpisodes(loc *time.Location) ([]*Episode, error) {
-	return loadEpisodesInDir(episodeDir, loc)
-}
-
-func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
+func LoadEpisodes(rootDir string, loc *time.Location) ([]*Episode, error) {
+	dirname := filepath.Join(rootDir, episodeDir)
 	dir, err := os.ReadDir(dirname)
 	if err != nil {
 		return nil, err
@@ -29,13 +26,12 @@ func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
 		// XXX: Do we need to handle subdirectories?
 		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
 			continue
-
 		}
-		e, err := loadEpisodeFromFile(filepath.Join(dirname, f.Name()), loc)
+		ep, err := loadEpisodeFromFile(rootDir, filepath.Join(dirname, f.Name()), loc)
 		if err != nil {
 			return nil, err
 		}
-		ret = append(ret, e)
+		ret = append(ret, ep)
 	}
 	sort.Slice(ret, func(i, j int) bool {
 		// desc sort
@@ -52,6 +48,8 @@ type Episode struct {
 	EpisodeFrontMatter
 	Slug          string // is Slug appropriate?
 	RawBody, Body string
+
+	rootDir string
 }
 
 type EpisodeFrontMatter struct {
@@ -65,7 +63,7 @@ type EpisodeFrontMatter struct {
 }
 
 func (ep *Episode) init(loc *time.Location) error {
-	if err := ep.loadAudio(); err != nil {
+	if err := ep.loadAudio(ep.rootDir); err != nil {
 		return err
 	}
 
@@ -92,7 +90,7 @@ func (epm *EpisodeFrontMatter) Audio() *Audio {
 	return epm.audio
 }
 
-func (epm *EpisodeFrontMatter) loadAudio() error {
+func (epm *EpisodeFrontMatter) loadAudio(rootDir string) error {
 	if epm.AudioFile == "" {
 		return errors.New("no audio")
 	}
@@ -100,15 +98,11 @@ func (epm *EpisodeFrontMatter) loadAudio() error {
 		return fmt.Errorf("subdirectories are not supported of audio file: %s", epm.AudioFile)
 	}
 	var err error
-	epm.audio, err = readAudio(epm.audioFilePath())
+	epm.audio, err = readAudio(filepath.Join(rootDir, audioDir, epm.AudioFile))
 	return err
 }
 
-func (epm *EpisodeFrontMatter) audioFilePath() string {
-	return filepath.Join(audioDir, epm.AudioFile)
-}
-
-func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
+func loadEpisodeFromFile(rootDir, fname string, loc *time.Location) (*Episode, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
@@ -117,6 +111,8 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
 
 	ep := &Episode{
 		Slug: strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname)),
+
+		rootDir: rootDir,
 	}
 	if err := ep.loadEpisode(f, loc); err != nil {
 		return nil, err

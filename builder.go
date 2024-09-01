@@ -11,10 +11,15 @@ const buildDir = "public"
 type Builder struct {
 	Config   *Config
 	Episodes []*Episode
+	RootDir  string
+}
+
+func (bdr *Builder) buildDir() string {
+	return filepath.Join(bdr.RootDir, buildDir)
 }
 
 func (bdr *Builder) Build() error {
-	if err := os.MkdirAll(buildDir, os.ModePerm); err != nil {
+	if err := os.MkdirAll(bdr.buildDir(), os.ModePerm); err != nil {
 		return err
 	}
 
@@ -27,8 +32,8 @@ func (bdr *Builder) Build() error {
 			return err
 		}
 	}
-
 	return bdr.buildIndex()
+	/// TODO: build and locate assets files like images
 }
 
 func (bdr *Builder) buildFeed() error {
@@ -44,7 +49,7 @@ func (bdr *Builder) buildFeed() error {
 		}
 	}
 
-	feedPath := filepath.Join(buildDir, feedFile)
+	feedPath := filepath.Join(bdr.buildDir(), feedFile)
 	f, err := os.Create(feedPath)
 	if err != nil {
 		return err
@@ -55,7 +60,7 @@ func (bdr *Builder) buildFeed() error {
 }
 
 func (bdr *Builder) buildEpisode(ep *Episode) error {
-	episodePath := filepath.Join(buildDir, episodeDir, ep.Slug, "index.html")
+	episodePath := filepath.Join(bdr.buildDir(), episodeDir, ep.Slug, "index.html")
 	if err := os.MkdirAll(filepath.Dir(episodePath), os.ModePerm); err != nil {
 		return err
 	}
@@ -63,10 +68,10 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 }
 
 func (bdr *Builder) buildIndex() error {
-	idx, err := LoadIndex(bdr.Config, bdr.Episodes)
+	idx, err := LoadIndex(bdr.RootDir, bdr.Config, bdr.Episodes)
 	if err != nil {
 		return err
 	}
-	indexPath := filepath.Join(buildDir, "index.html")
+	indexPath := filepath.Join(bdr.buildDir(), "index.html")
 	return os.WriteFile(indexPath, []byte(idx.Body), 0644)
 }

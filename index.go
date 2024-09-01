@@ -3,11 +3,10 @@ package primcast
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
-
-const indexMD = "index.md"
 
 type Index struct {
 	RawFrontmatter, RawBody string
@@ -15,14 +14,16 @@ type Index struct {
 	Body string
 }
 
-func LoadIndex(cfg *Config, episodes []*Episode) (*Index, error) {
-	if _, err := os.Stat(indexMD); err != nil {
+func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error) {
+	idxMD := filepath.Join(rootDir, "index.md")
+
+	if _, err := os.Stat(idxMD); err != nil {
 		if os.IsNotExist(err) {
 			return &Index{}, nil
 		}
 		return nil, err
 	}
-	bs, err := os.ReadFile(indexMD)
+	bs, err := os.ReadFile(idxMD)
 	if err != nil {
 		return nil, err
 	}

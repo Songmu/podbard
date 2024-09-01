@@ -47,7 +47,7 @@ func (de *cmdDumpEpisode) Command(ctx context.Context, args []string, outw, errw
 		f = args[0]
 	}
 	loc := time.Local
-	ep, err := loadEpisodeFromFile(f, loc)
+	ep, err := loadEpisodeFromFile(".", f, loc)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (de *cmdDumpEpisodes) Command(ctx context.Context, args []string, outw, err
 	if err != nil {
 		return err
 	}
-	eps, err := LoadEpisodes(cfg.Location())
+	eps, err := LoadEpisodes(".", cfg.Location())
 	if err != nil {
 		return err
 	}

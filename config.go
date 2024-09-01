@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -103,8 +104,8 @@ func (channel *ChannelConfig) ImageURL() string {
 	return l + img
 }
 
-func LoadConfig() (*Config, error) {
-	return loadConfigFromFile(configFile)
+func LoadConfig(rootDir string) (*Config, error) {
+	return loadConfigFromFile(filepath.Join(rootDir, configFile))
 }
 
 func loadConfigFromFile(fname string) (*Config, error) {
