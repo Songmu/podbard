@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -12,25 +13,36 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-func episodesItr(loc *time.Location) (func(func(*Episode, error) bool), error) {
-	dir, err := os.ReadDir(episodeDir)
+func LoadEpisodes(loc *time.Location) ([]*Episode, error) {
+	return loadEpisodesInDir(episodeDir, loc)
+}
+
+func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
+	dir, err := os.ReadDir(dirname)
 	if err != nil {
 		return nil, err
 	}
-
-	return func(yield func(ep *Episode, err error) bool) {
-		for _, f := range dir {
-			if f.IsDir() {
-				continue
-			}
-			e, err := loadEpisodeFromFile(filepath.Join(episodeDir, f.Name()), loc)
-			yield(e, err)
-			if err != nil {
-				return
-			}
+	var ret []*Episode
+	for _, f := range dir {
+		if f.IsDir() {
+			// XXX: Do we need to handle subdirectories?
+			continue
 		}
-		return
-	}, nil
+		e, err := loadEpisodeFromFile(filepath.Join(dirname, f.Name()), loc)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, e)
+	}
+	sort.Slice(ret, func(i, j int) bool {
+		// desc sort
+		if ret[i].PubDate().Equal(ret[j].PubDate()) {
+			return ret[j].AudioFile < ret[i].AudioFile
+		}
+		return ret[j].PubDate().Before(ret[i].PubDate())
+	})
+
+	return ret, nil
 }
 
 type Episode struct {

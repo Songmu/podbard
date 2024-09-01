@@ -11,7 +11,6 @@ type cmdDebug struct {
 }
 
 func (d *cmdDebug) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-
 	fname := args[0]
 	aud, err := readAudio(fname)
 
@@ -64,12 +63,12 @@ func (de *cmdDumpEpisodes) Command(ctx context.Context, args []string, outw, err
 	if err != nil {
 		return err
 	}
-	itr, err := episodesItr(cfg.Site.Location())
+	eps, err := LoadEpisodes(cfg.Site.Location())
 	if err != nil {
 		return err
 	}
 
-	for ep, err := range itr {
+	for _, ep := range eps {
 		if err != nil {
 			return err
 		}
