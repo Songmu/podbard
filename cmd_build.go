@@ -2,6 +2,7 @@ package primcast
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io"
 
@@ -12,11 +13,24 @@ type cmdBuild struct {
 }
 
 func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-	cfg, err := cast.LoadConfig(".")
+	flagCfg := getFlagConfig(ctx)
+	rootDir := flagCfg.RootDir
+
+	fs := flag.NewFlagSet("primcast build", flag.ContinueOnError)
+	fs.SetOutput(errw)
+	cd := fs.String("C", "", "change to directory")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *cd != "" {
+		rootDir = *cd
+	}
+
+	cfg, err := cast.LoadConfig(rootDir)
 	if err != nil {
 		return err
 	}
-	episodes, err := cast.LoadEpisodes(".", cfg.Channel.Link.URL, cfg.Location())
+	episodes, err := cast.LoadEpisodes(rootDir, cfg.Channel.Link.URL, cfg.Location())
 	if err != nil {
 		return err
 	}
@@ -24,7 +38,7 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 	return (&cast.Builder{
 		Config:    cfg,
 		Episodes:  episodes,
-		RootDir:   ".",
+		RootDir:   rootDir,
 		Generator: fmt.Sprintf("github.com/Songmu/primcast %s", version),
 	}).Build()
 }

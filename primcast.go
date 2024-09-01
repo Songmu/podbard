@@ -17,7 +17,9 @@ func Run(ctx context.Context, argv []string, outw, errw io.Writer) error {
 	fs := flag.NewFlagSet(
 		fmt.Sprintf("%s (v%s rev:%s)", cmdName, version, revision), flag.ContinueOnError)
 	fs.SetOutput(errw)
+
 	ver := fs.Bool("version", false, "display version")
+	rootDir := fs.String("C", ".", "change to directory")
 	if err := fs.Parse(argv); err != nil {
 		return err
 	}
@@ -33,7 +35,11 @@ func Run(ctx context.Context, argv []string, outw, errw io.Writer) error {
 	if !ok {
 		return fmt.Errorf("unknown subcommand: %s", argv[0])
 	}
-	return com.Command(ctx, argv[1:], outw, errw)
+	return com.Command(
+		withFlagConfig(ctx, &flagConfig{
+			RootDir: *rootDir,
+		}),
+		argv[1:], outw, errw)
 }
 
 func printVersion(out io.Writer) error {
