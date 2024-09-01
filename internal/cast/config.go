@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/goccy/go-yaml"
+	"golang.org/x/text/language"
 )
 
 type YAMLURL struct {
@@ -41,6 +42,38 @@ func (yu *YAMLURL) MarshalYAML() (interface{}, error) {
 	return yu.String(), nil
 }
 
+type YAMLLang struct {
+	*language.Tag
+}
+
+func (yl *YAMLLang) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	err := unmarshal(&s)
+	if err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	lang, err := language.Parse(s)
+	if err != nil {
+		return err
+	}
+	yl.Tag = &lang
+	return nil
+}
+
+func (yl *YAMLLang) MarshalYAML() (interface{}, error) {
+	return yl.String(), nil
+}
+
+func (yl *YAMLLang) String() string {
+	if yl.Tag == nil {
+		return ""
+	}
+	return yl.Tag.String()
+}
+
 const (
 	episodeDir  = "episode"
 	audioDir    = "audio"
@@ -64,7 +97,7 @@ type ChannelConfig struct {
 	Title       string     `yaml:"title"`
 	Description string     `yaml:"description"`
 	Categories  Categories `yaml:"category"` // XXX sub category is not supported yet
-	Language    string     `yaml:"language"`
+	Language    YAMLLang   `yaml:"language"`
 	Author      string     `yaml:"author"`
 	Email       string     `yaml:"email"`
 	Artwork     string     `yaml:"artwork"`

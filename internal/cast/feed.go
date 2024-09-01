@@ -18,7 +18,7 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed 
 	pdTmp := podcast.New(channel.Title, channel.Link.String(), channel.Description, &pubDate, &pubDate)
 
 	pd := &pdTmp
-	pd.Language = channel.Language
+	pd.Language = channel.Language.String()
 	pd.Generator = fmt.Sprintf("%s powered by %s", generator, pd.Generator)
 	pd.AddAuthor(channel.Author, channel.Email)
 	pd.AddAtomLink(channel.FeedURL().String())

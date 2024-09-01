@@ -9,6 +9,7 @@ require (
 	github.com/goccy/go-yaml v1.12.0
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	github.com/yuin/goldmark v1.7.4
+	golang.org/x/text v0.17.0
 )
 
 require (
