@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -15,7 +16,7 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-func LoadEpisodes(rootDir string, loc *time.Location) ([]*Episode, error) {
+func LoadEpisodes(rootDir, rootURL string, loc *time.Location) ([]*Episode, error) {
 	dirname := filepath.Join(rootDir, episodeDir)
 	dir, err := os.ReadDir(dirname)
 	if err != nil {
@@ -27,7 +28,7 @@ func LoadEpisodes(rootDir string, loc *time.Location) ([]*Episode, error) {
 		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
 			continue
 		}
-		ep, err := loadEpisodeFromFile(rootDir, filepath.Join(dirname, f.Name()), loc)
+		ep, err := loadEpisodeFromFile(rootDir, rootURL, filepath.Join(dirname, f.Name()), loc)
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +47,7 @@ func LoadEpisodes(rootDir string, loc *time.Location) ([]*Episode, error) {
 
 type Episode struct {
 	EpisodeFrontMatter
-	Slug          string // is Slug appropriate?
+	Slug, URL     string
 	RawBody, Body string
 
 	rootDir string
@@ -102,16 +103,21 @@ func (epm *EpisodeFrontMatter) loadAudio(rootDir string) error {
 	return err
 }
 
-func loadEpisodeFromFile(rootDir, fname string, loc *time.Location) (*Episode, error) {
+func loadEpisodeFromFile(rootDir, rootURL, fname string, loc *time.Location) (*Episode, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
+	slug := strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname))
+	u, err := url.JoinPath(rootURL, episodeDir, slug)
+	if err != nil {
+		return nil, err
+	}
 	ep := &Episode{
-		Slug: strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname)),
-
+		Slug:    slug,
+		URL:     u + "/",
 		rootDir: rootDir,
 	}
 	if err := ep.loadEpisode(f, loc); err != nil {
