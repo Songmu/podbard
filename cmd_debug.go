@@ -34,7 +34,7 @@ func (dc *cmdDumpConfig) Command(ctx context.Context, args []string, outw, errw 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%#v\n", cfg.Site)
+	fmt.Printf("%#v\n", cfg.Channel)
 	return nil
 }
 
@@ -63,7 +63,7 @@ func (de *cmdDumpEpisodes) Command(ctx context.Context, args []string, outw, err
 	if err != nil {
 		return err
 	}
-	eps, err := LoadEpisodes(cfg.Site.Location())
+	eps, err := LoadEpisodes(cfg.Location())
 	if err != nil {
 		return err
 	}

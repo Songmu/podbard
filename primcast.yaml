@@ -1,5 +1,5 @@
 # sample
-site:
+channel:
   link: https//primcast.example.com
   title: sample
   description: sample description
@@ -8,5 +8,6 @@ site:
   # category: []
   author: Songmu
   email: y.songmu@gmail.com
-  timezone: Asia/Tokyo
-  audio_bucket_url: https://s3-ap-northeast-1.amazonaws.com/primcast.example.com/audio
+
+timezone: Asia/Tokyo
+audio_bucket_url: https://s3-ap-northeast-1.amazonaws.com/primcast.example.com/audio

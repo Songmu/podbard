@@ -18,56 +18,58 @@ const (
 )
 
 type Config struct {
-	Site *SiteConfig `yaml:"site"`
-}
+	Channel *ChannelConfig `yaml:"channel"`
 
-type SiteConfig struct {
-	Link           string `yaml:"link"`
-	Title          string `yaml:"title"`
-	Description    string `yaml:"description"`
-	Language       string `yaml:"language"`
-	KeyWords       string `yaml:"keywords"`
-	Author         string `yaml:"author"`
-	Email          string `yaml:"email"`
 	TimeZone       string `yaml:"timezone"`
 	AudioBucketURL string `yaml:"audio_bucket_url"`
 
 	location *time.Location
 }
 
+type ChannelConfig struct {
+	Link        string `yaml:"link"`
+	Title       string `yaml:"title"`
+	Description string `yaml:"description"`
+	Language    string `yaml:"language"`
+	KeyWords    string `yaml:"keywords"`
+	Author      string `yaml:"author"`
+	Email       string `yaml:"email"`
+	CopyRight   string `yaml:"copyright"`
+}
+
 func (cfg *Config) init() error {
-	if cfg.Site == nil {
+	if cfg.Channel == nil {
 		return errors.New("no site configuration")
 	}
-	if cfg.Site.TimeZone != "" {
-		loc, err := time.LoadLocation(cfg.Site.TimeZone)
+	if cfg.TimeZone != "" {
+		loc, err := time.LoadLocation(cfg.TimeZone)
 		if err != nil {
 			return err
 		}
-		cfg.Site.location = loc
+		cfg.location = loc
 	} else {
-		cfg.Site.location = time.Local
+		cfg.location = time.Local
 	}
 	return nil
 }
 
-func (site *SiteConfig) Location() *time.Location {
-	return site.location
+func (cfg *Config) Location() *time.Location {
+	return cfg.location
 }
 
-func (site *SiteConfig) AudioBaseURL() string {
-	if site.AudioBucketURL != "" {
-		return site.AudioBucketURL
+func (cfg *Config) AudioBaseURL() string {
+	if cfg.AudioBucketURL != "" {
+		return cfg.AudioBucketURL
 	}
 
-	l := site.Link
+	l := cfg.Channel.Link
 	if !strings.HasSuffix(l, "/") {
 		l += "/"
 	}
-	return site.Link + audioDir + "/"
+	return cfg.Channel.Link + audioDir + "/"
 }
 
-func (site *SiteConfig) FeedURL() string {
+func (site *ChannelConfig) FeedURL() string {
 	l := site.Link
 	if !strings.HasSuffix(l, "/") {
 		l += "/"
