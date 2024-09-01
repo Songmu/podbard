@@ -70,7 +70,7 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 
 	tmpl, err := loadTemplate(bdr.RootDir)
 	if err != nil {
-		return os.WriteFile(episodePath, []byte(ep.Body), 0644)
+		return err
 	}
 
 	arg := struct {
@@ -85,8 +85,13 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 		Config:  bdr.Config,
 	}
 
-	body, err := tmpl.execute("layout", "episode", arg)
-	return os.WriteFile(episodePath, []byte(body), 0644)
+	f, err := os.Create(episodePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	return tmpl.execute(f, "layout", "episode", arg)
 }
 
 func (bdr *Builder) buildIndex() error {
@@ -98,8 +103,26 @@ func (bdr *Builder) buildIndex() error {
 
 	tmpl, err := loadTemplate(bdr.RootDir)
 	if err != nil {
-		return os.WriteFile(indexPath, []byte(idx.Body), 0644)
+		return err
 	}
-	body, err := tmpl.execute("layout", "index", idx)
-	return os.WriteFile(indexPath, []byte(body), 0644)
+
+	arg := struct {
+		Title    string
+		Body     template.HTML
+		Episodes []*Episode
+		Config   *Config
+	}{
+		Title:    bdr.Config.Channel.Title,
+		Body:     template.HTML(idx.Body),
+		Episodes: bdr.Episodes,
+		Config:   bdr.Config,
+	}
+
+	f, err := os.Create(indexPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	return tmpl.execute(f, "layout", "index", arg)
 }

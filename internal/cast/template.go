@@ -1,8 +1,8 @@
 package cast
 
 import (
-	"bytes"
 	"html/template"
+	"io"
 	"path/filepath"
 )
 
@@ -23,13 +23,9 @@ func loadTemplate(rootDir string) (*castTemplate, error) {
 	return &castTemplate{tmpl}, nil
 }
 
-func (ct *castTemplate) execute(layout, name string, data interface{}) (string, error) {
-	var buf bytes.Buffer
-
-	template.Must(template.Must(
+func (ct *castTemplate) execute(w io.Writer, layout, name string, data interface{}) error {
+	return template.Must(template.Must(
 		ct.Lookup(layout).Clone()).
 		AddParseTree("content", ct.Lookup(name).Tree)).
-		ExecuteTemplate(&buf, layout, data)
-
-	return buf.String(), nil
+		ExecuteTemplate(w, layout, data)
 }
