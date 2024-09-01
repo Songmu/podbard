@@ -13,6 +13,7 @@ func NewMarkdown() goldmark.Markdown {
 			extension.DefinitionList,
 			extension.Footnote,
 			extension.Typographer,
+			extension.CJK,
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
