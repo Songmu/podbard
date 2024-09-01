@@ -19,7 +19,7 @@ type Audio struct {
 	Duration uint64
 }
 
-func readAudio(fname string) (*Audio, error) {
+func ReadAudio(fname string) (*Audio, error) {
 	au := &Audio{
 		Name: filepath.Base(fname),
 	}

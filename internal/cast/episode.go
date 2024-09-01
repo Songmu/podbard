@@ -10,11 +10,92 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/Songmu/go-httpdate"
 	"github.com/goccy/go-yaml"
 )
+
+func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *time.Location) error {
+	localAudioFilePath := audioFile
+	if _, err := os.Stat(localAudioFilePath); err != nil {
+		if err != os.ErrNotExist {
+			return err
+		}
+		localAudioFilePath = filepath.Join(rootDir, audioDir, audioFile)
+	}
+	if _, err := os.Stat(localAudioFilePath); err != nil {
+		return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+	}
+
+	if filepath.IsAbs(localAudioFilePath) {
+		var absBasePath = rootDir
+		if !filepath.IsAbs(absBasePath) {
+			var err error
+			absBasePath, err = filepath.Abs(rootDir)
+			if err != nil {
+				return err
+			}
+		}
+		p, err := filepath.Rel(absBasePath, localAudioFilePath)
+		if err != nil {
+			return err
+		}
+		p = filepath.ToSlash(p)
+		if strings.HasPrefix(p, "../") {
+			return fmt.Errorf("audio file must be in the audio directory: %s", p)
+		}
+	}
+
+	audio, err := ReadAudio(localAudioFilePath)
+	if err != nil {
+		return err
+	}
+	if slug == "" {
+		slug = strings.TrimSuffix(filepath.Base(localAudioFilePath), filepath.Ext(localAudioFilePath))
+	}
+	if title == "" {
+		title = audio.Title
+	}
+
+	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
+	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+		return err
+	}
+	f, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	arg := struct {
+		AudioFile   string
+		Title       string
+		Description string
+		Date        string
+	}{
+		AudioFile:   filepath.Base(localAudioFilePath),
+		Title:       title,
+		Description: description,
+		Date:        time.Now().In(loc).Format(time.RFC3339),
+	}
+	err = episodeTmpl.Execute(f, arg)
+
+	return err
+}
+
+const episodeTmplStr = `---
+audio: {{ .AudioFile }}
+title: {{ .Title }}
+description: {{ .Description }}
+date: {{ .Date }}
+---
+
+# {{ .Title }}
+`
+
+var episodeTmpl = template.Must(template.New("episode").Parse(episodeTmplStr))
 
 func LoadEpisodes(rootDir string, rootURL *url.URL, loc *time.Location) ([]*Episode, error) {
 	dirname := filepath.Join(rootDir, episodeDir)
@@ -100,7 +181,7 @@ func (epm *EpisodeFrontMatter) loadAudio(rootDir string) error {
 		return fmt.Errorf("subdirectories are not supported of audio file: %s", epm.AudioFile)
 	}
 	var err error
-	epm.audio, err = readAudio(filepath.Join(rootDir, audioDir, epm.AudioFile))
+	epm.audio, err = ReadAudio(filepath.Join(rootDir, audioDir, epm.AudioFile))
 	return err
 }
 
