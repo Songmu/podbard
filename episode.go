@@ -49,7 +49,8 @@ func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
 
 type Episode struct {
 	EpisodeFrontMatter
-	Name, Body string
+	Name string // is Slug appropriate?
+	Body string
 }
 
 type EpisodeFrontMatter struct {

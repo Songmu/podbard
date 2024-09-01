@@ -11,21 +11,28 @@ import (
 )
 
 type Audio struct {
-	Name   string
-	Format string
-	Length uint64
+	Name     string
+	FileSize int64
+	Format   string
+	Duration uint64
 }
 
 func readAudio(fname string) (*Audio, error) {
+	au := &Audio{
+		Name: filepath.Base(fname),
+	}
+
+	fi, err := os.Stat(fname)
+	if err != nil {
+		return nil, err
+	}
+	au.FileSize = fi.Size()
+
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-
-	au := &Audio{
-		Name: filepath.Base(fname),
-	}
 
 	// XXX: awful filetype detection
 	fn := au.readMP3
@@ -45,7 +52,7 @@ func (au *Audio) readMP4(rs io.ReadSeeker) error {
 		return err
 	}
 	au.Format = "mp4"
-	au.Length = prove.Duration / uint64(prove.Timescale)
+	au.Duration = prove.Duration / uint64(prove.Timescale)
 	return nil
 }
 
@@ -67,6 +74,6 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 		t = t + f.Duration().Seconds()
 	}
 	au.Format = "mp3"
-	au.Length = uint64(t)
+	au.Duration = uint64(t)
 	return nil
 }
