@@ -43,7 +43,7 @@ func NewFeed(channel *ChannelConfig, pubDate time.Time) *Feed {
 }
 
 func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
-	epLink, err := url.JoinPath(f.Channel.Link, episodeDir, ep.Name)
+	epLink, err := url.JoinPath(f.Channel.Link, episodeDir, ep.Slug)
 	if err != nil {
 		return 0, err
 	}

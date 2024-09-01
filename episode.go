@@ -1,6 +1,7 @@
 package primcast
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -49,8 +50,8 @@ func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
 
 type Episode struct {
 	EpisodeFrontMatter
-	Name string // is Slug appropriate?
-	Body string
+	Slug          string // is Slug appropriate?
+	RawBody, Body string
 }
 
 type EpisodeFrontMatter struct {
@@ -64,13 +65,23 @@ type EpisodeFrontMatter struct {
 }
 
 func (ep *Episode) init(loc *time.Location) error {
-	var err error
 	if err := ep.loadAudio(); err != nil {
 		return err
 	}
 
+	var err error
 	ep.pubDate, err = httpdate.Str2Time(ep.Date, loc)
-	return err
+	if err != nil {
+		return err
+	}
+
+	md := NewMarkdown()
+	var buf bytes.Buffer
+	if err := md.Convert([]byte(ep.RawBody), &buf); err != nil {
+		return err
+	}
+	ep.Body = buf.String()
+	return nil
 }
 
 func (epm *EpisodeFrontMatter) PubDate() time.Time {
@@ -105,7 +116,7 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
 	defer f.Close()
 
 	ep := &Episode{
-		Name: strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname)),
+		Slug: strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname)),
 	}
 	if err := ep.loadEpisode(f, loc); err != nil {
 		return nil, err
@@ -114,25 +125,26 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
 }
 
 func (ep *Episode) loadEpisode(r io.Reader, loc *time.Location) error {
-	// TODO: template
-
 	content, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
-	stuff := strings.SplitN(string(content), "---\n", 3)
-
-	if strings.TrimSpace(stuff[0]) != "" {
-		return errors.New("no front matter")
-	}
-
+	// TODO: template
+	/*
+		The following patterns are possible for template processing.
+		- Batch template processing before splitting frontmatter and body.
+		- Template processing after splitting frontmatter and body
+		- After splitting frontmatter and body, template only body.
+		- No template processing (<- current implementation)
+	*/
+	frontMatter, body, err := splitFrontMatterAndBody(string(content))
 	var ef EpisodeFrontMatter
-	if err := yaml.NewDecoder(strings.NewReader(stuff[1])).Decode(&ef); err != nil {
+	if err := yaml.NewDecoder(strings.NewReader(frontMatter)).Decode(&ef); err != nil {
 		return err
 	}
 
 	ep.EpisodeFrontMatter = ef
-	ep.Body = strings.TrimSpace(stuff[2])
+	ep.RawBody = body
 
 	return ep.init(loc)
 }
