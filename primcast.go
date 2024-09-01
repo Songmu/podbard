@@ -42,7 +42,8 @@ func printVersion(out io.Writer) error {
 }
 
 var commands = map[string]commander{
-	"init": &cmdInit{},
+	"init":  &cmdInit{},
+	"build": &cmdBuild{},
 	// for debug
 	"debug":         &cmdDebug{},
 	"dump-config":   &cmdDumpConfig{},

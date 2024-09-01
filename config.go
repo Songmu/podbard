@@ -3,6 +3,7 @@ package primcast
 import (
 	"errors"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -15,6 +16,7 @@ const (
 	audioDir    = "audio"
 	configFile  = "primcast.yaml"
 	artworkFile = "images/artwork.jpg"
+	feedFile    = "feed.xml"
 )
 
 type Config struct {
@@ -23,7 +25,8 @@ type Config struct {
 	TimeZone       string `yaml:"timezone"`
 	AudioBucketURL string `yaml:"audio_bucket_url"`
 
-	location *time.Location
+	location     *time.Location
+	audioBaseURL *url.URL
 }
 
 type ChannelConfig struct {
@@ -51,6 +54,21 @@ func (cfg *Config) init() error {
 	} else {
 		cfg.location = time.Local
 	}
+
+	audioBaseURL := cfg.AudioBucketURL
+	if audioBaseURL == "" {
+		l := cfg.Channel.Link
+		if !strings.HasSuffix(l, "/") {
+			l += "/"
+		}
+		audioBaseURL = l + audioDir + "/"
+	}
+	u, err := url.Parse(audioBaseURL)
+	if err != nil {
+		return err
+	}
+	cfg.audioBaseURL = u
+
 	return nil
 }
 
@@ -58,16 +76,8 @@ func (cfg *Config) Location() *time.Location {
 	return cfg.location
 }
 
-func (cfg *Config) AudioBaseURL() string {
-	if cfg.AudioBucketURL != "" {
-		return cfg.AudioBucketURL
-	}
-
-	l := cfg.Channel.Link
-	if !strings.HasSuffix(l, "/") {
-		l += "/"
-	}
-	return cfg.Channel.Link + audioDir + "/"
+func (cfg *Config) AudioBaseURL() *url.URL {
+	return cfg.audioBaseURL
 }
 
 func (channel *ChannelConfig) FeedURL() string {
@@ -75,7 +85,7 @@ func (channel *ChannelConfig) FeedURL() string {
 	if !strings.HasSuffix(l, "/") {
 		l += "/"
 	}
-	return l + "feed.xml"
+	return l + feedFile
 }
 
 func (channel *ChannelConfig) ImageURL() string {
@@ -93,7 +103,7 @@ func (channel *ChannelConfig) ImageURL() string {
 	return l + img
 }
 
-func loadConfig() (*Config, error) {
+func LoadConfig() (*Config, error) {
 	return loadConfigFromFile(configFile)
 }
 

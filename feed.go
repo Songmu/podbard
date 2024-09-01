@@ -42,7 +42,7 @@ func NewFeed(channel *ChannelConfig, pubDate time.Time) *Feed {
 	}
 }
 
-func (f *Feed) AddEpisode(ep *Episode, audioBucketURL string) (int, error) {
+func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	epLink, err := url.JoinPath(f.Channel.Link, episodeDir, ep.Name)
 	if err != nil {
 		return 0, err
@@ -62,20 +62,12 @@ func (f *Feed) AddEpisode(ep *Episode, audioBucketURL string) (int, error) {
 	item.AddDuration(int64(ep.Audio().Duration))
 	// XXX: item.Content = ep.HTML() // <content:encoded> is not supported yet
 
-	audioBaseURL := audioBucketURL
-	if audioBaseURL == "" {
-		// f.Channel.Link has been already validated above
-		audioBaseURL, _ = url.JoinPath(f.Channel.Link, audioDir)
-	}
-	audioURL, err := url.JoinPath(audioBaseURL, ep.AudioFile)
-	if err != nil {
-		return 0, err
-	}
+	audioURL := audioBaseURL.JoinPath(ep.AudioFile)
 	encType := podcast.MP3
 	if strings.HasSuffix(ep.AudioFile, ".m4a") {
 		encType = podcast.M4A
 	}
-	item.AddEnclosure(audioURL, encType, ep.Audio().FileSize)
+	item.AddEnclosure(audioURL.String(), encType, ep.Audio().FileSize)
 
 	return f.Podcast.AddItem(*item)
 }
