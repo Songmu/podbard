@@ -2,6 +2,7 @@ package cast
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
 	"os"
@@ -11,6 +12,34 @@ import (
 
 	"github.com/goccy/go-yaml"
 )
+
+type YAMLURL struct {
+	*url.URL
+}
+
+func (yu *YAMLURL) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	err := unmarshal(&s)
+	if err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	url, err := url.Parse(s)
+	if err != nil {
+		return err
+	}
+	if url.Scheme != "https" && url.Scheme != "http" {
+		return fmt.Errorf("invalid scheme: %s", url.Scheme)
+	}
+	yu.URL = url
+	return nil
+}
+
+func (yu *YAMLURL) MarshalYAML() (interface{}, error) {
+	return yu.String(), nil
+}
 
 const (
 	episodeDir  = "episode"
@@ -23,15 +52,15 @@ const (
 type Config struct {
 	Channel *ChannelConfig `yaml:"channel"`
 
-	TimeZone       string `yaml:"timezone"`
-	AudioBucketURL string `yaml:"audio_bucket_url"`
+	TimeZone       string  `yaml:"timezone"`
+	AudioBucketURL YAMLURL `yaml:"audio_bucket_url"`
 
 	location     *time.Location
 	audioBaseURL *url.URL
 }
 
 type ChannelConfig struct {
-	Link        string     `yaml:"link"`
+	Link        YAMLURL    `yaml:"link"`
 	Title       string     `yaml:"title"`
 	Description string     `yaml:"description"`
 	Categories  Categories `yaml:"category"` // XXX sub category is not supported yet
@@ -44,7 +73,10 @@ type ChannelConfig struct {
 
 func (cfg *Config) init() error {
 	if cfg.Channel == nil {
-		return errors.New("no site configuration")
+		return errors.New("no channel configuration")
+	}
+	if cfg.Channel.Link.URL == nil {
+		return errors.New("no channel link")
 	}
 	if cfg.TimeZone != "" {
 		loc, err := time.LoadLocation(cfg.TimeZone)
@@ -56,20 +88,10 @@ func (cfg *Config) init() error {
 		cfg.location = time.Local
 	}
 
-	audioBaseURL := cfg.AudioBucketURL
-	if audioBaseURL == "" {
-		l := cfg.Channel.Link
-		if !strings.HasSuffix(l, "/") {
-			l += "/"
-		}
-		audioBaseURL = l + audioDir + "/"
+	cfg.audioBaseURL = cfg.AudioBucketURL.URL
+	if cfg.audioBaseURL == nil {
+		cfg.audioBaseURL = cfg.Channel.Link.JoinPath(audioDir)
 	}
-	u, err := url.Parse(audioBaseURL)
-	if err != nil {
-		return err
-	}
-	cfg.audioBaseURL = u
-
 	return nil
 }
 
@@ -81,12 +103,8 @@ func (cfg *Config) AudioBaseURL() *url.URL {
 	return cfg.audioBaseURL
 }
 
-func (channel *ChannelConfig) FeedURL() string {
-	l := channel.Link
-	if !strings.HasSuffix(l, "/") {
-		l += "/"
-	}
-	return l + feedFile
+func (channel *ChannelConfig) FeedURL() *url.URL {
+	return channel.Link.JoinPath(feedFile)
 }
 
 func (channel *ChannelConfig) ImageURL() string {
@@ -97,11 +115,7 @@ func (channel *ChannelConfig) ImageURL() string {
 	if img == "" {
 		img = artworkFile
 	}
-	l := channel.Link
-	if !strings.HasSuffix(l, "/") {
-		l += "/"
-	}
-	return l + img
+	return channel.Link.JoinPath(img).String()
 }
 
 func LoadConfig(rootDir string) (*Config, error) {

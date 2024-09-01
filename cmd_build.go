@@ -16,7 +16,7 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 	if err != nil {
 		return err
 	}
-	episodes, err := cast.LoadEpisodes(".", cfg.Channel.Link, cfg.Location())
+	episodes, err := cast.LoadEpisodes(".", cfg.Channel.Link.URL, cfg.Location())
 	if err != nil {
 		return err
 	}

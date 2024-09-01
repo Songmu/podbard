@@ -15,13 +15,13 @@ type Feed struct {
 }
 
 func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed {
-	pdTmp := podcast.New(channel.Title, channel.Link, channel.Description, &pubDate, &pubDate)
+	pdTmp := podcast.New(channel.Title, channel.Link.String(), channel.Description, &pubDate, &pubDate)
 
 	pd := &pdTmp
 	pd.Language = channel.Language
 	pd.Generator = fmt.Sprintf("%s powered by %s", generator, pd.Generator)
 	pd.AddAuthor(channel.Author, channel.Email)
-	pd.AddAtomLink(channel.FeedURL())
+	pd.AddAtomLink(channel.FeedURL().String())
 	pd.Copyright = channel.Copyright
 	pd.AddImage(channel.ImageURL())
 
@@ -43,7 +43,7 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed 
 }
 
 func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
-	epLink, err := url.JoinPath(f.Channel.Link, episodeDir, ep.Slug)
+	epLink, err := url.JoinPath(f.Channel.Link.String(), episodeDir, ep.Slug)
 	if err != nil {
 		return 0, err
 	}
