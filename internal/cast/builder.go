@@ -1,6 +1,7 @@
 package cast
 
 import (
+	"html/template"
 	"os"
 	"path/filepath"
 	"time"
@@ -34,7 +35,8 @@ func (bdr *Builder) Build() error {
 		}
 	}
 	return bdr.buildIndex()
-	/// TODO: build and locate assets files like images
+	// TODO: build and locate assets files like images
+	// XXX: Should we copy audio filess to the build directory if the audio bucket is empty?
 }
 
 func (bdr *Builder) buildFeed() error {
@@ -65,7 +67,26 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 	if err := os.MkdirAll(filepath.Dir(episodePath), os.ModePerm); err != nil {
 		return err
 	}
-	return os.WriteFile(episodePath, []byte(ep.Body), 0644)
+
+	tmpl, err := loadTemplate(bdr.RootDir)
+	if err != nil {
+		return os.WriteFile(episodePath, []byte(ep.Body), 0644)
+	}
+
+	arg := struct {
+		Title   string
+		Body    template.HTML
+		Episode *Episode
+		Config  *Config
+	}{
+		Title:   ep.Title,
+		Body:    template.HTML(ep.Body),
+		Episode: ep,
+		Config:  bdr.Config,
+	}
+
+	body, err := tmpl.execute("layout", "episode", arg)
+	return os.WriteFile(episodePath, []byte(body), 0644)
 }
 
 func (bdr *Builder) buildIndex() error {
@@ -74,5 +95,11 @@ func (bdr *Builder) buildIndex() error {
 		return err
 	}
 	indexPath := filepath.Join(bdr.buildDir(), "index.html")
-	return os.WriteFile(indexPath, []byte(idx.Body), 0644)
+
+	tmpl, err := loadTemplate(bdr.RootDir)
+	if err != nil {
+		return os.WriteFile(indexPath, []byte(idx.Body), 0644)
+	}
+	body, err := tmpl.execute("layout", "index", idx)
+	return os.WriteFile(indexPath, []byte(body), 0644)
 }

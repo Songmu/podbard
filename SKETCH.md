@@ -1,35 +1,31 @@
+# SKETCH
 
-
-# directory structure
+## Directory Structure
 
 - index.md - index page
 - primcast.yaml - configuration file
 - episode/ - eqisode pages
 - audio/   - audio files
-- images/  - images
+- images/  - images (optional)
 
+## Sub Commmands
 
-
-# sub commmands
-
-## init
+### init
 
 ```console
 $ primcast init
 ```
 
-## page
+### episode
 
 ```
-$ primcast episode audio/1.mp3
+$ primcast episode [-slug hoge] audio/1.mp3
 ```
 
 create a new epoisode page with the specified audio file.
 
-
-## build
+### build
 
 ```
 $ primcast build
 ```
-

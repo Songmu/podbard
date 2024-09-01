@@ -18,12 +18,8 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 
 	fs := flag.NewFlagSet("primcast build", flag.ContinueOnError)
 	fs.SetOutput(errw)
-	cd := fs.String("C", "", "change to directory")
 	if err := fs.Parse(args); err != nil {
 		return err
-	}
-	if *cd != "" {
-		rootDir = *cd
 	}
 
 	cfg, err := cast.LoadConfig(rootDir)
