@@ -20,7 +20,7 @@ import (
 func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *time.Location) error {
 	localAudioFilePath := audioFile
 	if _, err := os.Stat(localAudioFilePath); err != nil {
-		if err != os.ErrNotExist {
+		if !os.IsNotExist(err) {
 			return err
 		}
 		localAudioFilePath = filepath.Join(rootDir, audioDir, audioFile)
