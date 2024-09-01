@@ -37,7 +37,7 @@ type ChannelConfig struct {
 	Language    string     `yaml:"language"`
 	Author      string     `yaml:"author"`
 	Email       string     `yaml:"email"`
-	Image       string     `yaml:"image"`
+	Artwork     string     `yaml:"artwork"`
 	Copyright   string     `yaml:"copyright"`
 }
 
@@ -89,7 +89,7 @@ func (channel *ChannelConfig) FeedURL() string {
 }
 
 func (channel *ChannelConfig) ImageURL() string {
-	img := channel.Image
+	img := channel.Artwork
 	if strings.HasPrefix(img, "https://") || strings.HasPrefix(img, "http://") {
 		return img
 	}
