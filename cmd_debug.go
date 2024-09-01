@@ -52,6 +52,7 @@ func (de *cmdDumpEpisode) Command(ctx context.Context, args []string, outw, errw
 		return err
 	}
 	fmt.Printf("%#v\n", ep)
+	fmt.Printf("%#v\n", ep.Audio())
 	return nil
 }
 

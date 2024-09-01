@@ -2,6 +2,7 @@ package primcast
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -24,9 +25,10 @@ func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
 	}
 	var ret []*Episode
 	for _, f := range dir {
-		if f.IsDir() {
-			// XXX: Do we need to handle subdirectories?
+		// XXX: Do we need to handle subdirectories?
+		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
 			continue
+
 		}
 		e, err := loadEpisodeFromFile(filepath.Join(dirname, f.Name()), loc)
 		if err != nil {
@@ -47,7 +49,7 @@ func loadEpisodesInDir(dirname string, loc *time.Location) ([]*Episode, error) {
 
 type Episode struct {
 	EpisodeFrontMatter
-	Body string
+	Name, Body string
 }
 
 type EpisodeFrontMatter struct {
@@ -62,9 +64,6 @@ type EpisodeFrontMatter struct {
 
 func (ep *Episode) init(loc *time.Location) error {
 	var err error
-	if ep.AudioFile == "" {
-		return errors.New("no audio")
-	}
 	if err := ep.loadAudio(); err != nil {
 		return err
 	}
@@ -82,6 +81,12 @@ func (epm *EpisodeFrontMatter) Audio() *Audio {
 }
 
 func (epm *EpisodeFrontMatter) loadAudio() error {
+	if epm.AudioFile == "" {
+		return errors.New("no audio")
+	}
+	if epm.AudioFile != filepath.Base(epm.AudioFile) {
+		return fmt.Errorf("subdirectories are not supported of audio file: %s", epm.AudioFile)
+	}
 	var err error
 	epm.audio, err = readAudio(epm.audioFilePath())
 	return err
@@ -98,33 +103,35 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
 	}
 	defer f.Close()
 
-	return loadEpisode(f, loc)
+	ep := &Episode{
+		Name: strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname)),
+	}
+	if err := ep.loadEpisode(f, loc); err != nil {
+		return nil, err
+	}
+	return ep, nil
 }
 
-func loadEpisode(r io.Reader, loc *time.Location) (*Episode, error) {
+func (ep *Episode) loadEpisode(r io.Reader, loc *time.Location) error {
 	// TODO: template
 
 	content, err := io.ReadAll(r)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	stuff := strings.SplitN(string(content), "---\n", 3)
 
 	if strings.TrimSpace(stuff[0]) != "" {
-		return nil, errors.New("no front matter")
+		return errors.New("no front matter")
 	}
 
 	var ef EpisodeFrontMatter
 	if err := yaml.NewDecoder(strings.NewReader(stuff[1])).Decode(&ef); err != nil {
-		return nil, err
+		return err
 	}
 
-	ep := &Episode{
-		EpisodeFrontMatter: ef,
-		Body:               strings.TrimSpace(stuff[2]),
-	}
-	if err := ep.init(loc); err != nil {
-		return nil, err
-	}
-	return ep, nil
+	ep.EpisodeFrontMatter = ef
+	ep.Body = strings.TrimSpace(stuff[2])
+
+	return ep.init(loc)
 }

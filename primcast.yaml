@@ -5,9 +5,10 @@ channel:
   description: sample description
   language: ja-JP
   keywords: ""
-  # category: []
+  category: "Techlogy"
   author: Songmu
   email: y.songmu@gmail.com
+  # image: "images/artwork.jpg" # url or path
 
 timezone: Asia/Tokyo
 audio_bucket_url: https://s3-ap-northeast-1.amazonaws.com/primcast.example.com/audio

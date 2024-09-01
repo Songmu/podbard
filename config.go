@@ -27,14 +27,15 @@ type Config struct {
 }
 
 type ChannelConfig struct {
-	Link        string `yaml:"link"`
-	Title       string `yaml:"title"`
-	Description string `yaml:"description"`
-	Language    string `yaml:"language"`
-	KeyWords    string `yaml:"keywords"`
-	Author      string `yaml:"author"`
-	Email       string `yaml:"email"`
-	CopyRight   string `yaml:"copyright"`
+	Link        string     `yaml:"link"`
+	Title       string     `yaml:"title"`
+	Description string     `yaml:"description"`
+	Categories  Categories `yaml:"category"` // XXX sub category is not supported yet
+	Language    string     `yaml:"language"`
+	Author      string     `yaml:"author"`
+	Email       string     `yaml:"email"`
+	Image       string     `yaml:"image"`
+	Copyright   string     `yaml:"copyright"`
 }
 
 func (cfg *Config) init() error {
@@ -69,12 +70,27 @@ func (cfg *Config) AudioBaseURL() string {
 	return cfg.Channel.Link + audioDir + "/"
 }
 
-func (site *ChannelConfig) FeedURL() string {
-	l := site.Link
+func (channel *ChannelConfig) FeedURL() string {
+	l := channel.Link
 	if !strings.HasSuffix(l, "/") {
 		l += "/"
 	}
 	return l + "feed.xml"
+}
+
+func (channel *ChannelConfig) ImageURL() string {
+	img := channel.Image
+	if strings.HasPrefix(img, "https://") || strings.HasPrefix(img, "http://") {
+		return img
+	}
+	if img == "" {
+		img = artworkFile
+	}
+	l := channel.Link
+	if !strings.HasSuffix(l, "/") {
+		l += "/"
+	}
+	return l + img
 }
 
 func loadConfig() (*Config, error) {

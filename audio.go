@@ -3,6 +3,7 @@ package primcast
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/abema/go-mp4"
@@ -10,6 +11,7 @@ import (
 )
 
 type Audio struct {
+	Name   string
 	Format string
 	Length uint64
 }
@@ -21,27 +23,35 @@ func readAudio(fname string) (*Audio, error) {
 	}
 	defer f.Close()
 
-	// XXX:
-	if strings.HasSuffix(fname, ".mp3") {
-		return readMP3(f)
+	au := &Audio{
+		Name: filepath.Base(fname),
 	}
-	return readMP4(f)
-}
 
-func readMP4(rs io.ReadSeeker) (*Audio, error) {
-	prove, err := mp4.Probe(rs)
+	// XXX: awful filetype detection
+	fn := au.readMP3
+	if !strings.HasSuffix(fname, ".mp3") {
+		fn = au.readMP4
+	}
+	err = fn(f)
 	if err != nil {
 		return nil, err
 	}
-	return &Audio{
-		Format: "mp4",
-		Length: prove.Duration / uint64(prove.Timescale),
-	}, nil
+	return au, nil
+}
+
+func (au *Audio) readMP4(rs io.ReadSeeker) error {
+	prove, err := mp4.Probe(rs)
+	if err != nil {
+		return err
+	}
+	au.Format = "mp4"
+	au.Length = prove.Duration / uint64(prove.Timescale)
+	return nil
 }
 
 var skipped int = 0
 
-func readMP3(r io.Reader) (*Audio, error) {
+func (au *Audio) readMP3(r io.ReadSeeker) error {
 	var (
 		t float64
 		f mp3.Frame
@@ -52,12 +62,11 @@ func readMP3(r io.Reader) (*Audio, error) {
 			if err == io.EOF {
 				break
 			}
-			return nil, err
+			return err
 		}
 		t = t + f.Duration().Seconds()
 	}
-	return &Audio{
-		Format: "mp3",
-		Length: uint64(t),
-	}, nil
+	au.Format = "mp3"
+	au.Length = uint64(t)
+	return nil
 }
