@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	episodeDir = "episode"
-	audioDir   = "audio"
-	configFile = "primcast.yaml"
+	episodeDir  = "episode"
+	audioDir    = "audio"
+	configFile  = "primcast.yaml"
+	artworkFile = "images/artwork.jpg"
 )
 
 type Config struct {

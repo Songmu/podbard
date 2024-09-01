@@ -33,26 +33,27 @@ func episodesItr(loc *time.Location) (func(func(*Episode, error) bool), error) {
 	}, nil
 }
 
-type EpisodeFrontMatter struct {
-	Title       string `yaml:"title"`
-	Description string `yaml:"description"`
-	Date        string `yaml:"date"`
-	Audio       string `yaml:"audio"`
-
-	pubDate time.Time
-}
-
 type Episode struct {
 	EpisodeFrontMatter
 	Body string
 }
 
+type EpisodeFrontMatter struct {
+	Title       string `yaml:"title"`
+	Description string `yaml:"description"`
+	Date        string `yaml:"date"`
+	AudioFile   string `yaml:"audio"`
+
+	audio   *Audio
+	pubDate time.Time
+}
+
 func (ep *Episode) init(loc *time.Location) error {
 	var err error
-	if ep.Audio == "" {
+	if ep.AudioFile == "" {
 		return errors.New("no audio")
 	}
-	if _, err := os.Stat(ep.AudioFilePath()); err != nil {
+	if err := ep.loadAudio(); err != nil {
 		return err
 	}
 
@@ -60,12 +61,22 @@ func (ep *Episode) init(loc *time.Location) error {
 	return err
 }
 
-func (epm *EpisodeFrontMatter) AudioFilePath() string {
-	return filepath.Join(audioDir, epm.Audio)
-}
-
 func (epm *EpisodeFrontMatter) PubDate() time.Time {
 	return epm.pubDate
+}
+
+func (epm *EpisodeFrontMatter) Audio() *Audio {
+	return epm.audio
+}
+
+func (epm *EpisodeFrontMatter) loadAudio() error {
+	var err error
+	epm.audio, err = readAudio(epm.audioFilePath())
+	return err
+}
+
+func (epm *EpisodeFrontMatter) audioFilePath() string {
+	return filepath.Join(audioDir, epm.AudioFile)
 }
 
 func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {

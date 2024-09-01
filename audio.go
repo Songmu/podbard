@@ -10,8 +10,8 @@ import (
 )
 
 type Audio struct {
-	format string
-	length uint64
+	Format string
+	Length uint64
 }
 
 func readAudio(fname string) (*Audio, error) {
@@ -34,8 +34,8 @@ func readMP4(rs io.ReadSeeker) (*Audio, error) {
 		return nil, err
 	}
 	return &Audio{
-		format: "mp4",
-		length: prove.Duration / uint64(prove.Timescale),
+		Format: "mp4",
+		Length: prove.Duration / uint64(prove.Timescale),
 	}, nil
 }
 
@@ -57,7 +57,7 @@ func readMP3(r io.Reader) (*Audio, error) {
 		t = t + f.Duration().Seconds()
 	}
 	return &Audio{
-		format: "mp3",
-		length: uint64(t),
+		Format: "mp3",
+		Length: uint64(t),
 	}, nil
 }

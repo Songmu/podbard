@@ -19,7 +19,7 @@ func (d *cmdDebug) Command(ctx context.Context, args []string, outw, errw io.Wri
 		return err
 	}
 	fmt.Printf("%#v\n", aud)
-	fmt.Printf("%#d\n", aud.length)
+	fmt.Printf("%#d\n", aud.Length)
 	return nil
 }
 
