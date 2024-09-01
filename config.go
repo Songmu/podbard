@@ -16,11 +16,11 @@ const (
 	configFile = "primcast.yaml"
 )
 
-type config struct {
-	Site *siteConfig `yaml:"site"`
+type Config struct {
+	Site *SiteConfig `yaml:"site"`
 }
 
-type siteConfig struct {
+type SiteConfig struct {
 	Link           string `yaml:"link"`
 	Title          string `yaml:"title"`
 	Description    string `yaml:"description"`
@@ -34,7 +34,7 @@ type siteConfig struct {
 	location *time.Location
 }
 
-func (cfg *config) init() error {
+func (cfg *Config) init() error {
 	if cfg.Site == nil {
 		return errors.New("no site configuration")
 	}
@@ -50,11 +50,11 @@ func (cfg *config) init() error {
 	return nil
 }
 
-func (site *siteConfig) Location() *time.Location {
+func (site *SiteConfig) Location() *time.Location {
 	return site.location
 }
 
-func (site *siteConfig) AudioBaseURL() string {
+func (site *SiteConfig) AudioBaseURL() string {
 	if site.AudioBucketURL != "" {
 		return site.AudioBucketURL
 	}
@@ -66,7 +66,7 @@ func (site *siteConfig) AudioBaseURL() string {
 	return site.Link + audioDir + "/"
 }
 
-func (site *siteConfig) FeedURL() string {
+func (site *SiteConfig) FeedURL() string {
 	l := site.Link
 	if !strings.HasSuffix(l, "/") {
 		l += "/"
@@ -74,17 +74,21 @@ func (site *siteConfig) FeedURL() string {
 	return l + "feed.xml"
 }
 
-func loadConfigFromFile(fname string) (*config, error) {
+func loadConfig() (*Config, error) {
+	return loadConfigFromFile(configFile)
+}
+
+func loadConfigFromFile(fname string) (*Config, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	return loadConfig(f)
+	return loadConfigFromReader(f)
 }
 
-func loadConfig(r io.Reader) (*config, error) {
-	cfg := &config{}
+func loadConfigFromReader(r io.Reader) (*Config, error) {
+	cfg := &Config{}
 	err := yaml.NewDecoder(r).Decode(cfg)
 	if err := cfg.init(); err != nil {
 		return nil, err

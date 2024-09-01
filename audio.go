@@ -9,12 +9,12 @@ import (
 	"github.com/tcolgate/mp3"
 )
 
-type audio struct {
+type Audio struct {
 	format string
 	length uint64
 }
 
-func readAudio(fname string) (*audio, error) {
+func readAudio(fname string) (*Audio, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
@@ -28,12 +28,12 @@ func readAudio(fname string) (*audio, error) {
 	return readMP4(f)
 }
 
-func readMP4(rs io.ReadSeeker) (*audio, error) {
+func readMP4(rs io.ReadSeeker) (*Audio, error) {
 	prove, err := mp4.Probe(rs)
 	if err != nil {
 		return nil, err
 	}
-	return &audio{
+	return &Audio{
 		format: "mp4",
 		length: prove.Duration / uint64(prove.Timescale),
 	}, nil
@@ -41,7 +41,7 @@ func readMP4(rs io.ReadSeeker) (*audio, error) {
 
 var skipped int = 0
 
-func readMP3(r io.Reader) (*audio, error) {
+func readMP3(r io.Reader) (*Audio, error) {
 	var (
 		t float64
 		f mp3.Frame
@@ -56,7 +56,7 @@ func readMP3(r io.Reader) (*audio, error) {
 		}
 		t = t + f.Duration().Seconds()
 	}
-	return &audio{
+	return &Audio{
 		format: "mp3",
 		length: uint64(t),
 	}, nil

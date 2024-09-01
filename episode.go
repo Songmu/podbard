@@ -12,13 +12,13 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-func episodesItr(loc *time.Location) (func(func(*episode, error) bool), error) {
+func episodesItr(loc *time.Location) (func(func(*Episode, error) bool), error) {
 	dir, err := os.ReadDir(episodeDir)
 	if err != nil {
 		return nil, err
 	}
 
-	return func(yield func(ep *episode, err error) bool) {
+	return func(yield func(ep *Episode, err error) bool) {
 		for _, f := range dir {
 			if f.IsDir() {
 				continue
@@ -33,7 +33,7 @@ func episodesItr(loc *time.Location) (func(func(*episode, error) bool), error) {
 	}, nil
 }
 
-type episodeFrontMatter struct {
+type EpisodeFrontMatter struct {
 	Title       string `yaml:"title"`
 	Description string `yaml:"description"`
 	Date        string `yaml:"date"`
@@ -42,12 +42,12 @@ type episodeFrontMatter struct {
 	pubDate time.Time
 }
 
-type episode struct {
-	episodeFrontMatter
+type Episode struct {
+	EpisodeFrontMatter
 	Body string
 }
 
-func (ep *episode) init(loc *time.Location) error {
+func (ep *Episode) init(loc *time.Location) error {
 	var err error
 	if ep.Audio == "" {
 		return errors.New("no audio")
@@ -60,15 +60,15 @@ func (ep *episode) init(loc *time.Location) error {
 	return err
 }
 
-func (epm *episodeFrontMatter) AudioFilePath() string {
+func (epm *EpisodeFrontMatter) AudioFilePath() string {
 	return filepath.Join(audioDir, epm.Audio)
 }
 
-func (epm *episodeFrontMatter) PubDate() time.Time {
+func (epm *EpisodeFrontMatter) PubDate() time.Time {
 	return epm.pubDate
 }
 
-func loadEpisodeFromFile(fname string, loc *time.Location) (*episode, error) {
+func loadEpisodeFromFile(fname string, loc *time.Location) (*Episode, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func loadEpisodeFromFile(fname string, loc *time.Location) (*episode, error) {
 	return loadEpisode(f, loc)
 }
 
-func loadEpisode(r io.Reader, loc *time.Location) (*episode, error) {
+func loadEpisode(r io.Reader, loc *time.Location) (*Episode, error) {
 	// TODO: template
 
 	content, err := io.ReadAll(r)
@@ -91,13 +91,13 @@ func loadEpisode(r io.Reader, loc *time.Location) (*episode, error) {
 		return nil, errors.New("no front matter")
 	}
 
-	var ef episodeFrontMatter
+	var ef EpisodeFrontMatter
 	if err := yaml.NewDecoder(strings.NewReader(stuff[1])).Decode(&ef); err != nil {
 		return nil, err
 	}
 
-	ep := &episode{
-		episodeFrontMatter: ef,
+	ep := &Episode{
+		EpisodeFrontMatter: ef,
 		Body:               strings.TrimSpace(stuff[2]),
 	}
 	if err := ep.init(loc); err != nil {
