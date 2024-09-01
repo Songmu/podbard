@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	"github.com/abema/go-mp4"
+	"github.com/dhowden/tag"
 	"github.com/tcolgate/mp3"
 )
 
 type Audio struct {
 	Name     string
+	Title    string
 	FileSize int64
 	Format   string
 	Duration uint64
@@ -34,6 +36,13 @@ func readAudio(fname string) (*Audio, error) {
 	}
 	defer f.Close()
 
+	meta, err := tag.ReadFrom(f)
+	if err != nil {
+		return nil, err
+	}
+	au.Title = meta.Title()
+
+	f.Seek(0, 0)
 	// XXX: awful filetype detection
 	fn := au.readMP3
 	if !strings.HasSuffix(fname, ".mp3") {
