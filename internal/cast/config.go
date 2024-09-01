@@ -31,7 +31,7 @@ func (yu *YAMLURL) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 	if url.Scheme != "https" && url.Scheme != "http" {
-		return fmt.Errorf("invalid scheme: %s", url.Scheme)
+		return fmt.Errorf("invalid scheme in URL: %s", s)
 	}
 	yu.URL = url
 	return nil
@@ -76,7 +76,7 @@ func (cfg *Config) init() error {
 		return errors.New("no channel configuration")
 	}
 	if cfg.Channel.Link.URL == nil {
-		return errors.New("no channel link")
+		return errors.New("no link configuration is specified in configuration")
 	}
 	if cfg.TimeZone != "" {
 		loc, err := time.LoadLocation(cfg.TimeZone)
@@ -133,9 +133,11 @@ func loadConfigFromFile(fname string) (*Config, error) {
 
 func loadConfigFromReader(r io.Reader) (*Config, error) {
 	cfg := &Config{}
-	err := yaml.NewDecoder(r).Decode(cfg)
+	if err := yaml.NewDecoder(r).Decode(cfg); err != nil {
+		return nil, err
+	}
 	if err := cfg.init(); err != nil {
 		return nil, err
 	}
-	return cfg, err
+	return cfg, nil
 }
