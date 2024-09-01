@@ -1,4 +1,4 @@
-package primcast
+package cast
 
 import (
 	"os"
@@ -9,9 +9,10 @@ import (
 const buildDir = "public"
 
 type Builder struct {
-	Config   *Config
-	Episodes []*Episode
-	RootDir  string
+	Config    *Config
+	Episodes  []*Episode
+	RootDir   string
+	Generator string
 }
 
 func (bdr *Builder) buildDir() string {
@@ -42,7 +43,7 @@ func (bdr *Builder) buildFeed() error {
 		pubDate = bdr.Episodes[0].PubDate()
 	}
 
-	feed := NewFeed(bdr.Config.Channel, pubDate)
+	feed := NewFeed(bdr.Generator, bdr.Config.Channel, pubDate)
 	for _, ep := range bdr.Episodes {
 		if _, err := feed.AddEpisode(ep, bdr.Config.AudioBaseURL()); err != nil {
 			return err

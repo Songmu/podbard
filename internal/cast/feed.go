@@ -1,4 +1,4 @@
-package primcast
+package cast
 
 import (
 	"fmt"
@@ -14,12 +14,12 @@ type Feed struct {
 	Podcast *podcast.Podcast
 }
 
-func NewFeed(channel *ChannelConfig, pubDate time.Time) *Feed {
+func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed {
 	pdTmp := podcast.New(channel.Title, channel.Link, channel.Description, &pubDate, &pubDate)
 
 	pd := &pdTmp
 	pd.Language = channel.Language
-	pd.Generator = fmt.Sprintf("github.com/Songmu/primcast %s powered by %s", version, pd.Generator)
+	pd.Generator = fmt.Sprintf("%s powered by %s", generator, pd.Generator)
 	pd.AddAuthor(channel.Author, channel.Email)
 	pd.AddAtomLink(channel.FeedURL())
 	pd.Copyright = channel.Copyright

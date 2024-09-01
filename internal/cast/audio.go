@@ -1,4 +1,4 @@
-package primcast
+package cast
 
 import (
 	"io"
