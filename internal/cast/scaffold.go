@@ -11,11 +11,17 @@ import (
 var embedFS embed.FS
 
 func Scaffold(outDir string) error {
-	return fs.WalkDir(embedFS, "testdata/init", func(path string, d fs.DirEntry, err error) error {
+
+	root := "testdata/init"
+	return fs.WalkDir(embedFS, root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		outPath := filepath.Join(outDir, path)
+		dstPath, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		outPath := filepath.Join(outDir, dstPath)
 		if d.IsDir() {
 			return os.MkdirAll(outPath, 0755)
 		}
