@@ -8,7 +8,7 @@ channel:
   category: "Techlogy"
   author: Songmu
   email: y.songmu@gmail.com
-  # artwork: "images/artwork.jpg" # url or path
+  artwork: "images/artwork.jpg" # url or path
 
 timezone: Asia/Tokyo
 audio_bucket_url: https://s3-ap-northeast-1.amazonaws.com/primcast.example.com/audio

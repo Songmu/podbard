@@ -19,9 +19,8 @@ const (
 	audioDir   = "audio"
 	staticDir  = "static"
 
-	configFile  = "primcast.yaml"
-	artworkFile = "images/artwork.jpg" // XXX
-	feedFile    = "feed.xml"
+	configFile = "primcast.yaml"
+	feedFile   = "feed.xml"
 )
 
 type YAMLURL struct {
@@ -144,11 +143,11 @@ func (channel *ChannelConfig) FeedURL() *url.URL {
 
 func (channel *ChannelConfig) ImageURL() string {
 	img := channel.Artwork
+	if img == "" {
+		return ""
+	}
 	if strings.HasPrefix(img, "https://") || strings.HasPrefix(img, "http://") {
 		return img
-	}
-	if img == "" {
-		img = artworkFile
 	}
 	return channel.Link.JoinPath(img).String()
 }

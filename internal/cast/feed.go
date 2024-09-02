@@ -23,8 +23,9 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed 
 	pd.AddAuthor(channel.Author, channel.Email)
 	pd.AddAtomLink(channel.FeedURL().String())
 	pd.Copyright = channel.Copyright
-	pd.AddImage(channel.ImageURL())
-
+	if img := channel.ImageURL(); img != "" {
+		pd.AddImage(img)
+	}
 	pd.ISubtitle = channel.Description
 	pd.AddSummary(channel.Description)
 
