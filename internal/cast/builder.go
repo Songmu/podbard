@@ -4,7 +4,10 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/otiai10/copy"
 )
 
 const buildDir = "public"
@@ -34,8 +37,12 @@ func (bdr *Builder) Build() error {
 			return err
 		}
 	}
+
+	if err := bdr.buildStatic(); err != nil {
+		return err
+	}
+
 	return bdr.buildIndex()
-	// TODO: build and locate assets files like images
 	// XXX: Should we copy audio filess to the build directory if the audio bucket is empty?
 }
 
@@ -123,4 +130,16 @@ func (bdr *Builder) buildIndex() error {
 	defer f.Close()
 
 	return tmpl.execute(f, "layout", "index", arg)
+}
+
+func (bdr *Builder) buildStatic() error {
+	src := filepath.Join(bdr.RootDir, staticDir)
+	if _, err := os.Stat(src); err != nil {
+		return nil
+	}
+	return copy.Copy(src, bdr.buildDir(), copy.Options{
+		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
+			return strings.HasPrefix(".", fi.Name()), nil
+		},
+	})
 }
