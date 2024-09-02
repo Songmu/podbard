@@ -2,6 +2,7 @@
 
 {{.Channel.Description}}
 
-{{range .Episodes}}
+## Episodes
+{{range .Episodes -}}
 - [{{.Title}}]({{.URL}}) ({{.PubDate.Format "2006-01-02"}})
 {{end}}
