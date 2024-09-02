@@ -14,6 +14,16 @@ import (
 	"golang.org/x/text/language"
 )
 
+const (
+	episodeDir = "episode"
+	audioDir   = "audio"
+	staticDir  = "static"
+
+	configFile  = "primcast.yaml"
+	artworkFile = "images/artwork.jpg" // XXX
+	feedFile    = "feed.xml"
+)
+
 type YAMLURL struct {
 	*url.URL
 }
@@ -73,14 +83,6 @@ func (yl *YAMLLang) String() string {
 	}
 	return yl.Tag.String()
 }
-
-const (
-	episodeDir  = "episode"
-	audioDir    = "audio"
-	configFile  = "primcast.yaml"
-	artworkFile = "images/artwork.jpg"
-	feedFile    = "feed.xml"
-)
 
 type Config struct {
 	Channel *ChannelConfig `yaml:"channel"`
