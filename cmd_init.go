@@ -31,7 +31,13 @@ func (in *cmdInit) Command(ctx context.Context, args []string, outw, errw io.Wri
 	dir := fs.Arg(0)
 
 	if _, err := os.Stat(dir); err == nil {
-		if !prompter.YN(fmt.Sprintf("directory %q already exist. Do you continue to init?", dir), false) {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			return err
+		}
+		if len(entries) > 0 &&
+			!prompter.YN(fmt.Sprintf("directory %q already exist. Do you continue to init?", dir), false) {
+
 			return nil
 		}
 	}
