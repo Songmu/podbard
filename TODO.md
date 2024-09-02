@@ -4,7 +4,7 @@
 - [ ] No prompt when the directory is empty
 - [ ] Add a `README.md` and `.gitignore` to the scaffolded project
 - [ ] Docment
-- [ ] Open `$EDITOR` when create new episode
+- [x] Open `$EDITOR` when create new episode
 - [ ] Friendly log message
 - [ ] Testing
 - [ ] Add RSS Feed link to the template
