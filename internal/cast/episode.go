@@ -87,6 +87,9 @@ func CreateEpisode(
 	}
 
 	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
+	if _, err := os.Stat(filePath); err == nil {
+		return fmt.Errorf("episode file already exists: %q", filePath)
+	}
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
 		return err
 	}
