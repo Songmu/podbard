@@ -76,6 +76,9 @@ func CreateEpisode(
 	if err != nil {
 		return err
 	}
+	if pubDate.IsZero() {
+		pubDate = audio.ModTime
+	}
 	if slug == "" {
 		slug = strings.TrimSuffix(filepath.Base(audioPath), filepath.Ext(audioPath))
 	}

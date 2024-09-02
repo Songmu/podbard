@@ -43,7 +43,8 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 		return err
 	}
 	loc := cfg.Location()
-	pubDate := time.Now()
+
+	var pubDate time.Time
 	if *date != "" {
 		var err error
 		pubDate, err = httpdate.Str2Time(*date, loc)
