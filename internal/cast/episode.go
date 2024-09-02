@@ -31,7 +31,7 @@ In any case, the audio files must exist under the audio placement directory.
 */
 func CreateEpisode(
 	rootDir, audioFile string,
-	pubDate time.Time, slug, title, description string, loc *time.Location) error {
+	pubDate time.Time, slug, title, description string, loc *time.Location) (string, error) {
 
 	var (
 		audioPath     = audioFile
@@ -39,11 +39,11 @@ func CreateEpisode(
 	)
 	if _, err := os.Stat(audioPath); err != nil {
 		if strings.ContainsAny(audioPath, `/\`) {
-			return fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
+			return "", fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
 		}
 		audioPath = filepath.Join(audioBasePath, audioFile)
 		if _, err := os.Stat(audioPath); err != nil {
-			return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+			return "", fmt.Errorf("audio file not found: %s, %w", audioFile, err)
 		}
 	} else {
 		var absAudioPath = audioPath
@@ -51,7 +51,7 @@ func CreateEpisode(
 			var err error
 			absAudioPath, err = filepath.Abs(absAudioPath)
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 		var absAudioBasePath = audioBasePath
@@ -59,22 +59,22 @@ func CreateEpisode(
 			var err error
 			absAudioBasePath, err = filepath.Abs(absAudioBasePath)
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 		p, err := filepath.Rel(absAudioBasePath, absAudioPath)
 		if err != nil {
-			return err
+			return "", err
 		}
 		if strings.ContainsAny(p, `/\`) {
-			return fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
+			return "", fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
 				audioBasePath, audioPath)
 		}
 	}
 
 	audio, err := ReadAudio(audioPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if pubDate.IsZero() {
 		pubDate = audio.ModTime
@@ -93,14 +93,14 @@ func CreateEpisode(
 	}
 	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
 	if _, err := os.Stat(filePath); err == nil {
-		return fmt.Errorf("episode file already exists: %q", filePath)
+		return "", fmt.Errorf("episode file already exists: %q", filePath)
 	}
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-		return err
+		return "", err
 	}
 	f, err := os.Create(filePath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer f.Close()
 
@@ -115,7 +115,10 @@ func CreateEpisode(
 		Description: description,
 		Date:        pubDate.Format(time.RFC3339),
 	}
-	return episodeTmpl.Execute(f, arg)
+	if err := episodeTmpl.Execute(f, arg); err != nil {
+		return "", err
+	}
+	return filePath, nil
 }
 
 const episodeTmplStr = `---

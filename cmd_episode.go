@@ -6,10 +6,13 @@ import (
 	"flag"
 	"io"
 	"log"
+	"os"
+	"os/exec"
 	"time"
 
 	"github.com/Songmu/go-httpdate"
 	"github.com/Songmu/primcast/internal/cast"
+	"github.com/mattn/go-isatty"
 )
 
 type cmdEpisode struct {
@@ -52,5 +55,22 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 			return err
 		}
 	}
-	return cast.CreateEpisode(rootDir, audioFile, pubDate, *slug, *title, *descripsion, loc)
+	fpath, err := cast.CreateEpisode(rootDir, audioFile, pubDate, *slug, *title, *descripsion, loc)
+	if err != nil {
+		return err
+	}
+	// TODO: no editor option
+	if editor := os.Getenv("EDITOR"); editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
+		com := exec.Command(editor, fpath)
+		com.Stdin = os.Stdin
+		com.Stdout = os.Stdout
+		com.Stderr = os.Stderr
+
+		return com.Run()
+	}
+	return nil
+}
+
+func isTTY(fd uintptr) bool {
+	return isatty.IsTerminal(fd) || isatty.IsCygwinTerminal(fd)
 }
