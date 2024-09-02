@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/abema/go-mp4"
 	"github.com/dhowden/tag"
@@ -17,6 +18,7 @@ type Audio struct {
 	FileSize int64
 	Format   string
 	Duration uint64
+	ModTime  time.Time
 }
 
 func ReadAudio(fname string) (*Audio, error) {
@@ -29,6 +31,7 @@ func ReadAudio(fname string) (*Audio, error) {
 		return nil, err
 	}
 	au.FileSize = fi.Size()
+	au.ModTime = fi.ModTime()
 
 	f, err := os.Open(fname)
 	if err != nil {

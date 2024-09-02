@@ -22,54 +22,65 @@ The `audioFile` is specified either by file path or by filename in the audio pla
 This means there are follwing patterns for `audioFile`:
 
 - File path:
-  - Relative path: ". /audio/1.mp3" (this will be relative to the current directory, not the rootDir)
+  - Relative path: "./audio/1.mp3" (this will be relative to the current directory, not the rootDir)
   - Absolute path: "/path/to/audio/mp.3"
 
 - File name: "1.mp3"  (subdirectories are currently not supported)
 
 In any case, the audio files must exist under the audio placement directory.
 */
-func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *time.Location) error {
-	// TODO: pubDate
-	localAudioFilePath := audioFile
-	if _, err := os.Stat(localAudioFilePath); err != nil {
-		if !os.IsNotExist(err) {
-			return err
-		}
-		localAudioFilePath = filepath.Join(rootDir, audioDir, audioFile)
-	}
-	if _, err := os.Stat(localAudioFilePath); err != nil {
-		return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
-	}
+func CreateEpisode(
+	rootDir, audioFile string,
+	pubDate time.Time, slug, title, description string, loc *time.Location) error {
 
-	// XXX: Existence checks are not performed when relative paths are specified when the rootDir and
-	// current directory are different.
-	if filepath.IsAbs(localAudioFilePath) {
-		var absBasePath = rootDir
-		if !filepath.IsAbs(absBasePath) {
+	var (
+		audioPath     = audioFile
+		audioBasePath = filepath.Join(rootDir, audioDir)
+	)
+	if _, err := os.Stat(audioPath); err != nil {
+		if strings.ContainsAny(audioPath, `/\`) {
+			return fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
+		}
+		audioPath = filepath.Join(audioBasePath, audioFile)
+		if _, err := os.Stat(audioPath); err != nil {
+			return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+		}
+	} else {
+		var absAudioPath = audioPath
+		if !filepath.IsAbs(absAudioPath) {
 			var err error
-			absBasePath, err = filepath.Abs(rootDir)
+			absAudioPath, err = filepath.Abs(absAudioPath)
 			if err != nil {
 				return err
 			}
 		}
-		p, err := filepath.Rel(absBasePath, localAudioFilePath)
+		var absAudioBasePath = audioBasePath
+		if !filepath.IsAbs(absAudioBasePath) {
+			var err error
+			absAudioBasePath, err = filepath.Abs(absAudioBasePath)
+			if err != nil {
+				return err
+			}
+		}
+		p, err := filepath.Rel(absAudioBasePath, absAudioPath)
 		if err != nil {
 			return err
 		}
-		p = filepath.ToSlash(p)
-		if strings.HasPrefix(p, "../") {
-			return fmt.Errorf("audio file must be located in the %q directory: %s",
-				filepath.Join(rootDir, audioDir), p)
+		if strings.ContainsAny(p, `/\`) {
+			return fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
+				audioBasePath, audioPath)
 		}
 	}
 
-	audio, err := ReadAudio(localAudioFilePath)
+	audio, err := ReadAudio(audioPath)
 	if err != nil {
 		return err
 	}
+	if pubDate.IsZero() {
+		pubDate = audio.ModTime
+	}
 	if slug == "" {
-		slug = strings.TrimSuffix(filepath.Base(localAudioFilePath), filepath.Ext(localAudioFilePath))
+		slug = strings.TrimSuffix(filepath.Base(audioPath), filepath.Ext(audioPath))
 	}
 	if title == "" {
 		title = audio.Title
@@ -91,21 +102,19 @@ func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *tim
 		Description string
 		Date        string
 	}{
-		AudioFile:   filepath.Base(localAudioFilePath),
+		AudioFile:   filepath.Base(audioPath),
 		Title:       title,
 		Description: description,
-		Date:        time.Now().In(loc).Format(time.RFC3339),
+		Date:        pubDate.Format(time.RFC3339),
 	}
-	err = episodeTmpl.Execute(f, arg)
-
-	return err
+	return episodeTmpl.Execute(f, arg)
 }
 
 const episodeTmplStr = `---
 audio: {{ .AudioFile }}
 title: {{ .Title }}
-description: {{ .Description }}
 date: {{ .Date }}
+description: {{ .Description }}
 ---
 
 # {{ .Title }}
@@ -234,6 +243,9 @@ func (ep *Episode) loadEpisode(r io.Reader, loc *time.Location) error {
 		- No template processing (<- current implementation)
 	*/
 	frontMatter, body, err := splitFrontMatterAndBody(string(content))
+	if err != nil {
+		return err
+	}
 	var ef EpisodeFrontMatter
 	if err := yaml.NewDecoder(strings.NewReader(frontMatter)).Decode(&ef); err != nil {
 		return err
