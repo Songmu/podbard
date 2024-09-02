@@ -22,7 +22,7 @@ The `audioFile` is specified either by file path or by filename in the audio pla
 This means there are follwing patterns for `audioFile`:
 
 - File path:
-  - Relative path: ". /audio/1.mp3" (this will be relative to the current directory, not the rootDir)
+  - Relative path: "./audio/1.mp3" (this will be relative to the current directory, not the rootDir)
   - Absolute path: "/path/to/audio/mp.3"
 
 - File name: "1.mp3"  (subdirectories are currently not supported)
@@ -113,8 +113,8 @@ func CreateEpisode(
 const episodeTmplStr = `---
 audio: {{ .AudioFile }}
 title: {{ .Title }}
-description: {{ .Description }}
 date: {{ .Date }}
+description: {{ .Description }}
 ---
 
 # {{ .Title }}
