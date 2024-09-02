@@ -42,8 +42,11 @@ func (bdr *Builder) Build() error {
 		return err
 	}
 
+	if err := bdr.copyAudio(); err != nil {
+		return err
+	}
+
 	return bdr.buildIndex()
-	// XXX: Should we copy audio filess to the build directory if the audio bucket is empty?
 }
 
 func (bdr *Builder) buildFeed() error {
@@ -130,6 +133,22 @@ func (bdr *Builder) buildIndex() error {
 	defer f.Close()
 
 	return tmpl.execute(f, "layout", "index", arg)
+}
+
+func (bdr *Builder) copyAudio() error {
+	// If we upload the audio files to a different URL, do not copy them.
+	if bdr.Config.AudioBucketURL.URL != nil {
+		return nil
+	}
+	src := filepath.Join(bdr.RootDir, audioDir)
+	if _, err := os.Stat(src); err != nil {
+		return nil
+	}
+	return copy.Copy(src, filepath.Join(bdr.buildDir(), audioDir), copy.Options{
+		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
+			return strings.HasPrefix(".", fi.Name()) || fi.IsDir(), nil
+		},
+	})
 }
 
 func (bdr *Builder) buildStatic() error {
