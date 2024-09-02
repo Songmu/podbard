@@ -77,14 +77,13 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 		Title   string
 		Body    template.HTML
 		Episode *Episode
-		Config  *Config
+		Channel *ChannelConfig
 	}{
 		Title:   ep.Title,
 		Body:    template.HTML(ep.Body),
 		Episode: ep,
-		Config:  bdr.Config,
+		Channel: bdr.Config.Channel,
 	}
-
 	f, err := os.Create(episodePath)
 	if err != nil {
 		return err
@@ -110,14 +109,13 @@ func (bdr *Builder) buildIndex() error {
 		Title    string
 		Body     template.HTML
 		Episodes []*Episode
-		Config   *Config
+		Channel  *ChannelConfig
 	}{
 		Title:    bdr.Config.Channel.Title,
 		Body:     template.HTML(idx.Body),
 		Episodes: bdr.Episodes,
-		Config:   bdr.Config,
+		Channel:  bdr.Config.Channel,
 	}
-
 	f, err := os.Create(indexPath)
 	if err != nil {
 		return err

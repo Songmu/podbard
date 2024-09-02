@@ -54,10 +54,10 @@ func (idx *Index) build(cfg *Config, episodes []*Episode) error {
 		return err
 	}
 	arg := struct {
-		Config   *Config
+		Channel  *ChannelConfig
 		Episodes []*Episode
 	}{
-		Config:   cfg,
+		Channel:  cfg.Channel,
 		Episodes: episodes,
 	}
 	var buf bytes.Buffer

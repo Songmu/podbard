@@ -1,6 +1,6 @@
-# {{.Config.Channel.Title}}
+# {{.Channel.Title}}
 
-{{.Config.Channel.Description}}
+{{.Channel.Description}}
 
 {{range .Episodes}}
 ## [{{.Title}}]({{.URL}})
