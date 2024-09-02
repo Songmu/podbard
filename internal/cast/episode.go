@@ -33,45 +33,51 @@ func CreateEpisode(
 	rootDir, audioFile string,
 	pubDate time.Time, slug, title, description string, loc *time.Location) error {
 
-	localAudioFilePath := audioFile
-	if _, err := os.Stat(localAudioFilePath); err != nil {
-		if !os.IsNotExist(err) {
-			return err
+	var (
+		audioPath     = audioFile
+		audioBasePath = filepath.Join(rootDir, audioDir)
+	)
+	if _, err := os.Stat(audioPath); err != nil {
+		if strings.ContainsAny(audioPath, `/\`) {
+			return fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
 		}
-		localAudioFilePath = filepath.Join(rootDir, audioDir, audioFile)
-	}
-	if _, err := os.Stat(localAudioFilePath); err != nil {
-		return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
-	}
-
-	// XXX: Existence checks are not performed when relative paths are specified when the rootDir and
-	// current directory are different.
-	if filepath.IsAbs(localAudioFilePath) {
-		var absBasePath = rootDir
-		if !filepath.IsAbs(absBasePath) {
+		audioPath = filepath.Join(audioBasePath, audioFile)
+		if _, err := os.Stat(audioPath); err != nil {
+			return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+		}
+	} else {
+		var absAudioPath = audioPath
+		if !filepath.IsAbs(absAudioPath) {
 			var err error
-			absBasePath, err = filepath.Abs(rootDir)
+			absAudioPath, err = filepath.Abs(absAudioPath)
 			if err != nil {
 				return err
 			}
 		}
-		p, err := filepath.Rel(absBasePath, localAudioFilePath)
+		var absAudioBasePath = audioBasePath
+		if !filepath.IsAbs(absAudioBasePath) {
+			var err error
+			absAudioBasePath, err = filepath.Abs(absAudioBasePath)
+			if err != nil {
+				return err
+			}
+		}
+		p, err := filepath.Rel(absAudioBasePath, absAudioPath)
 		if err != nil {
 			return err
 		}
-		p = filepath.ToSlash(p)
-		if strings.HasPrefix(p, "../") {
-			return fmt.Errorf("audio file must be located in the %q directory: %s",
-				filepath.Join(rootDir, audioDir), p)
+		if strings.ContainsAny(p, `/\`) {
+			return fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
+				audioBasePath, audioPath)
 		}
 	}
 
-	audio, err := ReadAudio(localAudioFilePath)
+	audio, err := ReadAudio(audioPath)
 	if err != nil {
 		return err
 	}
 	if slug == "" {
-		slug = strings.TrimSuffix(filepath.Base(localAudioFilePath), filepath.Ext(localAudioFilePath))
+		slug = strings.TrimSuffix(filepath.Base(audioPath), filepath.Ext(audioPath))
 	}
 	if title == "" {
 		title = audio.Title
@@ -93,14 +99,12 @@ func CreateEpisode(
 		Description string
 		Date        string
 	}{
-		AudioFile:   filepath.Base(localAudioFilePath),
+		AudioFile:   filepath.Base(audioPath),
 		Title:       title,
 		Description: description,
 		Date:        pubDate.Format(time.RFC3339),
 	}
-	err = episodeTmpl.Execute(f, arg)
-
-	return err
+	return episodeTmpl.Execute(f, arg)
 }
 
 const episodeTmplStr = `---
