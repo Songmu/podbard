@@ -17,7 +17,20 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+/*
+The `audioFile` is specified either by file path or by filename in the audio placement directory.
+This means there are follwing patterns for `audioFile`:
+
+- File path:
+  - Relative path: ". /audio/1.mp3" (this will be relative to the current directory, not the rootDir)
+  - Absolute path: "/path/to/audio/mp.3"
+
+- File name: "1.mp3"  (subdirectories are currently not supported)
+
+In any case, the audio files must exist under the audio placement directory.
+*/
 func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *time.Location) error {
+	// TODO: pubDate
 	localAudioFilePath := audioFile
 	if _, err := os.Stat(localAudioFilePath); err != nil {
 		if !os.IsNotExist(err) {
@@ -29,6 +42,8 @@ func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *tim
 		return fmt.Errorf("audio file not found: %s, %w", audioFile, err)
 	}
 
+	// XXX: Existence checks are not performed when relative paths are specified when the rootDir and
+	// current directory are different.
 	if filepath.IsAbs(localAudioFilePath) {
 		var absBasePath = rootDir
 		if !filepath.IsAbs(absBasePath) {
@@ -44,7 +59,8 @@ func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *tim
 		}
 		p = filepath.ToSlash(p)
 		if strings.HasPrefix(p, "../") {
-			return fmt.Errorf("audio file must be in the audio directory: %s", p)
+			return fmt.Errorf("audio file must be located in the %q directory: %s",
+				filepath.Join(rootDir, audioDir), p)
 		}
 	}
 
