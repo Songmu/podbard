@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-const templateDir = "tmpl"
+const templateDir = "template"
 
 type castTemplate struct {
 	*template.Template
