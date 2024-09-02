@@ -29,8 +29,10 @@ This means there are follwing patterns for `audioFile`:
 
 In any case, the audio files must exist under the audio placement directory.
 */
-func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *time.Location) error {
-	// TODO: pubDate
+func CreateEpisode(
+	rootDir, audioFile string,
+	pubDate time.Time, slug, title, description string, loc *time.Location) error {
+
 	localAudioFilePath := audioFile
 	if _, err := os.Stat(localAudioFilePath); err != nil {
 		if !os.IsNotExist(err) {
@@ -94,7 +96,7 @@ func CreateEpisode(rootDir, audioFile, slug, title, description string, loc *tim
 		AudioFile:   filepath.Base(localAudioFilePath),
 		Title:       title,
 		Description: description,
-		Date:        time.Now().In(loc).Format(time.RFC3339),
+		Date:        pubDate.Format(time.RFC3339),
 	}
 	err = episodeTmpl.Execute(f, arg)
 
