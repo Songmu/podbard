@@ -67,7 +67,7 @@ func (idx *Index) build(cfg *Config, episodes []*Episode) error {
 
 	md := NewMarkdown()
 	var mdBuf bytes.Buffer
-	if err := md.Convert([]byte(buf.String()), &mdBuf); err != nil {
+	if err := md.Convert(buf.Bytes(), &mdBuf); err != nil {
 		return err
 	}
 	idx.Body = mdBuf.String()

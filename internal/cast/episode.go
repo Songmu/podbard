@@ -243,6 +243,9 @@ func (ep *Episode) loadEpisode(r io.Reader, loc *time.Location) error {
 		- No template processing (<- current implementation)
 	*/
 	frontMatter, body, err := splitFrontMatterAndBody(string(content))
+	if err != nil {
+		return err
+	}
 	var ef EpisodeFrontMatter
 	if err := yaml.NewDecoder(strings.NewReader(frontMatter)).Decode(&ef); err != nil {
 		return err
