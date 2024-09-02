@@ -1,0 +1,13 @@
+# sample
+channel:
+  link: https://primcast.example.com
+  title: sample
+  description: sample description
+  language: ja-JP
+  category: "Techlogy"
+  author: your name
+  email: your-email@example.com
+  artwork: "images/artwork.jpg" # url or path
+
+timezone: Asia/Tokyo
+# audio_bucket_url: https://s3-ap-northeast-1.amazonaws.com/primcast.example.com/audio
