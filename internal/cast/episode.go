@@ -85,7 +85,12 @@ func CreateEpisode(
 	if title == "" {
 		title = audio.Title
 	}
-
+	if title == "" {
+		title = slug
+	}
+	if description == "" {
+		description = title
+	}
 	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
 	if _, err := os.Stat(filePath); err == nil {
 		return fmt.Errorf("episode file already exists: %q", filePath)
