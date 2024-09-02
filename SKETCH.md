@@ -2,24 +2,25 @@
 
 ## Directory Structure
 
-- index.md - index page
+- index.md      - index page
 - primcast.yaml - configuration file
-- episode/ - eqisode pages
-- audio/   - audio files
-- images/  - images (optional)
+- episode/      - eqisode pages
+- audio/        - audio files
+- template/     - template files
+- static/       - static files
 
 ## Sub Commmands
 
 ### init
 
 ```console
-$ primcast init
+$ primcast init .
 ```
 
 ### episode
 
 ```
-$ primcast episode [-slug hoge] audio/1.mp3
+$ primcast episode [-slug=hoge -date=2024-09-01 -title=title] audio/1.mp3
 ```
 
 create a new epoisode page with the specified audio file.
@@ -29,3 +30,5 @@ create a new epoisode page with the specified audio file.
 ```
 $ primcast build
 ```
+
+build the site and output to the `public` directory.
