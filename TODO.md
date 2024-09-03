@@ -15,4 +15,6 @@
 - [ ] Templatize the `episode/*.md` files when build
 - [x] Add a powered by `primcast` link to the template
 - [ ] GitHub Actions
-- [ ] og:image
+- [ ] og:image (eyecatch, artwork)
+    - [ ] congigurable in a episode Markdown
+- [ ] dummy favicon
