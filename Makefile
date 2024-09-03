@@ -43,3 +43,10 @@ crossbuild: CREDITS
 .PHONY: upload
 upload:
 	ghr -body="$$(godzil changelog --latest -F markdown)" v$(VERSION) dist/v$(VERSION)
+
+
+.PHONY: sync
+sync:
+	cp testdata/dev/index.md internal/cast/testdata/init/index.md
+	cp -r testdata/dev/template/ internal/cast/testdata/init/template/
+	cp -r testdata/dev/static/ internal/cast/testdata/init/static/
