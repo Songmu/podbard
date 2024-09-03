@@ -12,8 +12,8 @@
 - [ ] update footer
 
 ## Should
-- [ ] support https://github.com/Masterminds/sprig
-- [ ] buildDate
+- [x] support https://github.com/Masterminds/sprig
+- [x] buildDate
 
 ## Nice to have
 - [ ] Default CSS

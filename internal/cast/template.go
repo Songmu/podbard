@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+
+	"github.com/Masterminds/sprig/v3"
 )
 
 const templateDir = "template"
@@ -28,6 +30,7 @@ func loadTemplate(rootDir string) (*castTemplate, error) {
 func (ct *castTemplate) execute(w io.Writer, layout, name string, data interface{}) error {
 	return template.Must(template.Must(
 		ct.Lookup(layout).Clone()).
+		Funcs(sprig.FuncMap()).
 		AddParseTree("content", ct.Lookup(name).Tree)).
 		ExecuteTemplate(w, layout, data)
 }
