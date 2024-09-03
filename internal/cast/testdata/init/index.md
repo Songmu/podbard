@@ -8,5 +8,5 @@
 
 ## Episodes
 {{range .Episodes -}}
-- [{{.Title}}]({{.URL.Path}}) ({{.PubDate.Format "2006-01-02"}})
+- [{{.Title}}]({{.URL.Path}}) ({{.PubDate.Format "2006-01-02 15:04"}})
 {{end}}

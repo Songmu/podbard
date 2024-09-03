@@ -1,3 +1,11 @@
 {{define "episode" -}}
 {{.Body}}
+
+<aside>
+{{- with $t := .Episode.PubDate.Format "2006-01-02 15:04" -}}
+<p>Published: <time datetime="{{ $t }}">{{ $t }}</time></p>
+{{- end}}
+<p><a href="{{.Episode.AudioURL}}">Download audio</a><p>
+</aside>
+
 {{- end}}

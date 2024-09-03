@@ -193,7 +193,9 @@ func loadMeta(fpath string) (*EpisodeFrontMatter, error) {
 	return &ef, nil
 }
 
-func LoadEpisodes(rootDir string, rootURL *url.URL, loc *time.Location) ([]*Episode, error) {
+func LoadEpisodes(
+	rootDir string, rootURL *url.URL, audioBaseURL *url.URL, loc *time.Location) ([]*Episode, error) {
+
 	dirname := filepath.Join(rootDir, episodeDir)
 	dir, err := os.ReadDir(dirname)
 	if err != nil {
@@ -205,7 +207,8 @@ func LoadEpisodes(rootDir string, rootURL *url.URL, loc *time.Location) ([]*Epis
 		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
 			continue
 		}
-		ep, err := loadEpisodeFromFile(rootDir, filepath.Join(dirname, f.Name()), rootURL, loc)
+		ep, err := loadEpisodeFromFile(
+			rootDir, filepath.Join(dirname, f.Name()), rootURL, audioBaseURL, loc)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +231,8 @@ type Episode struct {
 	RawBody, Body string
 	URL           *url.URL
 
-	rootDir string
+	rootDir      string
+	audioBaseURL *url.URL
 }
 
 type EpisodeFrontMatter struct {
@@ -239,6 +243,10 @@ type EpisodeFrontMatter struct {
 
 	audio   *Audio
 	pubDate time.Time
+}
+
+func (ep *Episode) AudioURL() *url.URL {
+	return ep.audioBaseURL.JoinPath(ep.AudioFile)
 }
 
 func (ep *Episode) init(loc *time.Location) error {
@@ -281,7 +289,8 @@ func (epm *EpisodeFrontMatter) loadAudio(rootDir string) error {
 	return err
 }
 
-func loadEpisodeFromFile(rootDir, fname string, rootURL *url.URL, loc *time.Location) (*Episode, error) {
+func loadEpisodeFromFile(
+	rootDir, fname string, rootURL *url.URL, audioBaseURL *url.URL, loc *time.Location) (*Episode, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
@@ -290,9 +299,10 @@ func loadEpisodeFromFile(rootDir, fname string, rootURL *url.URL, loc *time.Loca
 
 	slug := strings.TrimSuffix(filepath.Base(fname), filepath.Ext(fname))
 	ep := &Episode{
-		Slug:    slug,
-		URL:     rootURL.JoinPath(episodeDir, slug+"/"),
-		rootDir: rootDir,
+		Slug:         slug,
+		URL:          rootURL.JoinPath(episodeDir, slug+"/"),
+		rootDir:      rootDir,
+		audioBaseURL: audioBaseURL,
 	}
 	if err := ep.loadEpisode(f, loc); err != nil {
 		return nil, err

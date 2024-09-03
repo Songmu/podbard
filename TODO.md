@@ -13,6 +13,7 @@
 
 ## Should
 - [ ] support https://github.com/Masterminds/sprig
+- [ ] buildDate
 
 ## Nice to have
 - [ ] Default CSS
