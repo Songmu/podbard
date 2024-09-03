@@ -16,12 +16,17 @@
 - [x] buildDate
 
 ## Nice to have
+- [ ] long description
+- [ ] dummy favicon
 - [ ] Default CSS
 - [ ] Add a `LICENSE` to the scaffolded project
 - [ ] Templatize the `episode/*.md` files when build
 - [x] Add a powered by `primcast` link to the template
 - [ ] GitHub Actions
 - [ ] og:image (eyecatch, artwork)
-    - [ ] congigurable in a episode Markdown
-- [ ] dummy favicon
+    - [ ] configurable in a episode Markdown
 - [ ] doctor subocommand like `brew doctor` to check settings
+- [ ] add some element to feed like `itunes:author`, `itunes:explicit`, etc.
+
+## Never do
+- configure Google Analytics, Google Tag Manager, etc.
