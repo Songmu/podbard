@@ -2,10 +2,10 @@
 {{.Body}}
 
 <aside>
-{{- with $t := .Episode.PubDate.Format "2006-01-02 15:04" -}}
-<p>Published: <time datetime="{{ $t }}">{{ $t }}</time></p>
+{{with $t := .Episode.PubDate.Format "2006-01-02 15:04" -}}
+  <div>Published: <time datetime="{{ $t }}">{{ $t }}</time></div>
 {{- end}}
-<p><a href="{{.Episode.AudioURL}}">Download audio</a><p>
+  <div><a href="{{.Episode.AudioURL}}">Download audio</a><div>
 </aside>
 
 {{- end}}
