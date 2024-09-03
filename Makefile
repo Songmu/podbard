@@ -47,6 +47,6 @@ upload:
 
 .PHONY: sync
 sync:
-	cp testdata/dev/index.md internal/cast/testdata/index.md
-	cp -r testdata/dev/template internal/cast/testdata/template
-	cp -r testdata/dev/static internal/cast/testdata/static
+	cp testdata/dev/index.md internal/cast/testdata/init/index.md
+	cp -r testdata/dev/template/ internal/cast/testdata/init/template/
+	cp -r testdata/dev/static/ internal/cast/testdata/init/static/
