@@ -19,6 +19,7 @@
 - [ ] long description
 - [ ] dummy favicon
 - [ ] Default CSS
+- [ ] subcommand `dev` to run a local server
 - [ ] Add a `LICENSE` to the scaffolded project
 - [ ] Templatize the `episode/*.md` files when build
 - [x] Add a powered by `primcast` link to the template
