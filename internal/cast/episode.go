@@ -29,9 +29,9 @@ This means there are follwing patterns for `audioFile`:
 
 In any case, the audio files must exist under the audio placement directory.
 */
-func CreateEpisode(
+func LoadEpisode(
 	rootDir, audioFile string,
-	pubDate time.Time, slug, title, description string, loc *time.Location) (string, error) {
+	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
 
 	var (
 		audioPath     = audioFile
@@ -39,11 +39,11 @@ func CreateEpisode(
 	)
 	if _, err := os.Stat(audioPath); err != nil {
 		if strings.ContainsAny(audioPath, `/\`) {
-			return "", fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
+			return "", false, fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
 		}
 		audioPath = filepath.Join(audioBasePath, audioFile)
 		if _, err := os.Stat(audioPath); err != nil {
-			return "", fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+			return "", false, fmt.Errorf("audio file not found: %s, %w", audioFile, err)
 		}
 	} else {
 		var absAudioPath = audioPath
@@ -51,7 +51,7 @@ func CreateEpisode(
 			var err error
 			absAudioPath, err = filepath.Abs(absAudioPath)
 			if err != nil {
-				return "", err
+				return "", false, err
 			}
 		}
 		var absAudioBasePath = audioBasePath
@@ -59,22 +59,22 @@ func CreateEpisode(
 			var err error
 			absAudioBasePath, err = filepath.Abs(absAudioBasePath)
 			if err != nil {
-				return "", err
+				return "", false, err
 			}
 		}
 		p, err := filepath.Rel(absAudioBasePath, absAudioPath)
 		if err != nil {
-			return "", err
+			return "", false, err
 		}
 		if strings.ContainsAny(p, `/\`) {
-			return "", fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
+			return "", false, fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
 				audioBasePath, audioPath)
 		}
 	}
 
 	audio, err := ReadAudio(audioPath)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 	if pubDate.IsZero() {
 		pubDate = audio.ModTime
@@ -93,14 +93,32 @@ func CreateEpisode(
 	}
 	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
 	if _, err := os.Stat(filePath); err == nil {
-		return "", fmt.Errorf("episode file already exists: %q", filePath)
+		ef, err := loadMeta(filePath)
+		if err != nil {
+			return "", false, err
+		}
+		if audio.Name != ef.AudioFile {
+			return "", false, fmt.Errorf("mismatch audio file in %q: %s, %s",
+				filePath, audio.Name, ef.AudioFile)
+		}
+		return filePath, false, nil
 	}
+	efs, err := loadEpisodeMetas(rootDir)
+	if err != nil {
+		return "", false, err
+	}
+	for mdPath, ef := range efs {
+		if ef.AudioFile == audio.Name {
+			return mdPath, false, nil
+		}
+	}
+
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-		return "", err
+		return "", false, err
 	}
 	f, err := os.Create(filePath)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 	defer f.Close()
 
@@ -116,9 +134,9 @@ func CreateEpisode(
 		Date:        pubDate.Format(time.RFC3339),
 	}
 	if err := episodeTmpl.Execute(f, arg); err != nil {
-		return "", err
+		return "", false, err
 	}
-	return filePath, nil
+	return filePath, true, nil
 }
 
 // XXX: Considering YAML escaping, etc., it might be better to assign to the frontmatter type
@@ -134,6 +152,46 @@ description: {{ .Description }}
 `
 
 var episodeTmpl = template.Must(template.New("episode").Parse(episodeTmplStr))
+
+func loadEpisodeMetas(rootDir string) (map[string]*EpisodeFrontMatter, error) {
+	dirname := filepath.Join(rootDir, episodeDir)
+	dir, err := os.ReadDir(dirname)
+	if err != nil {
+		return nil, err
+	}
+	var ret = make(map[string]*EpisodeFrontMatter)
+	for _, f := range dir {
+		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
+			continue
+		}
+		mdPath := filepath.Join(dirname, f.Name())
+		ef, err := loadMeta(mdPath)
+		if err != nil {
+			return nil, err
+		}
+		ret[mdPath] = ef
+	}
+	return ret, nil
+}
+
+func loadMeta(fpath string) (*EpisodeFrontMatter, error) {
+	content, err := os.ReadFile(fpath)
+	if err != nil {
+		return nil, err
+	}
+	frontMatter, _, err := splitFrontMatterAndBody(string(content))
+	if err != nil {
+		return nil, err
+	}
+	var ef EpisodeFrontMatter
+	if err := yaml.NewDecoder(strings.NewReader(frontMatter)).Decode(&ef); err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &ef, nil
+}
 
 func LoadEpisodes(rootDir string, rootURL *url.URL, loc *time.Location) ([]*Episode, error) {
 	dirname := filepath.Join(rootDir, episodeDir)

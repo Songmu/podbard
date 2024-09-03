@@ -18,3 +18,4 @@
 - [ ] og:image (eyecatch, artwork)
     - [ ] congigurable in a episode Markdown
 - [ ] dummy favicon
+- [ ] doctor subocommand like `brew doctor` to check settings

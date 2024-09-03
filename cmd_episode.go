@@ -55,9 +55,15 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 			return err
 		}
 	}
-	fpath, err := cast.CreateEpisode(rootDir, audioFile, pubDate, *slug, *title, *descripsion, loc)
+	fpath, isNew, err := cast.LoadEpisode(rootDir, audioFile, pubDate, *slug, *title, *descripsion, loc)
 	if err != nil {
 		return err
+	}
+
+	if !isNew {
+		log.Printf("episode file created: %q\n", fpath)
+	} else {
+		log.Printf("episode file found: %q\n", fpath)
 	}
 	// TODO: no editor option
 	if editor := os.Getenv("EDITOR"); editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
