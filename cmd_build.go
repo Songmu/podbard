@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/Songmu/primcast/internal/cast"
 )
@@ -37,5 +38,5 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 		Episodes:  episodes,
 		RootDir:   rootDir,
 		Generator: fmt.Sprintf("github.com/Songmu/primcast %s", version),
-	}).Build()
+	}).Build(time.Now())
 }
