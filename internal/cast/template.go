@@ -12,6 +12,8 @@ type castTemplate struct {
 	*template.Template
 }
 
+// XXX: define argument types
+
 func loadTemplate(rootDir string) (*castTemplate, error) {
 	base := filepath.Join(rootDir, templateDir)
 	glob := filepath.Join(base, "*.tmpl")
