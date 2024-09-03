@@ -14,8 +14,9 @@ type Feed struct {
 	Podcast *podcast.Podcast
 }
 
-func NewFeed(generator string, channel *ChannelConfig, pubDate time.Time) *Feed {
-	pdTmp := podcast.New(channel.Title, channel.Link.String(), channel.Description, &pubDate, &pubDate)
+func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate time.Time) *Feed {
+	pdTmp := podcast.New(
+		channel.Title, channel.Link.String(), channel.Description, &pubDate, &lastBuildDate)
 
 	pd := &pdTmp
 	pd.Language = channel.Language.String()

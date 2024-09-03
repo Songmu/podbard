@@ -24,12 +24,12 @@ func (bdr *Builder) buildDir() string {
 	return filepath.Join(bdr.RootDir, buildDir)
 }
 
-func (bdr *Builder) Build() error {
+func (bdr *Builder) Build(now time.Time) error {
 	if err := os.MkdirAll(bdr.buildDir(), os.ModePerm); err != nil {
 		return err
 	}
 
-	if err := bdr.buildFeed(); err != nil {
+	if err := bdr.buildFeed(now); err != nil {
 		return err
 	}
 
@@ -50,13 +50,13 @@ func (bdr *Builder) Build() error {
 	return bdr.buildIndex()
 }
 
-func (bdr *Builder) buildFeed() error {
-	pubDate := time.Now()
+func (bdr *Builder) buildFeed(now time.Time) error {
+	pubDate := now
 	if len(bdr.Episodes) > 0 {
 		pubDate = bdr.Episodes[0].PubDate()
 	}
 
-	feed := NewFeed(bdr.Generator, bdr.Config.Channel, pubDate)
+	feed := NewFeed(bdr.Generator, bdr.Config.Channel, pubDate, now)
 	for _, ep := range bdr.Episodes {
 		if _, err := feed.AddEpisode(ep, bdr.Config.AudioBaseURL()); err != nil {
 			return err
