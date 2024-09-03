@@ -15,3 +15,4 @@
 - [ ] Templatize the `episode/*.md` files when build
 - [x] Add a powered by `primcast` link to the template
 - [ ] GitHub Actions
+- [ ] og:image
