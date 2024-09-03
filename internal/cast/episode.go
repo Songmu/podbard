@@ -121,6 +121,8 @@ func CreateEpisode(
 	return filePath, nil
 }
 
+// XXX: Considering YAML escaping, etc., it might be better to assign to the frontmatter type
+// and then Marshal.
 const episodeTmplStr = `---
 audio: {{ .AudioFile }}
 title: {{ .Title }}

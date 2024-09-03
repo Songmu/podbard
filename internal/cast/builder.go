@@ -2,6 +2,7 @@ package cast
 
 import (
 	"html/template"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,11 +86,17 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 
 	arg := struct {
 		Title   string
+		Page    *Page
 		Body    template.HTML
 		Episode *Episode
 		Channel *ChannelConfig
 	}{
-		Title:   ep.Title,
+		Title: ep.Title,
+		Page: &Page{
+			Title:       ep.Title,
+			Description: ep.Description,
+			URL:         ep.URL,
+		},
 		Body:    template.HTML(ep.Body),
 		Episode: ep,
 		Channel: bdr.Config.Channel,
@@ -101,6 +108,12 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 	defer f.Close()
 
 	return tmpl.execute(f, "layout", "episode", arg)
+}
+
+type Page struct {
+	Title       string
+	Description string
+	URL         *url.URL
 }
 
 func (bdr *Builder) buildIndex() error {
@@ -116,12 +129,16 @@ func (bdr *Builder) buildIndex() error {
 	}
 
 	arg := struct {
-		Title    string
+		Page     *Page
 		Body     template.HTML
 		Episodes []*Episode
 		Channel  *ChannelConfig
 	}{
-		Title:    bdr.Config.Channel.Title,
+		Page: &Page{
+			Title:       bdr.Config.Channel.Title,
+			Description: bdr.Config.Channel.Description,
+			URL:         bdr.Config.Channel.Link.URL,
+		},
 		Body:     template.HTML(idx.Body),
 		Episodes: bdr.Episodes,
 		Channel:  bdr.Config.Channel,

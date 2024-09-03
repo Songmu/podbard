@@ -4,7 +4,7 @@
 - [x] No prompt when the directory is empty
 - [x] Open `$EDITOR` when create new episode
 - [ ] Add a `README.md` and `.gitignore` to the scaffolded project
-- [ ] Docment
+- [ ] Document
 - [ ] Friendly log message
 - [ ] Testing
 - [ ] Add a css file to the scaffolded project
