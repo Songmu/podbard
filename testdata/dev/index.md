@@ -3,7 +3,6 @@
 {{.Channel.Description}}
 
 ## RSS Feed
-
 <input type="text" value="{{.Channel.FeedURL}}" size="80" readonly>
 
 ## Episodes
