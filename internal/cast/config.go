@@ -111,6 +111,8 @@ func (cfg *Config) init() error {
 	}
 	if cfg.Channel.Link.URL == nil {
 		return errors.New("no link configuration is specified in configuration")
+	} else if !strings.HasSuffix(cfg.Channel.Link.URL.Path, "/") {
+		cfg.Channel.Link.URL.Path += "/"
 	}
 	if cfg.TimeZone != "" {
 		loc, err := time.LoadLocation(cfg.TimeZone)
