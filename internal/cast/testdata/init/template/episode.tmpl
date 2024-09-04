@@ -1,5 +1,6 @@
 {{define "episode" -}}
 
+<h1>{{.Episode.Title}}</h1>
 <figure>
   <audio controls src="{{.Episode.AudioURL}}"></audio>
 </figure>
@@ -16,12 +17,12 @@
   <ul>
     {{ if .PreviousEpisode -}}
     <li>
-      <a href="{{.PreviousEpisode.URL.Path}}" rel="prev">previous episode</a>
+      <a href="{{.PreviousEpisode.URL.Path}}" rel="prev">{{.PreviousEpisode.Title}}</a>
     </li>
     {{- end}}
     {{ if .NextEpisode -}}
     <li>
-      <a href="{{.NextEpisode.URL.Path}}" rel="next">next episode</a>
+      <a href="{{.NextEpisode.URL.Path}}" rel="next">{{.NextEpisode.Title}}</a>
     </li>
     {{- end}}
   </ul>
