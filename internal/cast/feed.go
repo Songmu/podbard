@@ -47,7 +47,7 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 
 	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
 
-	pd.IExplicit = "false" // XXX: hardcodded
+	pd.IExplicit = fmt.Sprintf("%t", channel.Explicit)
 
 	return &Feed{
 		Channel: channel,
@@ -66,7 +66,7 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 		Description: ep.Description,
 		Link:        epLink,
 		GUID:        epLink,
-		IExplicit:   "false", // XXX: hardcoded
+		IExplicit:   fmt.Sprintf("%t", f.Channel.Explicit),
 		// don't use `item.AddDuration(d int64)`. It converts duration to string like "53:12",
 		// but just use seconds is recommended by Apple.
 		IDuration: fmt.Sprintf("%d", ep.Audio().Duration),

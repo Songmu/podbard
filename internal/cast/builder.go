@@ -174,6 +174,7 @@ func (bdr *Builder) copyAudio() error {
 	}
 	return copy.Copy(src, filepath.Join(bdr.buildDir(), audioDir), copy.Options{
 		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
+			// XXX: only copy audio files
 			return strings.HasPrefix(".", fi.Name()) || fi.IsDir(), nil
 		},
 	})

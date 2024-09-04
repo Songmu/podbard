@@ -203,7 +203,7 @@ func LoadEpisodes(
 	}
 	var ret []*Episode
 	for _, f := range dir {
-		// XXX: Do we need to handle subdirectories?
+		// no subdirectories support
 		if f.IsDir() || filepath.Ext(f.Name()) != ".md" {
 			continue
 		}
