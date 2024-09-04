@@ -10,7 +10,6 @@
 - [ ] 1.mp3.json
 
 ## Nice to have
-- [ ] dummy favicon
 - [ ] subcommand `dev` to run a local server
 - [ ] Add a `LICENSE` to the scaffolded project
 - [ ] Templatize the `episode/*.md` files when build
