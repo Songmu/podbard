@@ -7,6 +7,7 @@
 - [ ] Testing
 
 ## Should
+- [ ] 1.mp3.json
 
 ## Nice to have
 - [ ] long description
