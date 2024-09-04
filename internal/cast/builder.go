@@ -33,8 +33,15 @@ func (bdr *Builder) Build(now time.Time) error {
 		return err
 	}
 
-	for _, ep := range bdr.Episodes {
-		if err := bdr.buildEpisode(ep); err != nil {
+	for i, ep := range bdr.Episodes {
+		var prev, next *Episode
+		if i > 0 {
+			next = bdr.Episodes[i-1]
+		}
+		if i < len(bdr.Episodes)-1 {
+			prev = bdr.Episodes[i+1]
+		}
+		if err := bdr.buildEpisode(ep, prev, next); err != nil {
 			return err
 		}
 	}
@@ -73,7 +80,7 @@ func (bdr *Builder) buildFeed(now time.Time) error {
 	return feed.Podcast.Encode(f)
 }
 
-func (bdr *Builder) buildEpisode(ep *Episode) error {
+func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 	episodePath := filepath.Join(bdr.buildDir(), episodeDir, ep.Slug, "index.html")
 	if err := os.MkdirAll(filepath.Dir(episodePath), os.ModePerm); err != nil {
 		return err
@@ -85,11 +92,13 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 	}
 
 	arg := struct {
-		Title   string
-		Page    *Page
-		Body    template.HTML
-		Episode *Episode
-		Channel *ChannelConfig
+		Title           string
+		Page            *Page
+		Body            template.HTML
+		Episode         *Episode
+		PreviousEpisode *Episode
+		NextEpisode     *Episode
+		Channel         *ChannelConfig
 	}{
 		Title: ep.Title,
 		Page: &Page{
@@ -97,9 +106,11 @@ func (bdr *Builder) buildEpisode(ep *Episode) error {
 			Description: ep.Description,
 			URL:         ep.URL,
 		},
-		Body:    template.HTML(ep.Body),
-		Episode: ep,
-		Channel: bdr.Config.Channel,
+		Body:            template.HTML(ep.Body),
+		Episode:         ep,
+		PreviousEpisode: prev,
+		NextEpisode:     next,
+		Channel:         bdr.Config.Channel,
 	}
 	f, err := os.Create(episodePath)
 	if err != nil {
