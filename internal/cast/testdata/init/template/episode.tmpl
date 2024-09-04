@@ -1,11 +1,15 @@
 {{define "episode" -}}
+
+<figure>
+  <audio controls src="{{.Episode.AudioURL}}"></audio>
+</figure>
+
 {{.Body}}
 
 <aside>
   {{with $t := .Episode.PubDate.Format "2006-01-02 15:04" -}}
   <div>Published: <time datetime="{{ $t }}">{{ $t }}</time></div>
   {{- end}}
-  <div><a href="{{.Episode.AudioURL}}">Download audio</a><div>
 </aside>
 
 <nav class="adjacent-episodes">
