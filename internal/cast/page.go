@@ -6,6 +6,7 @@ import (
 )
 
 func splitFrontMatterAndBody(content string) (string, string, error) {
+	content = strings.ReplaceAll(content, "\r\n", "\n")
 	stuff := strings.SplitN(content, "---\n", 3)
 	if strings.TrimSpace(stuff[0]) != "" {
 		return "", "", errors.New("no front matter")

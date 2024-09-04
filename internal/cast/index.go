@@ -27,10 +27,10 @@ func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error)
 	if err != nil {
 		return nil, err
 	}
-	content := strings.TrimSpace(string(bs))
+	content := strings.ReplaceAll(strings.TrimSpace(string(bs)), "\r\n", "\n")
 
 	var idx *Index
-	if !strings.HasPrefix(content, "---\n") { // XXX: windows
+	if !strings.HasPrefix(content, "---\n") {
 		idx = &Index{RawBody: content}
 	} else {
 		frontmater, body, err := splitFrontMatterAndBody(content)

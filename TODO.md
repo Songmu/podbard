@@ -8,6 +8,8 @@
 
 ## Should
 - [ ] 1.mp3.json
+- [ ] `-ignore-missing` option to episode subcommand
+- [ ] audio media types
 
 ## Nice to have
 - [ ] subcommand `dev` to run a local server
