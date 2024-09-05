@@ -72,15 +72,41 @@ func LoadEpisode(
 		}
 	}
 
+	audioName := filepath.Base(audioPath)
+	if slug == "" {
+		slug = strings.TrimSuffix(audioName, filepath.Ext(audioName))
+	}
+	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
+
+	// find existing episode file
+	if _, err := os.Stat(filePath); err == nil {
+		ef, err := loadMeta(filePath)
+		if err != nil {
+			return "", false, err
+		}
+		if audioName != ef.AudioFile {
+			return "", false, fmt.Errorf("mismatch audio file in %q: %s, %s",
+				filePath, audioName, ef.AudioFile)
+		}
+		return filePath, false, nil
+	}
+	efs, err := loadEpisodeMetas(rootDir)
+	if err != nil {
+		return "", false, err
+	}
+	for mdPath, ef := range efs {
+		if ef.AudioFile == audioName {
+			return mdPath, false, nil
+		}
+	}
+
+	// create new episode file
 	audio, err := ReadAudio(audioPath)
 	if err != nil {
 		return "", false, err
 	}
 	if pubDate.IsZero() {
 		pubDate = audio.ModTime
-	}
-	if slug == "" {
-		slug = strings.TrimSuffix(filepath.Base(audioPath), filepath.Ext(audioPath))
 	}
 	if title == "" {
 		title = audio.Title
@@ -90,27 +116,6 @@ func LoadEpisode(
 	}
 	if description == "" {
 		description = title
-	}
-	filePath := filepath.Join(rootDir, episodeDir, slug+".md")
-	if _, err := os.Stat(filePath); err == nil {
-		ef, err := loadMeta(filePath)
-		if err != nil {
-			return "", false, err
-		}
-		if audio.Name != ef.AudioFile {
-			return "", false, fmt.Errorf("mismatch audio file in %q: %s, %s",
-				filePath, audio.Name, ef.AudioFile)
-		}
-		return filePath, false, nil
-	}
-	efs, err := loadEpisodeMetas(rootDir)
-	if err != nil {
-		return "", false, err
-	}
-	for mdPath, ef := range efs {
-		if ef.AudioFile == audio.Name {
-			return mdPath, false, nil
-		}
 	}
 
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
