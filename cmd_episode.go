@@ -33,18 +33,15 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 
 		noEdit        = fs.Bool("no-edit", false, "do not open the editor")
 		ignoreMissing = fs.Bool("ignore-missing", false, "ignore missing audio file")
-		saveMeta	  = fs.Bool("save-meta", false, "save meta file of audio")
+		saveMeta      = fs.Bool("save-meta", false, "save meta file of audio")
 	)
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 	if fs.NArg() < 1 {
-		return errors.New("no audio file specified")
+		return errors.New("no audio files specified")
 	}
-	if fs.NArg() > 1 {
-		log.Printf("[warn] two or more arguments are specified and they will be ignored: %v", fs.Args()[1:])
-	}
-	audioFile := fs.Arg(0)
+	audioFiles := fs.Args()
 
 	cfg, err := cast.LoadConfig(rootDir)
 	if err != nil {
@@ -69,28 +66,33 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 		body = string(b)
 	}
 
-	fpath, isNew, err := cast.LoadEpisode(
-		rootDir, audioFile, body, *ignoreMissing, *saveMeta, pubDate, *slug, *title, *descripsion, loc)
-	if err != nil {
-		return err
+	editor := os.Getenv("EDITOR")
+	if editor == "" || *noEdit || !isTTY(os.Stdin) || !isTTY(os.Stdout) || !isTTY(os.Stderr) {
+		editor = ""
 	}
+	for _, audioFile := range audioFiles {
+		fpath, isNew, err := cast.LoadEpisode(
+			rootDir, audioFile, body, *ignoreMissing, *saveMeta, pubDate, *slug, *title, *descripsion, loc)
+		if err != nil {
+			return err
+		}
+		if isNew {
+			log.Println("episode file created.")
+		} else {
+			log.Println("episode file found.")
+		}
+		fmt.Fprintln(outw, fpath)
 
-	if isNew {
-		log.Println("episode file created.")
-	} else {
-		log.Println("episode file found.")
-	}
-	fmt.Fprintln(outw, fpath)
+		if editor != "" {
+			com := exec.Command(editor, fpath)
+			com.Stdin = os.Stdin
+			com.Stdout = os.Stdout
+			com.Stderr = os.Stderr
 
-	if editor := os.Getenv("EDITOR"); !*noEdit && editor != "" &&
-		isTTY(os.Stdin) && isTTY(os.Stdout) && isTTY(os.Stderr) {
-
-		com := exec.Command(editor, fpath)
-		com.Stdin = os.Stdin
-		com.Stdout = os.Stdout
-		com.Stderr = os.Stderr
-
-		return com.Run()
+			if err := com.Run(); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
