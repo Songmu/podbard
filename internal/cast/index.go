@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/Masterminds/sprig/v3"
 )
 
 type Index struct {
@@ -49,7 +51,8 @@ func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error)
 }
 
 func (idx *Index) build(cfg *Config, episodes []*Episode) error {
-	tmpl, err := template.New("index").Parse(idx.RawBody)
+	tmpl, err := template.New("index").Funcs(sprig.FuncMap()).
+		Parse(idx.RawBody)
 	if err != nil {
 		return err
 	}
