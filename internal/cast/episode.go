@@ -114,7 +114,7 @@ func LoadEpisode(
 			return "", false, err
 		}
 		if pubDate.IsZero() {
-			pubDate = audio.ModTime
+			pubDate = audio.modTime
 		}
 		if title == "" {
 			title = audio.Title

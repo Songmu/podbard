@@ -1,6 +1,7 @@
 package cast
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,12 +14,12 @@ import (
 )
 
 type Audio struct {
-	Name     string
-	Title    string
-	FileSize int64
-	Duration uint64
-	ModTime  time.Time
+	Name     string `json:"name"`
+	Title    string `json:"title"`
+	FileSize int64  `json:"file_size"`
+	Duration uint64 `json:"duration"`
 
+	modTime   time.Time
 	mediaType MediaType
 }
 
@@ -39,7 +40,7 @@ func ReadAudio(fname string) (*Audio, error) {
 		return nil, err
 	}
 	au.FileSize = fi.Size()
-	au.ModTime = fi.ModTime()
+	au.modTime = fi.ModTime()
 
 	f, err := os.Open(fname)
 	if err != nil {
@@ -64,6 +65,26 @@ func ReadAudio(fname string) (*Audio, error) {
 		return nil, err
 	}
 	return au, nil
+}
+
+func getMetaFilePath(rootDir, name string) string {
+	return filepath.Join(rootDir, "."+name+".json")
+}
+
+func (au *Audio) SaveMeta(rootDir string) error {
+	metaFilePath := getMetaFilePath(rootDir, au.Name)
+	f, err := os.Create(metaFilePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if err := json.NewEncoder(f).Encode(au); err != nil {
+		return err
+	}
+	if mt := au.modTime; !mt.IsZero() {
+		return os.Chtimes(metaFilePath, mt, mt)
+	}
+	return nil
 }
 
 func (au *Audio) readMP4(rs io.ReadSeeker) error {
