@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -29,6 +30,8 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 		date        = fs.String("date", "", "date of the episode")
 		title       = fs.String("title", "", "title of the episode")
 		descripsion = fs.String("description", "", "description of the episode")
+
+		noEdit = fs.Bool("no-edit", false, "do not open the editor")
 	)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -60,13 +63,15 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 		return err
 	}
 
-	if !isNew {
-		log.Printf("episode file created: %q\n", fpath)
+	if isNew {
+		log.Println("episode file created.")
 	} else {
-		log.Printf("episode file found: %q\n", fpath)
+		log.Println("episode file found.")
 	}
+	fmt.Fprintln(outw, fpath)
+
 	// TODO: no editor option
-	if editor := os.Getenv("EDITOR"); editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
+	if editor := os.Getenv("EDITOR"); !*noEdit && editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
 		com := exec.Command(editor, fpath)
 		com.Stdin = os.Stdin
 		com.Stdout = os.Stdout
