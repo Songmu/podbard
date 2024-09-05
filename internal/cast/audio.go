@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/abema/go-mp4"
@@ -14,7 +15,7 @@ import (
 )
 
 type Audio struct {
-	Name     string `json:"name"`
+	Name     string `json:"-"`
 	Title    string `json:"title"`
 	FileSize int64  `json:"file_size"`
 	Duration uint64 `json:"duration"`
@@ -85,6 +86,26 @@ func (au *Audio) SaveMeta(rootDir string) error {
 		return os.Chtimes(metaFilePath, mt, mt)
 	}
 	return nil
+}
+
+func LoadAudioMeta(metaPath string) (*Audio, error) {
+	au := &Audio{}
+	f, err := os.Open(metaPath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	if err := json.NewDecoder(f).Decode(au); err != nil {
+		return nil, err
+	}
+	au.Name = strings.TrimPrefix(".", strings.TrimSuffix(filepath.Base(metaPath), ".json"))
+	fi, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	au.modTime = fi.ModTime()
+
+	return au, nil
 }
 
 func (au *Audio) readMP4(rs io.ReadSeeker) error {
