@@ -70,7 +70,6 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 	}
 	fmt.Fprintln(outw, fpath)
 
-	// TODO: no editor option
 	if editor := os.Getenv("EDITOR"); !*noEdit && editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
 		com := exec.Command(editor, fpath)
 		com.Stdin = os.Stdin
