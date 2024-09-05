@@ -3,7 +3,6 @@ package cast
 import (
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/eduncan911/podcast"
@@ -30,28 +29,39 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 	if img := channel.ImageURL(); img != "" {
 		pd.AddImage(img)
 	}
-	pd.ISubtitle = channel.Description
-	pd.AddSummary(channel.Description) // itunes:summary is deprecated but many apps still use it
 	if len(channel.Categories) == 0 {
 		pd.AddCategory("Technology", nil) // default category
 	}
 	for _, cat := range channel.Categories {
 		pd.AddCategory(cat, nil)
 	}
-	pd.Generator = fmt.Sprintf("%s powered by %s", generator, pd.Generator)
-
+	pd.IExplicit = fmt.Sprintf("%t", channel.Explicit)
+	pd.Generator = generator
 	pd.Copyright = channel.Copyright
 	if channel.Copyright != "" {
 		pd.Copyright = fmt.Sprintf("&#xA9; 2024 %s", channel.Author) // XXX: year is hardcoded
 	}
 
-	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
+	// deprecated but used tags
+	pd.ISubtitle = channel.Description
+	pd.AddSummary(channel.Description) // itunes:summary is deprecated but many apps still use it
 
-	pd.IExplicit = fmt.Sprintf("%t", channel.Explicit)
+	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
 
 	return &Feed{
 		Channel: channel,
 		Podcast: pd,
+	}
+}
+
+func podcastEnclosureType(mediaType MediaType) (podcast.EnclosureType, bool) {
+	switch mediaType {
+	case MP3:
+		return podcast.MP3, true
+	case M4A:
+		return podcast.M4A, true
+	default:
+		return 0, false
 	}
 }
 
@@ -86,9 +96,9 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	// XXX: item.Content = ep.HTML() // <content:encoded> is not supported yet
 
 	audioURL := audioBaseURL.JoinPath(ep.AudioFile)
-	encType := podcast.MP3
-	if strings.HasSuffix(ep.AudioFile, ".m4a") {
-		encType = podcast.M4A
+	encType, ok := podcastEnclosureType(ep.Audio().mediaType)
+	if !ok {
+		return 0, fmt.Errorf("unsupported media type: %s", ep.AudioFile)
 	}
 	item.AddEnclosure(audioURL.String(), encType, ep.Audio().FileSize)
 
