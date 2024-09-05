@@ -31,7 +31,8 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 		title       = fs.String("title", "", "title of the episode")
 		descripsion = fs.String("description", "", "description of the episode")
 
-		noEdit = fs.Bool("no-edit", false, "do not open the editor")
+		noEdit        = fs.Bool("no-edit", false, "do not open the editor")
+		ignoreMissing = fs.Bool("ignore-missing", false, "ignore missing audio file")
 	)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -58,7 +59,8 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 			return err
 		}
 	}
-	fpath, isNew, err := cast.LoadEpisode(rootDir, audioFile, pubDate, *slug, *title, *descripsion, loc)
+	fpath, isNew, err := cast.LoadEpisode(
+		rootDir, audioFile, *ignoreMissing, pubDate, *slug, *title, *descripsion, loc)
 	if err != nil {
 		return err
 	}

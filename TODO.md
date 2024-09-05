@@ -1,14 +1,16 @@
 # TODO
 
 ## Must
-- [ ] Add a `README.md` and `.gitignore` to the scaffolded project
+- [ ] Adjust init files
+    - [ ] Add a `README.md` and `.gitignore` to the scaffolded project
 - [ ] Document
 - [ ] Friendly log message
 - [ ] Testing
 
 ## Should
 - [ ] .1.mp3.json
-- [ ] `-ignore-missing` option to episode subcommand
+- [ ] specify input episode
+    - file or stdin?
 
 ## Nice to have
 - [ ] subcommand `dev` to run a local server
@@ -25,6 +27,7 @@
     - [ ] buildable
         - [ ] template
     - [ ] warning when the sample files are still there
+- [ ] configurable episode markdown template
 
 ## Never do
 - configure Google Analytics, Google Tag Manager, etc.

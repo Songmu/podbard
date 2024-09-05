@@ -30,22 +30,30 @@ This means there are follwing patterns for `audioFile`:
 In any case, the audio files must exist under the audio placement directory.
 */
 func LoadEpisode(
-	rootDir, audioFile string,
+	rootDir, audioFile string, ignoreMissing bool,
 	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
 
 	var (
-		audioPath     = audioFile
+		audioPath     = filepath.ToSlash(audioFile)
+		audioExists   = true
 		audioBasePath = filepath.Join(rootDir, audioDir)
 	)
-	if _, err := os.Stat(audioPath); err != nil {
-		if strings.ContainsAny(audioPath, `/\`) {
-			return "", false, fmt.Errorf("subdirectories are not supported, but: %q", audioPath)
-		}
+	if !strings.Contains(audioPath, "/") {
 		audioPath = filepath.Join(audioBasePath, audioFile)
 		if _, err := os.Stat(audioPath); err != nil {
-			return "", false, fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+			if !os.IsNotExist(err) {
+				return "", false, fmt.Errorf("can't find audio file: %s, %w", audioFile, err)
+			}
+			if !ignoreMissing {
+				return "", false, fmt.Errorf("audio file not found: %s, %w", audioFile, err)
+			}
+			audioExists = false
 		}
 	} else {
+		if _, err := os.Stat(audioPath); err != nil {
+			return "", false, fmt.Errorf("can't find audio file: %s, %w", audioFile, err)
+		}
+
 		var absAudioPath = audioPath
 		if !filepath.IsAbs(absAudioPath) {
 			var err error
@@ -101,21 +109,27 @@ func LoadEpisode(
 	}
 
 	// create new episode file
-	audio, err := ReadAudio(audioPath)
-	if err != nil {
-		return "", false, err
+	if audioExists {
+		audio, err := ReadAudio(audioPath)
+		if err != nil {
+			return "", false, err
+		}
+		if pubDate.IsZero() {
+			pubDate = audio.ModTime
+		}
+		if title == "" {
+			title = audio.Title
+		}
 	}
-	if pubDate.IsZero() {
-		pubDate = audio.ModTime
-	}
-	if title == "" {
-		title = audio.Title
-	}
+
 	if title == "" {
 		title = slug
 	}
 	if description == "" {
 		description = title
+	}
+	if pubDate.IsZero() {
+		pubDate = time.Now()
 	}
 
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
