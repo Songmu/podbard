@@ -24,7 +24,20 @@ type Audio struct {
 	mediaType MediaType
 }
 
-func ReadAudio(fname string) (*Audio, error) {
+func LoadAudio(fname string) (*Audio, error) {
+	if _, err := os.Stat(fname); err == nil {
+		return readAudio(fname)
+	}
+
+	metaPath := getMetaFilePath(filepath.Dir(fname), filepath.Base(fname))
+	if _, err := os.Stat(metaPath); err == nil {
+		return loadAudioMeta(metaPath)
+	}
+
+	return nil, fmt.Errorf("neither audio nor meta files where found: %s", fname)
+}
+
+func readAudio(fname string) (*Audio, error) {
 	ext := filepath.Ext(fname)
 	mt, ok := GetMediaTypeByExt(ext)
 	if !ok {
@@ -88,7 +101,7 @@ func (au *Audio) SaveMeta(rootDir string) error {
 	return nil
 }
 
-func LoadAudioMeta(metaPath string) (*Audio, error) {
+func loadAudioMeta(metaPath string) (*Audio, error) {
 	au := &Audio{}
 	f, err := os.Open(metaPath)
 	if err != nil {

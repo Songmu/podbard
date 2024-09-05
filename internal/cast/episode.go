@@ -36,14 +36,20 @@ func LoadEpisode(
 		audioPath     = filepath.ToSlash(audioFile)
 		audioExists   = true
 		audioBasePath = filepath.Join(rootDir, audioDir)
+		audioMetaPath = getMetaFilePath(audioBasePath, filepath.Base(audioPath))
+		audioMetaExists bool
 	)
+	if _, err := os.Stat(audioMetaPath); err == nil {
+		audioMetaExists = true
+	}
+
 	if !strings.Contains(audioPath, "/") {
 		audioPath = filepath.Join(audioBasePath, audioFile)
 		if _, err := os.Stat(audioPath); err != nil {
 			if !os.IsNotExist(err) {
 				return "", false, fmt.Errorf("can't find audio file: %s, %w", audioFile, err)
 			}
-			if !ignoreMissing {
+			if !ignoreMissing && !audioMetaExists {
 				return "", false, fmt.Errorf("audio file not found: %s, %w", audioFile, err)
 			}
 			audioExists = false
@@ -108,16 +114,16 @@ func LoadEpisode(
 	}
 
 	// create new episode file
-	if audioExists {
-		audio, err := ReadAudio(audioPath)
+	if audioExists || audioMetaExists {
+		au, err := LoadAudio(audioPath)
 		if err != nil {
 			return "", false, err
 		}
 		if pubDate.IsZero() {
-			pubDate = audio.modTime
+			pubDate = au.modTime
 		}
 		if title == "" {
-			title = audio.Title
+			title = au.Title
 		}
 	}
 
@@ -290,7 +296,7 @@ func (epm *EpisodeFrontMatter) loadAudio(rootDir string) error {
 		return fmt.Errorf("subdirectories are not supported of audio file: %s", epm.AudioFile)
 	}
 	var err error
-	epm.audio, err = ReadAudio(filepath.Join(rootDir, audioDir, epm.AudioFile))
+	epm.audio, err = LoadAudio(filepath.Join(rootDir, audioDir, epm.AudioFile))
 	return err
 }
 
