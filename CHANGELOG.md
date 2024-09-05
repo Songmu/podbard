@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.2](https://github.com/Songmu/primcast/compare/v0.0.1...v0.0.2) - 2024-09-05
+- introduce sprig to build index.md by @Songmu in https://github.com/Songmu/primcast/pull/30
+
 ## [v0.0.1](https://github.com/Songmu/primcast/commits/v0.0.1) - 2024-09-05
 - episode subcommand by @Songmu in https://github.com/Songmu/primcast/pull/1
 - fix template directory by @Songmu in https://github.com/Songmu/primcast/pull/2
