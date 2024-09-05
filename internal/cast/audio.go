@@ -1,10 +1,10 @@
 package cast
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/abema/go-mp4"
@@ -16,14 +16,22 @@ type Audio struct {
 	Name     string
 	Title    string
 	FileSize int64
-	Format   string
 	Duration uint64
 	ModTime  time.Time
+
+	mediaType MediaType
 }
 
 func ReadAudio(fname string) (*Audio, error) {
+	ext := filepath.Ext(fname)
+	mt, ok := GetMediaTypeByExt(ext)
+	if !ok {
+		return nil, fmt.Errorf("unsupported media type: %s", fname)
+	}
+
 	au := &Audio{
-		Name: filepath.Base(fname),
+		Name:      filepath.Base(fname),
+		mediaType: mt,
 	}
 
 	fi, err := os.Stat(fname)
@@ -46,9 +54,9 @@ func ReadAudio(fname string) (*Audio, error) {
 	au.Title = meta.Title()
 
 	f.Seek(0, 0)
-	// XXX: awful filetype detection
+
 	fn := au.readMP3
-	if !strings.HasSuffix(fname, ".mp3") {
+	if au.mediaType == M4A {
 		fn = au.readMP4
 	}
 	err = fn(f)
@@ -63,7 +71,6 @@ func (au *Audio) readMP4(rs io.ReadSeeker) error {
 	if err != nil {
 		return err
 	}
-	au.Format = "mp4"
 	au.Duration = prove.Duration / uint64(prove.Timescale)
 	return nil
 }
@@ -85,7 +92,6 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 		}
 		t = t + f.Duration().Seconds()
 	}
-	au.Format = "mp3"
 	au.Duration = uint64(t)
 	return nil
 }

@@ -3,7 +3,6 @@ package cast
 import (
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/eduncan911/podcast"
@@ -55,6 +54,17 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 	}
 }
 
+func podcastEnclosureType(mediaType MediaType) (podcast.EnclosureType, bool) {
+	switch mediaType {
+	case MP3:
+		return podcast.MP3, true
+	case M4A:
+		return podcast.M4A, true
+	default:
+		return 0, false
+	}
+}
+
 func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	epLink, err := url.JoinPath(f.Channel.Link.String(), episodeDir, ep.Slug)
 	if err != nil {
@@ -86,9 +96,9 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	// XXX: item.Content = ep.HTML() // <content:encoded> is not supported yet
 
 	audioURL := audioBaseURL.JoinPath(ep.AudioFile)
-	encType := podcast.MP3
-	if strings.HasSuffix(ep.AudioFile, ".m4a") {
-		encType = podcast.M4A
+	encType, ok := podcastEnclosureType(ep.Audio().mediaType)
+	if !ok {
+		return 0, fmt.Errorf("unsupported media type: %s", ep.AudioFile)
 	}
 	item.AddEnclosure(audioURL.String(), encType, ep.Audio().FileSize)
 
