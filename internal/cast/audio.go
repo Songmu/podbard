@@ -38,15 +38,9 @@ func LoadAudio(fname string) (*Audio, error) {
 }
 
 func readAudio(fname string) (*Audio, error) {
-	ext := filepath.Ext(fname)
-	mt, ok := GetMediaTypeByExt(ext)
-	if !ok {
-		return nil, fmt.Errorf("unsupported media type: %s", fname)
-	}
-
-	au := &Audio{
-		Name:      filepath.Base(fname),
-		mediaType: mt,
+	au, err := NewAudio(fname)
+	if err != nil {
+		return nil, err
 	}
 
 	fi, err := os.Stat(fname)
@@ -62,23 +56,42 @@ func readAudio(fname string) (*Audio, error) {
 	}
 	defer f.Close()
 
-	meta, err := tag.ReadFrom(f)
-	if err != nil {
+	if err := au.ReadFrom(f); err != nil {
 		return nil, err
+	}
+	return au, nil
+}
+
+func (au *Audio) ReadFrom(r io.ReadSeeker) error {
+	meta, err := tag.ReadFrom(r)
+	if err != nil {
+		return err
 	}
 	au.Title = meta.Title()
 
-	f.Seek(0, 0)
+	r.Seek(0, 0)
 
 	fn := au.readMP3
 	if au.mediaType == M4A {
 		fn = au.readMP4
 	}
-	err = fn(f)
+	err = fn(r)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return au, nil
+	return nil
+}
+
+func NewAudio(fname string) (*Audio, error) {
+	ext := filepath.Ext(fname)
+	mt, ok := GetMediaTypeByExt(ext)
+	if !ok {
+		return nil, fmt.Errorf("unsupported media type: %s", fname)
+	}
+	return &Audio{
+		Name:      filepath.Base(fname),
+		mediaType: mt,
+	}, nil
 }
 
 func getMetaFilePath(rootDir, name string) string {

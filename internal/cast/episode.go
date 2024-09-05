@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -17,7 +18,7 @@ import (
 )
 
 /*
-The `audioFile` is specified either by file path or by filename in the audio placement directory.
+The `audioFile` is specified either by file path, filename in the audio placement directory or URL.
 This means there are follwing patterns for `audioFile`:
 
 - File path:
@@ -25,6 +26,7 @@ This means there are follwing patterns for `audioFile`:
   - Absolute path: "/path/to/audio/mp.3"
 
 - File name: "1.mp3"  (subdirectories are currently not supported)
+- URL: "https://example.com/audio/1.mp3"
 
 In any case, the audio files must exist under the audio placement directory.
 */
@@ -33,11 +35,12 @@ func LoadEpisode(
 	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
 
 	var (
-		audioPath     = filepath.ToSlash(audioFile)
-		audioExists   = true
-		audioBasePath = filepath.Join(rootDir, audioDir)
-		audioMetaPath = getMetaFilePath(audioBasePath, filepath.Base(audioPath))
+		audioPath       = filepath.ToSlash(audioFile)
+		audioExists     = true
+		audioBasePath   = filepath.Join(rootDir, audioDir)
+		audioMetaPath   = getMetaFilePath(audioBasePath, filepath.Base(audioPath))
 		audioMetaExists bool
+		isAudioURL      bool
 	)
 	if _, err := os.Stat(audioMetaPath); err == nil {
 		audioMetaExists = true
@@ -54,6 +57,10 @@ func LoadEpisode(
 			}
 			audioExists = false
 		}
+	} else if strings.HasPrefix(audioPath, "http://") || strings.HasPrefix(audioPath, "https://") {
+		audioExists = false
+		isAudioURL = true
+
 	} else {
 		if _, err := os.Stat(audioPath); err != nil {
 			return "", false, fmt.Errorf("can't find audio file: %s, %w", audioFile, err)
@@ -92,6 +99,29 @@ func LoadEpisode(
 		if err != nil {
 			return "", false, err
 		}
+		if err := au.SaveMeta(audioBasePath); err != nil {
+			return "", false, err
+		}
+	} else if isAudioURL {
+		// For URLs, save the metafile even if the --save-meta option is not specified. Is that ok?
+		// It might be a good idea to check if the URL is under the audio bucket configuration.
+		// In any case, the specification would be changed here.
+		var err error
+		au, err = NewAudio(audioPath)
+		if err != nil {
+			return "", false, err
+		}
+		data, size, lastModified, err := downloadAndGetSizeAndLastModified(audioPath)
+		if err != nil {
+			return "", false, err
+		}
+		r := bytes.NewReader(data)
+		if err := au.ReadFrom(r); err != nil {
+			return "", false, err
+		}
+		au.FileSize = size
+		au.modTime = lastModified
+
 		if err := au.SaveMeta(audioBasePath); err != nil {
 			return "", false, err
 		}
@@ -177,6 +207,34 @@ func LoadEpisode(
 		return "", false, err
 	}
 	return filePath, true, nil
+}
+
+func downloadAndGetSizeAndLastModified(url string) ([]byte, int64, time.Time, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, 0, time.Time{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, 0, time.Time{}, fmt.Errorf("failed to download: %s", resp.Status)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, 0, time.Time{}, err
+	}
+
+	size := int64(len(body))
+
+	lastModifiedStr := resp.Header.Get("Last-Modified")
+	var lastModified time.Time
+	if lastModifiedStr != "" {
+		lastModified, err = time.Parse(time.RFC1123, lastModifiedStr)
+		if err != nil {
+			return nil, 0, time.Time{}, err
+		}
+	}
+	return body, size, lastModified, nil
 }
 
 func loadEpisodeMetas(rootDir string) (map[string]*EpisodeFrontMatter, error) {

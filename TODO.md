@@ -7,9 +7,6 @@
 - [ ] Friendly log message
 - [ ] Testing
 
-## Should
-- [ ] .1.mp3.json
-
 ## Nice to have
 - [ ] subcommand `dev` to run a local server
 - [ ] Templatize the `episode/*.md` files when build
