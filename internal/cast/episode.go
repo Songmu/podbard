@@ -203,7 +203,7 @@ func LoadEpisode(
 %s---
 
 %s`, string(b), body)
-	if err := os.WriteFile(filePath, []byte(content), os.ModePerm); err != nil {
+	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
 		return "", false, err
 	}
 	return filePath, true, nil
