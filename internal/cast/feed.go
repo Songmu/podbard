@@ -29,24 +29,24 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 	if img := channel.ImageURL(); img != "" {
 		pd.AddImage(img)
 	}
-	pd.ISubtitle = channel.Description
-	pd.AddSummary(channel.Description) // itunes:summary is deprecated but many apps still use it
 	if len(channel.Categories) == 0 {
 		pd.AddCategory("Technology", nil) // default category
 	}
 	for _, cat := range channel.Categories {
 		pd.AddCategory(cat, nil)
 	}
-	pd.Generator = fmt.Sprintf("%s powered by %s", generator, pd.Generator)
-
+	pd.IExplicit = fmt.Sprintf("%t", channel.Explicit)
+	pd.Generator = generator
 	pd.Copyright = channel.Copyright
 	if channel.Copyright != "" {
 		pd.Copyright = fmt.Sprintf("&#xA9; 2024 %s", channel.Author) // XXX: year is hardcoded
 	}
 
-	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
+	// deprecated but used tags
+	pd.ISubtitle = channel.Description
+	pd.AddSummary(channel.Description) // itunes:summary is deprecated but many apps still use it
 
-	pd.IExplicit = fmt.Sprintf("%t", channel.Explicit)
+	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
 
 	return &Feed{
 		Channel: channel,
