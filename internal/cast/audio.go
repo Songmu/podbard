@@ -64,10 +64,9 @@ func readAudio(fname string) (*Audio, error) {
 
 func (au *Audio) ReadFrom(r io.ReadSeeker) error {
 	meta, err := tag.ReadFrom(r)
-	if err != nil {
-		return err
-	}
-	au.Title = meta.Title()
+	if err == nil {
+		au.Title = meta.Title()
+	} // ignore error
 
 	r.Seek(0, 0)
 

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-//go:embed testdata/init
+//go:embed all:testdata/init
 var embedFS embed.FS
 
 func Scaffold(outDir string) error {
