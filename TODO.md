@@ -9,8 +9,6 @@
 
 ## Should
 - [ ] .1.mp3.json
-- [ ] specify input episode
-    - file or stdin?
 
 ## Nice to have
 - [ ] subcommand `dev` to run a local server

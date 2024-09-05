@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/Songmu/go-httpdate"
@@ -30,7 +29,7 @@ This means there are follwing patterns for `audioFile`:
 In any case, the audio files must exist under the audio placement directory.
 */
 func LoadEpisode(
-	rootDir, audioFile string, ignoreMissing bool,
+	rootDir, audioFile, body string, ignoreMissing bool,
 	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
 
 	var (
@@ -135,42 +134,29 @@ func LoadEpisode(
 	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
 		return "", false, err
 	}
-	f, err := os.Create(filePath)
-	if err != nil {
-		return "", false, err
-	}
-	defer f.Close()
 
-	arg := struct {
-		AudioFile   string
-		Title       string
-		Description string
-		Date        string
-	}{
-		AudioFile:   filepath.Base(audioPath),
+	epm := &EpisodeFrontMatter{
+		AudioFile:   audioName,
 		Title:       title,
 		Description: description,
 		Date:        pubDate.Format(time.RFC3339),
 	}
-	if err := episodeTmpl.Execute(f, arg); err != nil {
+	b, err := yaml.Marshal(epm)
+	if err != nil {
+		return "", false, err
+	}
+	if body == "" {
+		body = "<!-- write your episode here in markdown -->\n"
+	}
+	content := fmt.Sprintf(`---
+%s---
+
+%s`, string(b), body)
+	if err := os.WriteFile(filePath, []byte(content), os.ModePerm); err != nil {
 		return "", false, err
 	}
 	return filePath, true, nil
 }
-
-// XXX: Considering YAML escaping, etc., it might be better to assign to the frontmatter type
-// and then Marshal.
-const episodeTmplStr = `---
-audio: {{ .AudioFile }}
-title: {{ .Title }}
-date: {{ .Date }}
-description: {{ .Description }}
----
-
-# {{ .Title }}
-`
-
-var episodeTmpl = template.Must(template.New("episode").Parse(episodeTmplStr))
 
 func loadEpisodeMetas(rootDir string) (map[string]*EpisodeFrontMatter, error) {
 	dirname := filepath.Join(rootDir, episodeDir)
@@ -255,10 +241,10 @@ type Episode struct {
 }
 
 type EpisodeFrontMatter struct {
-	Title       string `yaml:"title"`
-	Description string `yaml:"description"`
-	Date        string `yaml:"date"`
 	AudioFile   string `yaml:"audio"`
+	Title       string `yaml:"title"`
+	Date        string `yaml:"date"`
+	Description string `yaml:"description"`
 
 	audio   *Audio
 	pubDate time.Time

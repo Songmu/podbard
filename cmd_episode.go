@@ -59,8 +59,17 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 			return err
 		}
 	}
+	var body string
+	if !isTTY(os.Stdin) {
+		b, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			return err
+		}
+		body = string(b)
+	}
+
 	fpath, isNew, err := cast.LoadEpisode(
-		rootDir, audioFile, *ignoreMissing, pubDate, *slug, *title, *descripsion, loc)
+		rootDir, audioFile, body, *ignoreMissing, pubDate, *slug, *title, *descripsion, loc)
 	if err != nil {
 		return err
 	}
@@ -72,7 +81,9 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 	}
 	fmt.Fprintln(outw, fpath)
 
-	if editor := os.Getenv("EDITOR"); !*noEdit && editor != "" && isTTY(os.Stdin.Fd()) && isTTY(os.Stdout.Fd()) {
+	if editor := os.Getenv("EDITOR"); !*noEdit && editor != "" &&
+		isTTY(os.Stdin) && isTTY(os.Stdout) && isTTY(os.Stderr) {
+
 		com := exec.Command(editor, fpath)
 		com.Stdin = os.Stdin
 		com.Stdout = os.Stdout
@@ -83,6 +94,7 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 	return nil
 }
 
-func isTTY(fd uintptr) bool {
+func isTTY(f *os.File) bool {
+	fd := f.Fd()
 	return isatty.IsTerminal(fd) || isatty.IsCygwinTerminal(fd)
 }
