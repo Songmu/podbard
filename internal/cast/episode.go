@@ -279,7 +279,9 @@ func loadMeta(fpath string) (*EpisodeFrontMatter, error) {
 
 func LoadEpisodes(
 	rootDir string, rootURL *url.URL, audioBaseURL *url.URL, loc *time.Location) ([]*Episode, error) {
-
+	if audioBaseURL == nil {
+		audioBaseURL = rootURL.JoinPath(audioDir)
+	}
 	dirname := filepath.Join(rootDir, episodeDir)
 	dir, err := os.ReadDir(dirname)
 	if err != nil {
