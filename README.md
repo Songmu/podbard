@@ -34,6 +34,8 @@ The primcast is software that generates a minimum podcast sites from a list of a
 
 ## Installation
 
+<details>
+
 ```console
 # Install the latest version. (Install it into ./bin/ by default).
 % curl -sfL https://raw.githubusercontent.com/Songmu/primcast/main/install.sh | sh -s
@@ -47,15 +49,22 @@ The primcast is software that generates a minimum podcast sites from a list of a
 # go install
 % go install github.com/Songmu/primcast/cmd/primcast@latest
 ```
+</details>
 
 ## Directory Structure
 
-- index.md      - index page
-- primcast.yaml - configuration file
-- episode/      - episode pages in markdown
-- audio/        - audio files (mp3 or m4a)
-- template/     - template files (tmpl files in Go's text/template syntax)
-- static/       - static files
+- **index.md**
+    - index page
+- **primcast.yaml**
+    - configuration file
+- **episode/**
+    - episode pages in markdown
+- **audio/**
+    - audio files (mp3 or m4a)
+- **template/**
+    - template files (tmpl files in Go's text/template syntax)
+- **static/**
+    - static files
 
 ## Sub Commmands
 
