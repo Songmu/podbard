@@ -7,18 +7,25 @@
 - [ ] Testing
 
 ## Should
-- [ ] 1.mp3.json
+- [ ] .1.mp3.json
 - [ ] `-ignore-missing` option to episode subcommand
 - [ ] audio media types
 
 ## Nice to have
 - [ ] subcommand `dev` to run a local server
-- [ ] Add a `LICENSE` to the scaffolded project
 - [ ] Templatize the `episode/*.md` files when build
 - [ ] GitHub Actions
 - [ ] og:image (eyecatch, artwork)
     - [ ] configurable in a episode Markdown
-- [ ] doctor subocommand like `brew doctor` to check settings
+- [ ] doctor/lint subocommand like `brew doctor` to check settings
+    - [ ] or, `primcast build -dry-run`
+    - [ ] check required files
+    - [ ] check config fields
+    - [ ] check episode files to check required fields
+        - [ ] check the audio existence
+    - [ ] buildable
+        - [ ] template
+    - [ ] warning when the sample files are still there
 
 ## Never do
 - configure Google Analytics, Google Tag Manager, etc.
