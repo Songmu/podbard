@@ -29,7 +29,7 @@ This means there are follwing patterns for `audioFile`:
 In any case, the audio files must exist under the audio placement directory.
 */
 func LoadEpisode(
-	rootDir, audioFile, body string, ignoreMissing bool,
+	rootDir, audioFile, body string, ignoreMissing, saveMeta bool,
 	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
 
 	var (
@@ -79,9 +79,21 @@ func LoadEpisode(
 		if err != nil {
 			return "", false, err
 		}
-		if strings.ContainsAny(p, `/\`) {
+		if strings.ContainsAny(p, `/\`) && !saveMeta {
 			return "", false, fmt.Errorf("audio files must be placed directory under the %q directory, but: %q",
 				audioBasePath, audioPath)
+		}
+	}
+
+	var au *Audio
+	if audioExists && saveMeta {
+		var err error
+		au, err = LoadAudio(audioPath)
+		if err != nil {
+			return "", false, err
+		}
+		if err := au.SaveMeta(audioBasePath); err != nil {
+			return "", false, err
 		}
 	}
 
@@ -115,9 +127,12 @@ func LoadEpisode(
 
 	// create new episode file
 	if audioExists || audioMetaExists {
-		au, err := LoadAudio(audioPath)
-		if err != nil {
-			return "", false, err
+		if au == nil {
+			var err error
+			au, err = LoadAudio(audioPath)
+			if err != nil {
+				return "", false, err
+			}
 		}
 		if pubDate.IsZero() {
 			pubDate = au.modTime

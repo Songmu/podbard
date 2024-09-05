@@ -33,6 +33,7 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 
 		noEdit        = fs.Bool("no-edit", false, "do not open the editor")
 		ignoreMissing = fs.Bool("ignore-missing", false, "ignore missing audio file")
+		saveMeta	  = fs.Bool("save-meta", false, "save meta file of audio")
 	)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -69,7 +70,7 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 	}
 
 	fpath, isNew, err := cast.LoadEpisode(
-		rootDir, audioFile, body, *ignoreMissing, pubDate, *slug, *title, *descripsion, loc)
+		rootDir, audioFile, body, *ignoreMissing, *saveMeta, pubDate, *slug, *title, *descripsion, loc)
 	if err != nil {
 		return err
 	}
