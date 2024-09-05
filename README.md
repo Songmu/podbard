@@ -11,15 +11,26 @@ primcast
 [license]: https://github.com/Songmu/primcast/blob/main/LICENSE
 [PkgGoDev]: https://pkg.go.dev/github.com/Songmu/primcast
 
-primcast short description
+The primcast is a primitive podcast site generator.
 
 ## Synopsis
 
-```go
-// simple usage here
+```console
+# Initialize the site
+$ primcast init .
+
+# Locate the audio file and create a new episode page
+$ primcast episode audio/1.mp3
+# episode/1.md is created
+
+# Build the site
+$ primcast build
+# site generated under public/
 ```
 
 ## Description
+
+The primcast is software that generates a minimum podcast sites from a list of audio files.
 
 ## Installation
 
@@ -36,6 +47,39 @@ primcast short description
 # go install
 % go install github.com/Songmu/primcast/cmd/primcast@latest
 ```
+
+## Directory Structure
+
+- index.md      - index page
+- primcast.yaml - configuration file
+- episode/      - episode pages in markdown
+- audio/        - audio files (mp3 or m4a)
+- template/     - template files (tmpl files in Go's text/template syntax)
+- static/       - static files
+
+## Sub Commmands
+
+### init
+
+```console
+$ primcast init .
+```
+
+### episode
+
+```
+$ primcast episode [-slug=hoge -date=2024-09-01 -title=title] audio/1.mp3
+```
+
+create a new epoisode page with the specified audio file.
+
+### build
+
+```
+$ primcast build
+```
+
+build the site and output to the `public` directory.
 
 ## Author
 
