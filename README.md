@@ -13,7 +13,7 @@ Podbard
 
 The Podbard is a primitive podcast site generator.
 
-![](docs/static/images/artwork.jpg)
+![](docs/ja/static/images/artwork.jpg)
 
 [Document site (Japanese)](https://junkyard.song.mu/podbard/)
 
