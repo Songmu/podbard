@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -63,31 +64,51 @@ func Main(argv []string) error {
 	}
 
 	audioFile := efm.AudioFile
-	if audioFile == "" {
-		audioFile = strings.TrimSuffix(mdFile, ".md") + ".mp3"
+	if audioFile != "" {
+		if filepath.Ext(audioFile) != ".mp3" {
+			return errors.New("audio file must have .mp3 extension")
+		}
+	} else {
+		audioFile = strings.TrimSuffix(filepath.Base(mdFile), ".md") + ".mp3"
 	}
 	baseDir := filepath.Join(filepath.Dir(filepath.Dir(mdFile)), "audio")
 	audioFile = filepath.Join(baseDir, audioFile)
+	wavFile := strings.TrimSuffix(audioFile, ".mp3") + ".wav"
 
 	ctx := context.Background()
 	resp, err := cli.CreateSpeech(ctx, openai.CreateSpeechRequest{
-		Model: openai.TTSModel1,
-		Voice: openai.VoiceEcho,
-		Input: body,
+		Model:          openai.TTSModel1,
+		Voice:          openai.VoiceEcho,
+		ResponseFormat: openai.SpeechResponseFormatWav,
+		Input:          body,
 	})
 	if err != nil {
 		return fmt.Errorf("Error creating speech: %w", err)
 	}
 	defer resp.Close()
 
-	f, err := os.Create(audioFile)
+	f, err := os.Create(wavFile)
 	if err != nil {
 		return fmt.Errorf("Error creating audio file: %w", err)
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, resp)
-	return err
+	if _, err := io.Copy(f, resp); err != nil {
+		return fmt.Errorf("Error writing audio file: %w", err)
+	}
+
+	com := exec.Command("ffmpeg", "-i", wavFile, "-ab", "32k", "-ac", "1", "-ar", "44100", audioFile)
+	com.Stdin = os.Stdin
+	com.Stdout = os.Stdout
+	com.Stderr = os.Stderr
+
+	if err := com.Run(); err != nil {
+		return fmt.Errorf("Error converting audio file: %w", err)
+	}
+	if err := os.Remove(wavFile); err != nil {
+		return fmt.Errorf("Error removing wav file: %w", err)
+	}
+	return nil
 }
 
 func splitFrontMatterAndBody(content string) (string, string, error) {
