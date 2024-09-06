@@ -19,7 +19,7 @@ const (
 	audioDir   = "audio"
 	staticDir  = "static"
 
-	configFile = "primcast.yaml"
+	configFile = "podbard.yaml"
 	feedFile   = "feed.xml"
 )
 

@@ -1,40 +1,40 @@
-primcast
+podbard
 =======
 
-[![Test Status](https://github.com/Songmu/primcast/workflows/test/badge.svg?branch=main)][actions]
-[![Coverage Status](https://codecov.io/gh/Songmu/primcast/branch/main/graph/badge.svg)][codecov]
-[![MIT License](https://img.shields.io/github/license/Songmu/primcast)][license]
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/Songmu/primcast)][PkgGoDev]
+[![Test Status](https://github.com/Songmu/podbard/workflows/test/badge.svg?branch=main)][actions]
+[![Coverage Status](https://codecov.io/gh/Songmu/podbard/branch/main/graph/badge.svg)][codecov]
+[![MIT License](https://img.shields.io/github/license/Songmu/podbard)][license]
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/Songmu/podbard)][PkgGoDev]
 
-[actions]: https://github.com/Songmu/primcast/actions?workflow=test
-[codecov]: https://codecov.io/gh/Songmu/primcast
-[license]: https://github.com/Songmu/primcast/blob/main/LICENSE
-[PkgGoDev]: https://pkg.go.dev/github.com/Songmu/primcast
+[actions]: https://github.com/Songmu/podbard/actions?workflow=test
+[codecov]: https://codecov.io/gh/Songmu/podbard
+[license]: https://github.com/Songmu/podbard/blob/main/LICENSE
+[PkgGoDev]: https://pkg.go.dev/github.com/Songmu/podbard
 
-The primcast is a primitive podcast site generator.
+The podbard is a primitive podcast site generator.
 
 ![](docs/static/images/artwork.jpg)
 
-[Document site (Japanese)](https://junkyard.song.mu/primcast/)
+[Document site (Japanese)](https://junkyard.song.mu/podbard/)
 
 ## Synopsis
 
 ```console
 # Initialize the site
-$ primcast init .
+$ podbard init .
 
 # Locate the audio file and create a new episode page
-$ primcast episode audio/1.mp3
+$ podbard episode audio/1.mp3
 # episode/1.md is created
 
 # Build the site
-$ primcast build
+$ podbard build
 # site generated under public/
 ```
 
 ## Description
 
-The primcast is software that generates a minimum podcast sites from a list of audio files.
+The podbard is software that generates a minimum podcast sites from a list of audio files.
 
 ## Installation
 
@@ -43,16 +43,16 @@ The primcast is software that generates a minimum podcast sites from a list of a
 
 ```console
 # Install the latest version. (Install it into ./bin/ by default).
-% curl -sfL https://raw.githubusercontent.com/Songmu/primcast/main/install.sh | sh -s
+% curl -sfL https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s
 
 # Specify installation directory ($(go env GOPATH)/bin/) and version.
-% curl -sfL https://raw.githubusercontent.com/Songmu/primcast/main/install.sh | sh -s -- -b $(go env GOPATH)/bin [vX.Y.Z]
+% curl -sfL https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s -- -b $(go env GOPATH)/bin [vX.Y.Z]
 
 # In alpine linux (as it does not come with curl by default)
-% wget -O - -q https://raw.githubusercontent.com/Songmu/primcast/main/install.sh | sh -s [vX.Y.Z]
+% wget -O - -q https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s [vX.Y.Z]
 
 # go install
-% go install github.com/Songmu/primcast/cmd/primcast@latest
+% go install github.com/Songmu/podbard/cmd/podbard@latest
 ```
 </details>
 
@@ -60,7 +60,7 @@ The primcast is software that generates a minimum podcast sites from a list of a
 
 - **index.md**
     - index page
-- **primcast.yaml**
+- **podbard.yaml**
     - configuration file
 - **episode/**
     - episode pages in markdown
@@ -76,13 +76,13 @@ The primcast is software that generates a minimum podcast sites from a list of a
 ### init
 
 ```console
-$ primcast init .
+$ podbard init .
 ```
 
 ### episode
 
 ```
-$ primcast episode [-slug=hoge -date=2024-09-01 -title=title] audio/1.mp3
+$ podbard episode [-slug=hoge -date=2024-09-01 -title=title] audio/1.mp3
 ```
 
 create a new epoisode page with the specified audio file.
@@ -90,7 +90,7 @@ create a new epoisode page with the specified audio file.
 ### build
 
 ```
-$ primcast build
+$ podbard build
 ```
 
 build the site and output to the `public` directory.

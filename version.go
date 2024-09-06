@@ -1,4 +1,4 @@
-package primcast
+package podbard
 
 const version = "0.0.2"
 

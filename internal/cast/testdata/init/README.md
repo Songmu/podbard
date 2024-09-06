@@ -1,1 +1,1 @@
-See. <https://github.com/Songmu/primcast>
+See. <https://github.com/Songmu/podbard>

@@ -14,7 +14,7 @@
 - [ ] og:image (eyecatch, artwork)
     - [ ] configurable in a episode Markdown
 - [ ] doctor/lint subocommand like `brew doctor` to check settings
-    - [ ] or, `primcast build -dry-run`
+    - [ ] or, `podbard build -dry-run`
     - [ ] check required files
     - [ ] check config fields
     - [ ] check episode files to check required fields

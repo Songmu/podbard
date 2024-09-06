@@ -23,7 +23,7 @@ jobs:
     - name: build pages
       run: |
         make build
-        ./primcast -C docs/ja build
+        ./podbard -C docs/ja build
     - uses: actions/upload-pages-artifact@v3
       with:
         path: docs/ja/public

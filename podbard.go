@@ -1,4 +1,4 @@
-package primcast
+package podbard
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	"log"
 )
 
-const cmdName = "primcast"
+const cmdName = "podbard"
 
-// Run the primcast
+// Run the podbard
 func Run(ctx context.Context, argv []string, outw, errw io.Writer) error {
 	log.SetOutput(errw)
 	fs := flag.NewFlagSet(

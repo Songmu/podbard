@@ -47,7 +47,11 @@ func renameFileOrDir(path, from, to string, info fs.FileInfo) error {
 }
 
 func renameContentsIfFile(path, from, to string) error {
-
+	if strings.Contains(path, from) {
+		// XXX
+		path = strings.ReplaceAll(path, from, to)
+	}
+	fmt.Println(path)
 	fi, err := os.Stat(path)
 	if err != nil {
 		return err

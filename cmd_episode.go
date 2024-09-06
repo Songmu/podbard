@@ -1,4 +1,4 @@
-package primcast
+package podbard
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/Songmu/go-httpdate"
-	"github.com/Songmu/primcast/internal/cast"
+	"github.com/Songmu/podbard/internal/cast"
 	"github.com/mattn/go-isatty"
 )
 
@@ -23,7 +23,7 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 	flagCfg := getFlagConfig(ctx)
 	rootDir := flagCfg.RootDir
 
-	fs := flag.NewFlagSet("primcast episode", flag.ContinueOnError)
+	fs := flag.NewFlagSet("podbard episode", flag.ContinueOnError)
 	fs.SetOutput(errw)
 	var (
 		slug        = fs.String("slug", "", "slug of the episode")

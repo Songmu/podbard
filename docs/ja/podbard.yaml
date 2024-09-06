@@ -1,8 +1,8 @@
 # sample
 channel:
-  link: https://junkyard.song.mu/primcast/
-  title: primcast
-  description: Podcast site generator, primcastの紹介
+  link: https://junkyard.song.mu/podbard/
+  title: podbard
+  description: Podcast site generator, podbardの紹介
   language: ja-JP
   category: "Techlogy"
   author: Songmu

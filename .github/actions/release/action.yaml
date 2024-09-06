@@ -1,5 +1,5 @@
 name: release
-description: release primcast
+description: release podbard
 inputs:
   tag:
     description: tag name to be released
