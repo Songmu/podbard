@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/goccy/go-yaml"
 	"github.com/sashabaranov/go-openai"
 	stripmd "github.com/writeas/go-strip-markdown/v2"
-	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -25,12 +25,21 @@ func main() {
 func Main(argv []string) error {
 
 	fs := flag.NewFlagSet(
-		"go run ./text_to_speech.go", flag.ContinueOnError)
+		"text_to_speech.go", flag.ContinueOnError)
 
-	if len(argv) < 1 {
+	fs.Usage = func() {
+		fmt.Println("Usage: go run ./text_to_speech.go <input.md>")
+		fs.PrintDefaults()
+	}
+	dryRun := fs.Bool("dry-run", false, "dry run")
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+
+	if fs.NArg() < 1 {
 		return errors.New("Usage: go run text_to_speech.go <input.md>")
 	}
-	mdFile := argv[0]
+	mdFile := fs.Arg(0)
 
 	cli := openai.NewClient(os.Getenv("OPENAI_API_KEY"))
 
@@ -47,6 +56,11 @@ func Main(argv []string) error {
 	body = stripmd.Strip(body)
 
 	body = efm.Title + "\n" + body
+
+	if *dryRun {
+		fmt.Println(body)
+		return nil
+	}
 
 	audioFile := efm.AudioFile
 	if audioFile == "" {
