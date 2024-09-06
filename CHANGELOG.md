@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.4](https://github.com/Songmu/podbard/compare/v0.0.3...v0.0.4) - 2024-09-06
+- [docs] update artwork icon by @Songmu in https://github.com/Songmu/podbard/pull/38
+- [bugfix] locate main.go by @Songmu in https://github.com/Songmu/podbard/pull/40
+
 ## [v0.0.3](https://github.com/Songmu/podbard/compare/v0.0.2...v0.0.3) - 2024-09-06
 - [maint] adjust text_to_speech by @Songmu in https://github.com/Songmu/podbard/pull/33
 - [docs] quick start by @Songmu in https://github.com/Songmu/podbard/pull/34
