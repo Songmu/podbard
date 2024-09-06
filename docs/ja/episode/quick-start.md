@@ -2,29 +2,29 @@
 audio: 2.mp3
 title: 最速でポッドキャスサイトを構築する
 date: 2024-09-06T18:00:00+09:00
-description: primcastを使って最速でポッドキャスサイトを構築する方法を解説します。
+description: podbardを使って最速でポッドキャスサイトを構築する方法を解説します。
 ---
 
-このページでは、primcastで最短でポッドキャスサイトを構築する方法を説明します。
+このページでは、podbardで最短でポッドキャスサイトを構築する方法を説明します。
 
 ## インストール
-まずは、`primcast` コマンドをインストールします。
+まずは、`podbard` コマンドをインストールします。
 
 ```console
-$ go install github.com/Songmu/primcast/cmd/primcast@latest
+$ go install github.com/Songmu/podbard/cmd/podbard@latest
 ```
 
 ## サイトの雛形作成
 次に、サイトの雛形を作成します。
 
 ```console
-$ primcast init <dirname>
+$ podbard init <dirname>
 ```
 
 ## 雛形の調整
 
-###  設定ファイル `primcast.yaml`
-`primcast.yaml` を開いて適宜調整してください。コメントアウトされていない項目は必須か推奨項目です。artwork指定は消しても大丈夫ですが、Apple Podcastsに登録する場合は必須です。
+###  設定ファイル `podbard.yaml`
+`podbard.yaml` を開いて適宜調整してください。コメントアウトされていない項目は必須か推奨項目です。artwork指定は消しても大丈夫ですが、Apple Podcastsに登録する場合は必須です。
 
 ### 不要なサンプルファイルの削除及び差し替え
 `audio/sample.mp3`, `episode/1.md` は不要なので削除してください。また、`static/images/artwork.jpg` はダミーの画像なので、適切な画像に差し替えてください。
@@ -33,10 +33,10 @@ $ primcast init <dirname>
 `audio/` ディレクトリ直下に配信する音声ファイルを配置してください。MP3またはM4Aをサポートしています。`audio/abc/` のようなサブディレクトリ階層はサポートしていないので、直下にフラットに配置してください。
 
 ## エピソードの作成
-音声に対応するエピソードファイルを作成します。エピソードファイルは、`episode/` ディレクトリ直下にMarkdownファイル形式で保存します。このファイルは、`primcast episode` サブコマンドで以下のようにベースを生成できます。
+音声に対応するエピソードファイルを作成します。エピソードファイルは、`episode/` ディレクトリ直下にMarkdownファイル形式で保存します。このファイルは、`podbard episode` サブコマンドで以下のようにベースを生成できます。
 
 ```console
-$ primcast episode audio/1.mp3
+$ podbard episode audio/1.mp3
 ```
 
 このとき、`episode/1.md`という以下のようなMarkdownファイルが生成されます。
@@ -57,15 +57,15 @@ description: "1"
 このファイルを適宜編集してエピソードの情報を記述してください。本文部分がShow Noteになります。
 
 ## サイトのビルド
-あとは、サイトをビルドするだけです。サイトのビルドは `primcast build` コマンドで行います。
+あとは、サイトをビルドするだけです。サイトのビルドは `podbard build` コマンドで行います。
 
 ```console
-$ primcast build
+$ podbard build
 ```
 
 サイトは `public/` ディレクトリに出力されます。このディレクトリを適切なホスティング環境にdeployすることで、ポッドキャストサイトが完成します。
 
-このサイト自体もprimcastで作られており、GitHub ActionsでビルドしてGitHub Pagesへdeployしています。[具体的なワークフローの設定](https://github.com/Songmu/primcast/blob/main/.github/workflows/deploy-pages.yaml)も参考にしてください。
+このサイト自体もpodbardで作られており、GitHub ActionsでビルドしてGitHub Pagesへdeployしています。[具体的なワークフローの設定](https://github.com/Songmu/podbard/blob/main/.github/workflows/deploy-pages.yaml)も参考にしてください。
 
 ## まとめ
 

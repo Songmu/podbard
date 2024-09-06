@@ -1,4 +1,4 @@
-module github.com/Songmu/primcast/scripts
+module github.com/Songmu/podbard/scripts
 
 go 1.23.0
 

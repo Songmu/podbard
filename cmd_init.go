@@ -1,4 +1,4 @@
-package primcast
+package podbard
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Songmu/primcast/internal/cast"
+	"github.com/Songmu/podbard/internal/cast"
 	"github.com/Songmu/prompter"
 )
 
@@ -17,7 +17,7 @@ type cmdInit struct {
 }
 
 func (in *cmdInit) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-	fs := flag.NewFlagSet("primcast init", flag.ContinueOnError)
+	fs := flag.NewFlagSet("podbard init", flag.ContinueOnError)
 	fs.SetOutput(errw)
 	if err := fs.Parse(args); err != nil {
 		return err
