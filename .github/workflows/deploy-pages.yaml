@@ -23,6 +23,7 @@ jobs:
         go-version: stable
     - name: build pages
       run: |
+        go clean -modcache -cache -testcache
         make build
         ./podbard -C docs/ja build
     - uses: actions/upload-pages-artifact@v3
