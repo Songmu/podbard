@@ -1,4 +1,4 @@
-module github.com/Songmu/primcast/author
+module github.com/Songmu/primcast/scripts
 
 go 1.23.0
 
