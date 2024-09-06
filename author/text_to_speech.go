@@ -3,14 +3,16 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/goccy/go-yaml"
 	"github.com/sashabaranov/go-openai"
+	stripmd "github.com/writeas/go-strip-markdown/v2"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -21,6 +23,10 @@ func main() {
 }
 
 func Main(argv []string) error {
+
+	fs := flag.NewFlagSet(
+		"go run ./text_to_speech.go", flag.ContinueOnError)
+
 	if len(argv) < 1 {
 		return errors.New("Usage: go run text_to_speech.go <input.md>")
 	}
@@ -38,6 +44,8 @@ func Main(argv []string) error {
 	if err := yaml.Unmarshal([]byte(fm), efm); err != nil {
 		return fmt.Errorf("Error unmarshalling front matter:", err)
 	}
+	body = stripmd.Strip(body)
+
 	body = efm.Title + "\n" + body
 
 	audioFile := efm.AudioFile

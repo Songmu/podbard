@@ -5,6 +5,7 @@ go 1.23.0
 require (
 	github.com/goccy/go-yaml v1.12.0
 	github.com/sashabaranov/go-openai v1.29.1
+	github.com/writeas/go-strip-markdown/v2 v2.1.1
 	github.com/yuin/goldmark v1.7.4
 )
 
