@@ -1,4 +1,4 @@
-podbard
+Podbard
 =======
 
 [![Test Status](https://github.com/Songmu/podbard/workflows/test/badge.svg?branch=main)][actions]
@@ -11,7 +11,7 @@ podbard
 [license]: https://github.com/Songmu/podbard/blob/main/LICENSE
 [PkgGoDev]: https://pkg.go.dev/github.com/Songmu/podbard
 
-The podbard is a primitive podcast site generator.
+The Podbard is a primitive podcast site generator.
 
 ![](docs/static/images/artwork.jpg)
 
