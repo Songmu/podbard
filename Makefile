@@ -49,5 +49,6 @@ upload:
 sync:
 	cp testdata/dev/index.md internal/cast/testdata/init/index.md
 	cp testdata/dev/static/css/style.css internal/cast/testdata/init/static/css/style.css
+	cp testdata/dev/static/css/style.css docs/ja/static/css/style.css
 	cp -r testdata/dev/template/ internal/cast/testdata/init/template/
 	cp -r testdata/dev/static/ internal/cast/testdata/init/static/

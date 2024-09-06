@@ -13,6 +13,10 @@ primcast
 
 The primcast is a primitive podcast site generator.
 
+![](docs/static/images/artwork.jpg)
+
+[Document site (Japanese)](https://junkyard.song.mu/primcast/)
+
 ## Synopsis
 
 ```console
@@ -35,6 +39,7 @@ The primcast is software that generates a minimum podcast sites from a list of a
 ## Installation
 
 <details>
+<summary>How to install on terminal</summary>
 
 ```console
 # Install the latest version. (Install it into ./bin/ by default).
