@@ -1,55 +1,74 @@
+:root {
+  --primary-color: #5a3d31;
+  --secondary-color: #f4f4f4;
+  --highlight-color: #e9d9c7;
+  --background-color: #f5f5f0;
+  --text-color: #333;
+  --border-color: #c4c4b7;
+  --light-border-color: #ccc;
+  --block-background: #fff8e7;
+  --blockquote-bg: #f5f5f0;
+  --blockquote-border: 4px solid var(--primary-color);
+  --padding: 1em 1.25em;
+}
+
 body {
-  font-family: "Helvetica Neue",
-    Arial,
-    "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans",
-    Meiryo,
-    sans-serif;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
   line-height: 1.7;
-  color: #333;
-  background-color: #f5f5f0;
+  color: var(--text-color);
+  background-color: var(--background-color);
   margin: 0;
   padding: 0;
 
   a {
-    color: #5a3d31;
+    color: var(--primary-color);
     text-decoration: none;
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   header {
-    background-color: #5a3d31;
-    color: #f4f4f4;
-    padding: 1em 1.25em;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: var(--padding);
+
     h1 {
       margin: 0;
       font-size: 1.9em;
       font-weight: bold;
       a {
-        color: #f4f4f4;
-        &:hover { text-decoration: none; }
+        color: var(--secondary-color);
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
-    p { margin: 0.3em 0 0; font-size: 1em; color: #e0d6d1; }
+
+    p {
+      margin: 0.3em 0 0;
+      font-size: 1em;
+      color: #e0d6d1;
+    }
   }
 
   main {
     max-width: 80em;
-    padding: 1.25em;
-    border: 1px solid #c4c4b7;
+    padding: var(--padding);
+    border: 1px solid var(--border-color);
     margin: auto;
-    background-color: #fff8e7;
+    background-color: var(--block-background);
 
     h1 { font-size: 2.00em; margin-bottom: 0.5em; }
     h2 { font-size: 1.68em; margin-bottom: 0.5em; }
     h3 { font-size: 1.41em; margin-bottom: 0.5em; }
     h4 { font-size: 1.18em; margin-bottom: 0.5em; }
-    h5 { font-size: 1.00em; margin-bottom: 0.5em; }
-    h6 { font-size: 1.00em; margin-bottom: 0.5em; font-weight: normal; }
-    p {  font-size: 1.00em; margin-bottom: 0.7em; }
+    h5, h6 { font-size: 1em; margin-bottom: 0.5em; }
+    h6 { font-weight: normal; }
+    p { font-size: 1em; margin-bottom: 0.7em; }
 
     input {
-      border: 1px solid #c4c4b7;
+      border: 1px solid var(--border-color);
       padding: 0.5em;
       font-size: 1em;
       width: 100%;
@@ -57,18 +76,13 @@ body {
       margin-bottom: 1em;
       background-color: #fff;
     }
-    figure {
-      margin: 1.5em 0;
-      text-align: center;
-    }
-    audio {
-      width: 100%;
-      max-width: 600px;
-    }
+
+    figure { margin: 1.5em 0; text-align: center; }
+    audio { width: 100%; max-width: 600px; }
 
     code {
       background-color: #f4f4f4;
-      border: 1px solid #ccc;
+      border: 1px solid var(--light-border-color);
       padding: 0.2em 0.4em;
       border-radius: 3px;
       font-family: Consolas, Monaco, 'Courier New', monospace;
@@ -77,7 +91,7 @@ body {
 
     pre {
       background-color: #f9f9f9;
-      border: 1px solid #ccc;
+      border: 1px solid var(--light-border-color);
       padding: 1em;
       overflow-x: auto;
       border-radius: 5px;
@@ -88,26 +102,21 @@ body {
         border: none;
         padding: 0;
         font-size: 1em;
-        color: #333;
+        color: var(--text-color);
       }
     }
 
     blockquote {
-      background-color: #f5f5f0;
-      border-left: 4px solid #5a3d31;
+      background-color: var(--blockquote-bg);
+      border-left: var(--blockquote-border);
       margin: 0.7em 0;
       padding: 0.75em 1.5em;
       font-style: italic;
-      color: #333;
+      color: var(--text-color);
 
       p {
         margin: 0;
         font-size: 1em;
-        line-height: 1.6;
-      }
-      + p:has(cite) {
-          margin-top: -0.5em;
-          text-align: right;
       }
     }
 
@@ -115,28 +124,19 @@ body {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 1.5em;
-      background-color: #fff8e7;
+      background-color: var(--block-background);
 
       th, td {
-        border: 1px solid #c4c4b7;
+        border: 1px solid var(--border-color);
         padding: 0.75em;
         text-align: left;
         font-size: 1em;
-        color: #333;
+        color: var(--text-color);
       }
 
-      th {
-        background-color: #e9d9c7;
-        font-weight: bold;
-      }
-
-      td {
-        background-color: #fff;
-      }
-
-      tr:nth-child(even) td {
-        background-color: #f5f5f0;
-      }
+      th { background-color: var(--highlight-color); font-weight: bold; }
+      td { background-color: #fff; }
+      tr:nth-child(even) td { background-color: var(--background-color); }
     }
 
     dl {
@@ -147,63 +147,61 @@ body {
         margin-top: 0.5em;
         color: #3b2f2f;
       }
+
       dd {
         margin-left: 1.5em;
         margin-bottom: 0.5em;
         font-size: 1em;
-        line-height: 1.7;
-        color: #333;
+        color: var(--text-color);
       }
     }
 
     aside {
-      background-color: #e9d9c7;
+      background-color: var(--highlight-color);
       padding: 0.7em;
       margin-top: 1.25em;
-      border-right: 4px solid #5a3d31;
+      border-right: 4px solid var(--primary-color);
       text-align: right;
     }
+
     nav.adjacent-episodes ul {
       list-style: none;
       padding: 0;
       margin: 1em 0;
       text-align: right;
+
       li {
         display: inline;
         padding: 0 0.7em;
-        &:nth-child(n+2) {
-          border-left: 1px solid #5a3d31;
-        }
-        a[rel="prev"]::before {
-          content: '\02190 '; // larr
-        }
-        a[rel="next"]::after {
-          content: ' \02192'; // rarr
-        }
+        &:nth-child(n+2) { border-left: 1px solid var(--primary-color); }
+
+        a[rel="prev"]::before { content: '\02190 '; } // larr
+        a[rel="next"]::after { content: ' \02192'; } // rarr
       }
     }
   }
 
   footer {
-    background-color: #5a3d31;
+    background-color: var(--primary-color);
     color: white;
-    padding: 0.7em 1.25em;
+    padding: var(--padding);
     text-align: right;
     margin-top: 2em;
+
     section h2 {
-      font-size: 1.25em;
+      font-size: 1.18em;
       padding: 0;
       margin: 0;
     }
+
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
       li { display: inline; margin-right: 0.7em; }
     }
-    a, ul li a {
-      color: #e0d6d1;
-    }
+
+    a, ul li a { color: #e0d6d1; }
     small { display: block; margin-top: 0.7em; }
   }
 }
