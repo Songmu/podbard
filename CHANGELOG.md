@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.0.3](https://github.com/Songmu/podbard/compare/v0.0.2...v0.0.3) - 2024-09-06
+- [maint] adjust text_to_speech by @Songmu in https://github.com/Songmu/podbard/pull/33
+- [docs] quick start by @Songmu in https://github.com/Songmu/podbard/pull/34
+- [docs] update default css by @Songmu in https://github.com/Songmu/podbard/pull/35
+- [docs] update css by @Songmu in https://github.com/Songmu/podbard/pull/36
+- rename software name to podbard by @Songmu in https://github.com/Songmu/podbard/pull/37
+
 ## [v0.0.2](https://github.com/Songmu/podbard/compare/v0.0.1...v0.0.2) - 2024-09-05
 - introduce sprig to build index.md by @Songmu in https://github.com/Songmu/podbard/pull/30
 
