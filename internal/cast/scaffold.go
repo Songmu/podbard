@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-//go:embed all:testdata/init
+//go:embed testdata/init testdata/init/template/_layout.tmpl
 var embedFS embed.FS
 
 func Scaffold(outDir string) error {

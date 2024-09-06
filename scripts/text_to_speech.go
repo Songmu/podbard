@@ -3,14 +3,17 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/goccy/go-yaml"
 	"github.com/sashabaranov/go-openai"
+	stripmd "github.com/writeas/go-strip-markdown/v2"
 )
 
 func main() {
@@ -21,10 +24,23 @@ func main() {
 }
 
 func Main(argv []string) error {
-	if len(argv) < 1 {
+
+	fs := flag.NewFlagSet(
+		"text_to_speech.go", flag.ContinueOnError)
+
+	fs.Usage = func() {
+		fmt.Println("Usage: go run ./text_to_speech.go <input.md>")
+		fs.PrintDefaults()
+	}
+	dryRun := fs.Bool("dry-run", false, "dry run")
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+
+	if fs.NArg() < 1 {
 		return errors.New("Usage: go run text_to_speech.go <input.md>")
 	}
-	mdFile := argv[0]
+	mdFile := fs.Arg(0)
 
 	cli := openai.NewClient(os.Getenv("OPENAI_API_KEY"))
 
@@ -38,34 +54,61 @@ func Main(argv []string) error {
 	if err := yaml.Unmarshal([]byte(fm), efm); err != nil {
 		return fmt.Errorf("Error unmarshalling front matter:", err)
 	}
+	body = stripmd.Strip(body)
+
 	body = efm.Title + "\n" + body
 
+	if *dryRun {
+		fmt.Println(body)
+		return nil
+	}
+
 	audioFile := efm.AudioFile
-	if audioFile == "" {
-		audioFile = strings.TrimSuffix(mdFile, ".md") + ".mp3"
+	if audioFile != "" {
+		if filepath.Ext(audioFile) != ".mp3" {
+			return errors.New("audio file must have .mp3 extension")
+		}
+	} else {
+		audioFile = strings.TrimSuffix(filepath.Base(mdFile), ".md") + ".mp3"
 	}
 	baseDir := filepath.Join(filepath.Dir(filepath.Dir(mdFile)), "audio")
 	audioFile = filepath.Join(baseDir, audioFile)
+	wavFile := strings.TrimSuffix(audioFile, ".mp3") + ".wav"
 
 	ctx := context.Background()
 	resp, err := cli.CreateSpeech(ctx, openai.CreateSpeechRequest{
-		Model: openai.TTSModel1,
-		Voice: openai.VoiceEcho,
-		Input: body,
+		Model:          openai.TTSModel1,
+		Voice:          openai.VoiceEcho,
+		ResponseFormat: openai.SpeechResponseFormatWav,
+		Input:          body,
 	})
 	if err != nil {
 		return fmt.Errorf("Error creating speech: %w", err)
 	}
 	defer resp.Close()
 
-	f, err := os.Create(audioFile)
+	f, err := os.Create(wavFile)
 	if err != nil {
 		return fmt.Errorf("Error creating audio file: %w", err)
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, resp)
-	return err
+	if _, err := io.Copy(f, resp); err != nil {
+		return fmt.Errorf("Error writing audio file: %w", err)
+	}
+
+	com := exec.Command("ffmpeg", "-i", wavFile, "-ab", "32k", "-ac", "1", "-ar", "44100", audioFile)
+	com.Stdin = os.Stdin
+	com.Stdout = os.Stdout
+	com.Stderr = os.Stderr
+
+	if err := com.Run(); err != nil {
+		return fmt.Errorf("Error converting audio file: %w", err)
+	}
+	if err := os.Remove(wavFile); err != nil {
+		return fmt.Errorf("Error removing wav file: %w", err)
+	}
+	return nil
 }
 
 func splitFrontMatterAndBody(content string) (string, string, error) {
