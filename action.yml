@@ -4,7 +4,7 @@ description: Install podbard
 inputs:
   version:
     description: "A version to install podbard"
-    default: "v0.0.4"
+    default: "v0.0.5"
 runs:
   using: "composite"
   steps:
