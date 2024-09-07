@@ -22,4 +22,5 @@ runs:
       GITHUB_TOKEN: ${{ inputs.token }}
   - uses: haya14busa/action-update-semver@v1
     with:
+      tag: ${{ inputs.tag }}
       major_version_tag_only: true
