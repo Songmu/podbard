@@ -8,9 +8,13 @@ description: podbardを使って最速でポッドキャスサイトを構築す
 このページでは、podbardで最短でポッドキャスサイトを構築する方法を説明します。
 
 ## インストール
-まずは、`podbard` コマンドをインストールします。
+まずは、`podbard` コマンドをインストールします。Homebrewまたはgo installでインストールできます。
 
 ```console
+# Homebrew
+$ brew install Songmu/tap/podbard
+
+# go install
 $ go install github.com/Songmu/podbard/cmd/podbard@latest
 ```
 

@@ -23,6 +23,7 @@
         - [ ] template
     - [ ] warning when the sample files are still there
 - [ ] configurable episode markdown template
+- [ ] temprate repository with GitHub Actions
 
 ## Never do
 - configure Google Analytics, Google Tag Manager, etc.
