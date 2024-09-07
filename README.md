@@ -42,6 +42,9 @@ The podbard is software that generates a minimum podcast sites from a list of au
 <summary>How to install on terminal</summary>
 
 ```console
+# Homebrew
+% brew install Songmu/tap/podbard
+
 # Install the latest version. (Install it into ./bin/ by default).
 % curl -sfL https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s
 
