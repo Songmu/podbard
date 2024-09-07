@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.0.5](https://github.com/Songmu/podbard/compare/v0.0.4...v0.0.5) - 2024-09-07
+- [docs] update by @Songmu in https://github.com/Songmu/podbard/pull/41
+- add action.yml by @Songmu in https://github.com/Songmu/podbard/pull/43
+- update versioning setting by @Songmu in https://github.com/Songmu/podbard/pull/44
+
 ## [v0.0.4](https://github.com/Songmu/podbard/compare/v0.0.3...v0.0.4) - 2024-09-06
 - [docs] update artwork icon by @Songmu in https://github.com/Songmu/podbard/pull/38
 - [bugfix] locate main.go by @Songmu in https://github.com/Songmu/podbard/pull/40
