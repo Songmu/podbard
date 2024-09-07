@@ -1,0 +1,16 @@
+name: The podbard
+author: Songmu
+description: Install podbard
+inputs:
+  version:
+    description: "A version to install podbard"
+    default: "v0.0.4"
+runs:
+  using: "composite"
+  steps:
+  - run: |
+      TEMP_PATH="$(mktemp -d)"
+      curl -sfL https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s -- -b "${TEMP_PATH}" "${{ inputs.version }}" 2>&1
+      sudo mv ${TEMP_PATH}/podbard /usr/local/bin/podbard
+      rm -rf ${TEMP_PATH}
+    shell: bash
