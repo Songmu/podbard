@@ -1,8 +1,6 @@
 # TODO
 
 ## Must
-- [ ] Adjust init files
-    - [ ] Add a `README.md` and `.gitignore` to the scaffolded project
 - [ ] Document
 - [ ] Friendly log message
 - [ ] Testing
@@ -23,7 +21,6 @@
         - [ ] template
     - [ ] warning when the sample files are still there
 - [ ] configurable episode markdown template
-- [ ] temprate repository with GitHub Actions
 
 ## Never do
 - configure Google Analytics, Google Tag Manager, etc.

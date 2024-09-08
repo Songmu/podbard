@@ -36,6 +36,12 @@ $ podbard build
 
 The podbard is software that generates a minimum podcast sites from a list of audio files.
 
+## Template Repository
+
+<https://github.com/Songmu/podbard-starter>
+
+You can start a new podcast site by using the template repository without installing the `podbard`.
+
 ## Installation
 
 <details>
