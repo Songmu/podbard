@@ -2,6 +2,7 @@ package cast
 
 import (
 	"html/template"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -41,14 +42,16 @@ func getBuildDir(rootDir, path, dest string, parents bool) string {
 	if dest == "" {
 		dest = defaultBuildDir
 	}
-	dir := rootDir
+	dir := filepath.Join(rootDir, dest)
 	if parents {
 		dir = filepath.Join(dir, strings.TrimLeft(path, "/"))
 	}
-	return filepath.Join(dir, dest)
+	return dir
 }
 
 func (bdr *Builder) Build() error {
+	log.Printf("generate site to %s", bdr.BuildDir)
+
 	if err := os.MkdirAll(bdr.BuildDir, os.ModePerm); err != nil {
 		return err
 	}
