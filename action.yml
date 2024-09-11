@@ -1,7 +1,17 @@
 name: The podbard
 author: Songmu
-description: Install podbard
+description: Install podbard and build
 inputs:
+  setup:
+    description: "Just setup podbard without build"
+  directory:
+    description: "A directory to build"
+    default: "."
+  destination:
+    description: "A destinaion to build your site"
+    default: "public"
+  parents:
+    description: "Whether to dig the site's path structure as a parent directory under destination."
   version:
     description: "A version to install podbard"
     default: "v0.0.5"
@@ -13,4 +23,16 @@ runs:
       curl -sfL https://raw.githubusercontent.com/Songmu/podbard/main/install.sh | sh -s -- -b "${TEMP_PATH}" "${{ inputs.version }}" 2>&1
       sudo mv ${TEMP_PATH}/podbard /usr/local/bin/podbard
       rm -rf ${TEMP_PATH}
+
+      if [ "${{ inputs.setup }}" = "true" ]; then
+        exit 0
+      fi
+
+      parents=""
+      if [ "${{ inputs.parents }}" = "true" ]; then
+        parents="--parents"
+      fi
+
+      podbard -C "${{ inputs.directory }}" build --destination "${{ inputs.destination }}" ${parents}
+
     shell: bash
