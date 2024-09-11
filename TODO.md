@@ -21,6 +21,7 @@
         - [ ] template
     - [ ] warning when the sample files are still there
 - [ ] configurable episode markdown template
+- [ ] if the destination is specified, don't we consider the rootDir?
 
 ## Never do
 - configure Google Analytics, Google Tag Manager, etc.
