@@ -13,35 +13,47 @@ import (
 
 const defaultBuildDir = "public"
 
+func NewBuilder(
+	cfg *Config, episodes []*Episode, rootDir, generator, destination string, parents bool, buildDate time.Time) *Builder {
+
+	buildDir := getBuildDir(rootDir, cfg.Channel.Link.Path, destination, parents)
+
+	return &Builder{
+		Config:    cfg,
+		Episodes:  episodes,
+		RootDir:   rootDir,
+		Generator: generator,
+		BuildDir:  buildDir,
+		BuildDate: buildDate,
+	}
+}
+
 type Builder struct {
 	Config    *Config
 	Episodes  []*Episode
 	RootDir   string
 	Generator string
-
-	Destination string
-	Parents     bool
+	BuildDir  string
+	BuildDate time.Time
 }
 
-func (bdr *Builder) buildDir() string {
-	base := bdr.Destination
-	if base == "" {
-		base = defaultBuildDir
+func getBuildDir(rootDir, path, dest string, parents bool) string {
+	if dest == "" {
+		dest = defaultBuildDir
 	}
-	dir := bdr.RootDir
-	if bdr.Parents {
-		p := strings.TrimLeft(bdr.Config.Channel.Link.URL.Path, "/")
-		dir = filepath.Join(dir, p)
+	dir := rootDir
+	if parents {
+		dir = filepath.Join(dir, strings.TrimLeft(path, "/"))
 	}
-	return filepath.Join(dir, base)
+	return filepath.Join(dir, dest)
 }
 
-func (bdr *Builder) Build(now time.Time) error {
-	if err := os.MkdirAll(bdr.buildDir(), os.ModePerm); err != nil {
+func (bdr *Builder) Build() error {
+	if err := os.MkdirAll(bdr.BuildDir, os.ModePerm); err != nil {
 		return err
 	}
 
-	if err := bdr.buildFeed(now); err != nil {
+	if err := bdr.buildFeed(bdr.BuildDate); err != nil {
 		return err
 	}
 
@@ -69,20 +81,20 @@ func (bdr *Builder) Build(now time.Time) error {
 	return bdr.buildIndex()
 }
 
-func (bdr *Builder) buildFeed(now time.Time) error {
-	pubDate := now
+func (bdr *Builder) buildFeed(buildDate time.Time) error {
+	pubDate := buildDate // XXX
 	if len(bdr.Episodes) > 0 {
 		pubDate = bdr.Episodes[0].PubDate()
 	}
 
-	feed := NewFeed(bdr.Generator, bdr.Config.Channel, pubDate, now)
+	feed := NewFeed(bdr.Generator, bdr.Config.Channel, pubDate, buildDate)
 	for _, ep := range bdr.Episodes {
 		if _, err := feed.AddEpisode(ep, bdr.Config.AudioBaseURL()); err != nil {
 			return err
 		}
 	}
 
-	feedPath := filepath.Join(bdr.buildDir(), feedFile)
+	feedPath := filepath.Join(bdr.BuildDir, feedFile)
 	f, err := os.Create(feedPath)
 	if err != nil {
 		return err
@@ -93,7 +105,7 @@ func (bdr *Builder) buildFeed(now time.Time) error {
 }
 
 func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
-	episodePath := filepath.Join(bdr.buildDir(), episodeDir, ep.Slug, "index.html")
+	episodePath := filepath.Join(bdr.BuildDir, episodeDir, ep.Slug, "index.html")
 	if err := os.MkdirAll(filepath.Dir(episodePath), os.ModePerm); err != nil {
 		return err
 	}
@@ -144,7 +156,7 @@ func (bdr *Builder) buildIndex() error {
 	if err != nil {
 		return err
 	}
-	indexPath := filepath.Join(bdr.buildDir(), "index.html")
+	indexPath := filepath.Join(bdr.BuildDir, "index.html")
 
 	tmpl, err := loadTemplate(bdr.RootDir)
 	if err != nil {
@@ -184,7 +196,7 @@ func (bdr *Builder) copyAudio() error {
 	if _, err := os.Stat(src); err != nil {
 		return nil
 	}
-	return copy.Copy(src, filepath.Join(bdr.buildDir(), audioDir), copy.Options{
+	return copy.Copy(src, filepath.Join(bdr.BuildDir, audioDir), copy.Options{
 		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
 			n := fi.Name()
 			skip := fi.IsDir() || strings.HasPrefix(".", n) ||
@@ -200,7 +212,7 @@ func (bdr *Builder) buildStatic() error {
 	if _, err := os.Stat(src); err != nil {
 		return nil
 	}
-	return copy.Copy(src, bdr.buildDir(), copy.Options{
+	return copy.Copy(src, bdr.BuildDir, copy.Options{
 		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
 			return strings.HasPrefix(".", fi.Name()), nil
 		},

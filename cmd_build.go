@@ -38,12 +38,9 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 		return err
 	}
 
-	return (&cast.Builder{
-		Config:      cfg,
-		Episodes:    episodes,
-		RootDir:     rootDir,
-		Generator:   fmt.Sprintf("github.com/Songmu/podbard %s", version),
-		Destination: *destination,
-		Parents:     *parents,
-	}).Build(time.Now())
+	generator := fmt.Sprintf("github.com/Songmu/podbard %s", version)
+	buildDate := time.Now()
+
+	return cast.NewBuilder(
+		cfg, episodes, rootDir, generator, *destination, *parents, buildDate).Build()
 }
