@@ -14,10 +14,24 @@ import (
 
 const defaultBuildDir = "public"
 
-func NewBuilder(
-	cfg *Config, episodes []*Episode, rootDir, generator, destination string, parents bool, buildDate time.Time) *Builder {
+func Build(
+	cfg *Config, episodes []*Episode, rootDir, generator, destination string,
+	parents, doClear bool, buildDate time.Time) error {
 
-	buildDir := getBuildDir(rootDir, cfg.Channel.Link.Path, destination, parents)
+	if doClear {
+		destBase := getDestDir(rootDir, destination)
+		if err := os.RemoveAll(destBase); err != nil {
+			return err
+		}
+	}
+	bdr := NewBuilder(cfg, episodes, rootDir, generator, destination, parents, buildDate)
+	return bdr.Build()
+}
+
+func NewBuilder(
+	cfg *Config, episodes []*Episode, rootDir, generator, dest string, parents bool, buildDate time.Time) *Builder {
+
+	buildDir := getBuildDir(rootDir, cfg.Channel.Link.Path, dest, parents)
 
 	return &Builder{
 		Config:    cfg,
@@ -38,11 +52,15 @@ type Builder struct {
 	BuildDate time.Time
 }
 
-func getBuildDir(rootDir, path, dest string, parents bool) string {
+func getDestDir(rootDir, dest string) string {
 	if dest == "" {
 		dest = defaultBuildDir
 	}
-	dir := filepath.Join(rootDir, dest)
+	return filepath.Join(rootDir, dest)
+}
+
+func getBuildDir(rootDir, path, dest string, parents bool) string {
+	dir := getDestDir(rootDir, dest)
 	if parents {
 		dir = filepath.Join(dir, strings.TrimLeft(path, "/"))
 	}

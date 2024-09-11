@@ -21,8 +21,9 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 	fs.SetOutput(errw)
 
 	var (
-		destination = fs.String("destination", "", "destination of the build")
-		parents     = fs.Bool("parents", false, "make parent directories as needed")
+		dest    = fs.String("destination", "", "destination of the build")
+		parents = fs.Bool("parents", false, "make parent directories as needed")
+		doClear = fs.Bool("clear", false, "clear destination before build")
 	)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -40,7 +41,5 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 
 	generator := fmt.Sprintf("github.com/Songmu/podbard %s", version)
 	buildDate := time.Now()
-
-	return cast.NewBuilder(
-		cfg, episodes, rootDir, generator, *destination, *parents, buildDate).Build()
+	return cast.Build(cfg, episodes, rootDir, generator, *dest, *parents, *doClear, buildDate)
 }
