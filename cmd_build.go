@@ -19,6 +19,11 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 
 	fs := flag.NewFlagSet("podbard build", flag.ContinueOnError)
 	fs.SetOutput(errw)
+
+	var (
+		destination = fs.String("destination", "", "destination of the build")
+		parents     = fs.Bool("parents", false, "make parent directories as needed")
+	)
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -34,9 +39,11 @@ func (in *cmdBuild) Command(ctx context.Context, args []string, outw, errw io.Wr
 	}
 
 	return (&cast.Builder{
-		Config:    cfg,
-		Episodes:  episodes,
-		RootDir:   rootDir,
-		Generator: fmt.Sprintf("github.com/Songmu/podbard %s", version),
+		Config:      cfg,
+		Episodes:    episodes,
+		RootDir:     rootDir,
+		Generator:   fmt.Sprintf("github.com/Songmu/podbard %s", version),
+		Destination: *destination,
+		Parents:     *parents,
 	}).Build(time.Now())
 }

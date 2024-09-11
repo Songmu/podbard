@@ -11,17 +11,29 @@ import (
 	"github.com/otiai10/copy"
 )
 
-const buildDir = "public"
+const defaultBuildDir = "public"
 
 type Builder struct {
 	Config    *Config
 	Episodes  []*Episode
 	RootDir   string
 	Generator string
+
+	Destination string
+	Parents     bool
 }
 
 func (bdr *Builder) buildDir() string {
-	return filepath.Join(bdr.RootDir, buildDir)
+	base := bdr.Destination
+	if base == "" {
+		base = defaultBuildDir
+	}
+	dir := bdr.RootDir
+	if bdr.Parents {
+		p := strings.TrimLeft(bdr.Config.Channel.Link.URL.Path, "/")
+		dir = filepath.Join(dir, p)
+	}
+	return filepath.Join(dir, base)
 }
 
 func (bdr *Builder) Build(now time.Time) error {
