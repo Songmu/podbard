@@ -53,10 +53,10 @@ type Builder struct {
 }
 
 func getDestDir(rootDir, dest string) string {
-	if dest == "" {
-		dest = defaultBuildDir
+	if dest != "" {
+		return dest
 	}
-	return filepath.Join(rootDir, dest)
+	return filepath.Join(rootDir, defaultBuildDir)
 }
 
 func getBuildDir(rootDir, path, dest string, parents bool) string {

@@ -9,7 +9,6 @@ inputs:
     default: "."
   destination:
     description: "A destinaion to build your site"
-    default: "public"
   parents:
     description: "Whether to dig the site's path structure as a parent directory under destination."
   version:
@@ -33,6 +32,11 @@ runs:
         parents="--parents"
       fi
 
-      podbard -C "${{ inputs.directory }}" build --destination "${{ inputs.destination }}" ${parents}
+      destination=""
+      if [ -n "${{ inputs.destination }}" ]; then
+        destination="--destination ${inputs.destination}"
+      fi
+
+      podbard -C "${{ inputs.directory }}" build ${destination} ${parents}
 
     shell: bash
