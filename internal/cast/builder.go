@@ -68,7 +68,7 @@ func getBuildDir(rootDir, path, dest string, parents bool) string {
 }
 
 func (bdr *Builder) Build() error {
-	log.Printf("generate site to %s", bdr.BuildDir)
+	log.Printf("Generate a site under the %q directrory", bdr.BuildDir)
 
 	if err := os.MkdirAll(bdr.BuildDir, os.ModePerm); err != nil {
 		return err

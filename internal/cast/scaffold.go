@@ -3,6 +3,7 @@ package cast
 import (
 	"embed"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -11,9 +12,8 @@ import (
 var embedFS embed.FS
 
 func Scaffold(outDir string) error {
-
 	root := "testdata/init"
-	return fs.WalkDir(embedFS, root, func(path string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(embedFS, root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -29,6 +29,12 @@ func Scaffold(outDir string) error {
 		if err != nil {
 			return err
 		}
+		log.Printf("Writing %q\n", outPath)
 		return os.WriteFile(outPath, data, 0644)
 	})
+	if err != nil {
+		return err
+	}
+	log.Printf("✨ Initialized your brand new podcast project under %q directory\n", outDir)
+	return nil
 }
