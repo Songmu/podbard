@@ -2,7 +2,6 @@
 
 ## Must
 - [ ] Document
-- [ ] Friendly log message
 - [ ] Testing
 
 ## Nice to have
