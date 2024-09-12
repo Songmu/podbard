@@ -22,14 +22,16 @@ The Podbard is a primitive podcast site generator.
 ```console
 # Initialize the site
 $ podbard init .
+✨ Initialized your brand new podcast project under "." directory
 
 # Locate the audio file and create a new episode page
 $ podbard episode audio/1.mp3
-# episode/1.md is created
+🔍 The episode file "episode/1.md" corresponding to the "1.mp3" was created.
 
 # Build the site
 $ podbard build
-# site generated under public/
+🔨 Generating a site under the "public" directrory
+🎧️ Your podcast site has been generated and is ready to cast.
 ```
 
 ## Description
@@ -38,7 +40,9 @@ The podbard is software that generates a minimum podcast sites from a list of au
 
 ## Template Repository
 
-<https://github.com/Songmu/podbard-starter>
+- <https://github.com/Songmu/podbard-starter>: GitHub Pages
+- <https://github.com/Songmu/podbard-cloudflare-starter>: Cloudflare Pages + R2
+- <https://github.com/Songmu/podbard-private-podcast-starter>: Cloudflare Pages + R2 (Private Podcast)
 
 You can start a new podcast site by using the template repository without installing the `podbard`.
 
