@@ -36,6 +36,7 @@ $ brew install Songmu/tap/podbard
 $ go install github.com/Songmu/podbard/cmd/podbard@latest
 ```
 
+
 ## 使い方
 
 大まかな流れは以下のとおりです。`audio/` ディレクトリにオーディオファイルを配置するだけですぐにサイトの生成ができます。
@@ -61,6 +62,17 @@ $ go install github.com/Songmu/podbard/cmd/podbard@latest
     - Goのhtml/template形式のテンプレートファイル格納ディレクトリ
 - **static/**
     - 静的ファイル格納ディレクトリ
+
+#### テンプレートリポジトリ
+
+`podbard init` コマンドを使わず、以下のテンプレートリポジトリを使うこともできます。これらは、GitHub Actionsの雛形も含まれているので便利です。
+
+- <https://github.com/Songmu/podbard-starter>
+    - GitHub Pages
+- <https://github.com/Songmu/podbard-cloudflare-starter>
+    - Cloudflare Pages + R2
+- <https://github.com/Songmu/podbard-private-podcast-starter>
+    - Cloudflare Pages + R2 (Private Podcast)
 
 ### 2. 設定ファイル
 `podbard.yaml` を開いて適宜調整してください。`artwork`にはダミーの画像が指定されているので、それは適切な画像に差し替えてください。正方形で1400×1400px以上のJPEGまたはPNGファイルを指定してください。

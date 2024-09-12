@@ -40,9 +40,12 @@ The podbard is software that generates a minimum podcast sites from a list of au
 
 ## Template Repository
 
-- <https://github.com/Songmu/podbard-starter>: GitHub Pages
-- <https://github.com/Songmu/podbard-cloudflare-starter>: Cloudflare Pages + R2
-- <https://github.com/Songmu/podbard-private-podcast-starter>: Cloudflare Pages + R2 (Private Podcast)
+- <https://github.com/Songmu/podbard-starter>
+    - GitHub Pages
+- <https://github.com/Songmu/podbard-cloudflare-starter>
+    - Cloudflare Pages + R2
+- <https://github.com/Songmu/podbard-private-podcast-starter>
+    - Cloudflare Pages + R2 (Private Podcast)
 
 You can start a new podcast site by using the template repository without installing the `podbard`.
 

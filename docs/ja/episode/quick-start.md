@@ -25,6 +25,17 @@ $ go install github.com/Songmu/podbard/cmd/podbard@latest
 $ podbard init <dirname>
 ```
 
+#### テンプレートリポジトリ
+
+`podbard init` コマンドを使わず、以下のテンプレートリポジトリを使うこともできます。これらは、GitHub Actionsの雛形も含まれているので、サイトのデプロイまでも簡単に行えます。
+
+- <https://github.com/Songmu/podbard-starter>
+    - GitHub Pages
+- <https://github.com/Songmu/podbard-cloudflare-starter>
+    - Cloudflare Pages + R2
+- <https://github.com/Songmu/podbard-private-podcast-starter>
+    - Cloudflare Pages + R2 (Private Podcast)
+
 ## 雛形の調整
 
 ###  設定ファイル `podbard.yaml`
