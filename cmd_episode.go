@@ -77,9 +77,9 @@ func (cd *cmdEpisode) Command(ctx context.Context, args []string, outw, errw io.
 			return err
 		}
 		if isNew {
-			log.Println("episode file created.")
+			log.Printf("📝 The episode file %q corresponding to the %q was created.\n", fpath, audioFile)
 		} else {
-			log.Println("episode file found.")
+			log.Printf("🔍 The episode file %q corresponding to the %q was found.\n", fpath, audioFile)
 		}
 		fmt.Fprintln(outw, fpath)
 
