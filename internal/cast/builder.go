@@ -25,7 +25,11 @@ func Build(
 		}
 	}
 	bdr := NewBuilder(cfg, episodes, rootDir, generator, destination, parents, buildDate)
-	return bdr.Build()
+	if err := bdr.Build(); err != nil {
+		return err
+	}
+	log.Println("🎧️ Your podcast site has been generated and is ready to cast.")
+	return nil
 }
 
 func NewBuilder(
@@ -68,16 +72,18 @@ func getBuildDir(rootDir, path, dest string, parents bool) string {
 }
 
 func (bdr *Builder) Build() error {
-	log.Printf("Generate a site under the %q directrory", bdr.BuildDir)
+	log.Printf("🔨 Generating a site under the %q directrory", bdr.BuildDir)
 
 	if err := os.MkdirAll(bdr.BuildDir, os.ModePerm); err != nil {
 		return err
 	}
 
+	log.Println("Building a podcast feed...")
 	if err := bdr.buildFeed(bdr.BuildDate); err != nil {
 		return err
 	}
 
+	log.Println("Building episodes...")
 	for i, ep := range bdr.Episodes {
 		var prev, next *Episode
 		if i > 0 {
@@ -91,6 +97,7 @@ func (bdr *Builder) Build() error {
 		}
 	}
 
+	log.Println("Copying static files...")
 	if err := bdr.buildStatic(); err != nil {
 		return err
 	}
@@ -99,6 +106,7 @@ func (bdr *Builder) Build() error {
 		return err
 	}
 
+	log.Println("Building an index page...")
 	return bdr.buildIndex()
 }
 
@@ -217,6 +225,7 @@ func (bdr *Builder) copyAudio() error {
 	if _, err := os.Stat(src); err != nil {
 		return nil
 	}
+	log.Println("Copying audio files...")
 	return copy.Copy(src, filepath.Join(bdr.BuildDir, audioDir), copy.Options{
 		Skip: func(fi os.FileInfo, src, dest string) (bool, error) {
 			n := fi.Name()
