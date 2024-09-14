@@ -36,7 +36,6 @@ $ brew install Songmu/tap/podbard
 $ go install github.com/Songmu/podbard/cmd/podbard@latest
 ```
 
-
 ## 使い方
 
 大まかな流れは以下のとおりです。`audio/` ディレクトリにオーディオファイルを配置するだけですぐにサイトの生成ができます。

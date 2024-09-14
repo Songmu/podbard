@@ -3,6 +3,10 @@ CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 BUILD_LDFLAGS = "-s -w -X github.com/Songmu/podbard.revision=$(CURRENT_REVISION)"
 u := $(if $(update),-u)
 
+.PHONY: doc
+doc:
+	exec go run cmd/podbard/main.go -C docs/ja episode --ignore-missing --slug ${doc} ${doc}.mp3
+
 .PHONY: deps
 deps:
 	go get ${u}
