@@ -1,0 +1,58 @@
+"$schema": https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - timezone
+  - channel
+properties:
+  timezone:
+    type: string
+    description: "タイムゾーン"
+  audio_bucket_url:
+    type: string
+    description: "オーディオファイルの保存先"
+  channel:
+    type: object
+    required:
+      - link
+      - title
+      - description
+      - language
+      - category
+      - author
+      - email
+    properties:
+      link:
+        type: string
+        format: uri
+        pattern: "^https?://"
+        description: "ポッドキャストのURL"
+      title:
+        type: string
+        description: "ポッドキャストのタイトル"
+      description:
+        type: string
+        description: "ポッドキャストの説明"
+      language:
+        type: string
+        description: "ja-JP, zh-CN, en-USのようなBCP 47 language tags"
+      category:
+        type: [string, array]
+        items:
+          type: string
+        description: "カテゴリ"
+      author:
+        type: string
+        description: "ポッドキャストの作者"
+      email:
+        type: string
+        format: email
+        description: "ポッドキャストのメール"
+      artwork:
+        type: string
+        description: "ポッドキャストのアートワーク"
+      explicit:
+        type: boolean
+        description: "過激なコンテンツが含まれているか"
+      copyright:
+        type: string
+        description: "著作権表示"
