@@ -7,10 +7,6 @@ u := $(if $(update),-u)
 doc:
 	exec go run cmd/podbard/main.go -C docs/ja episode --ignore-missing --slug ${doc} ${doc}.mp3
 
-.PHONY: schema
-schema:
-	yq -o json schema.yaml > schema
-
 .PHONY: deps
 deps:
 	go get ${u}
