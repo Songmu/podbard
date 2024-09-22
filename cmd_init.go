@@ -1,45 +1,40 @@
 package podbard
 
 import (
-	"context"
 	"errors"
-	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 
 	"github.com/Songmu/podbard/internal/cast"
 	"github.com/Songmu/prompter"
+	"github.com/urfave/cli/v2"
 )
 
-type cmdInit struct {
-}
-
-func (in *cmdInit) Command(ctx context.Context, args []string, outw, errw io.Writer) error {
-	fs := flag.NewFlagSet("podbard init", flag.ContinueOnError)
-	fs.SetOutput(errw)
-	if err := fs.Parse(args); err != nil {
-		return err
-	}
-	if fs.NArg() < 1 {
-		return errors.New("no target directories specified")
-	}
-	if fs.NArg() > 1 {
-		log.Printf("[warn] two or more arguments are specified and they will be ignored: %v", fs.Args()[1:])
-	}
-	dir := fs.Arg(0)
-
-	if _, err := os.Stat(dir); err == nil {
-		entries, err := os.ReadDir(dir)
-		if err != nil {
-			return err
+var commandInit = &cli.Command{
+	Name:  "init",
+	Usage: "initialize podbard",
+	Action: func(c *cli.Context) error {
+		args := c.Args().Slice()
+		if len(args) < 1 {
+			return errors.New("no target directories specified")
 		}
-		if len(entries) > 0 &&
-			!prompter.YN(fmt.Sprintf("directory %q already exist. Do you continue to init?", dir), false) {
-
-			return nil
+		if len(args) > 1 {
+			log.Printf("[warn] two or more arguments are specified and they will be ignored: %v", args[1:])
 		}
-	}
-	return cast.Scaffold(dir)
+		dir := args[0]
+
+		if _, err := os.Stat(dir); err == nil {
+			entries, err := os.ReadDir(dir)
+			if err != nil {
+				return err
+			}
+			if len(entries) > 0 &&
+				!prompter.YN(fmt.Sprintf("directory %q already exist. Do you continue to init?", dir), false) {
+
+				return nil
+			}
+		}
+		return cast.Scaffold(dir)
+	},
 }
