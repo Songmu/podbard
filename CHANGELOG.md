@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.0.7](https://github.com/Songmu/podbard/compare/v0.0.6...v0.0.7) - 2024-09-22
+- Enhance log messages by @Songmu in https://github.com/Songmu/podbard/pull/49
+- update README.md by @Songmu in https://github.com/Songmu/podbard/pull/51
+- Docs by @Songmu in https://github.com/Songmu/podbard/pull/52
+- introduce urfave/cli/v2 for flags by @Songmu in https://github.com/Songmu/podbard/pull/53
+- remove unused src and task by @Songmu in https://github.com/Songmu/podbard/pull/54
+
 ## [v0.0.6](https://github.com/Songmu/podbard/compare/v0.0.5...v0.0.6) - 2024-09-11
 - [feature] add --destination, --parents and --clear option to build subcommand by @Songmu in https://github.com/Songmu/podbard/pull/46
 - build by default in GitHub Actions by @Songmu in https://github.com/Songmu/podbard/pull/47
