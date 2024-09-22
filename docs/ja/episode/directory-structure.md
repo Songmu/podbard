@@ -1,6 +1,6 @@
 ---
 audio: directory-structure.mp3
-title: directory-structure
+title: ディレクトリ構造
 date: 2024-09-23T00:22:10+09:00
 description: Podbardのディレクトリ構造
 ---
