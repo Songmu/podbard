@@ -16,6 +16,7 @@ func Run(ctx context.Context, argv []string, outw, errw io.Writer) error {
 	log.SetOutput(errw)
 
 	app := cli.NewApp()
+	app.Usage = "A primitive podcast site generator"
 	app.Writer = outw
 	app.ErrWriter = errw
 	app.Version = fmt.Sprintf("v%s (rev:%s)", version, revision)
