@@ -13,7 +13,7 @@ inputs:
     description: "Whether to dig the site's path structure as a parent directory under destination."
   version:
     description: "A version to install podbard"
-    default: "v0.0.6"
+    default: "v0.0.7"
 runs:
   using: "composite"
   steps:
