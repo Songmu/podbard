@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://github.com/Songmu/podbard/blob/main/schema
+
 # sample
 channel:
   link: https://junkyard.song.mu/podbard/
