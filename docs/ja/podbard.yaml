@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://github.com/Songmu/podbard/blob/main/schema
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Songmu/podbard/refs/heads/main/schema.yaml
 
 # sample
 channel:
