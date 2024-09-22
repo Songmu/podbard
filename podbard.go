@@ -18,7 +18,7 @@ func Run(ctx context.Context, argv []string, outw, errw io.Writer) error {
 	app := cli.NewApp()
 	app.Writer = outw
 	app.ErrWriter = errw
-	app.Version = fmt.Sprintf("%s v%s (rev:%s)", cmdName, version, revision)
+	app.Version = fmt.Sprintf("v%s (rev:%s)", version, revision)
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "C",
