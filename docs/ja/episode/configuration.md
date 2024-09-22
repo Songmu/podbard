@@ -7,7 +7,4 @@ description: 設定ファイル
 
 # 設定ファイル
 
-`podbard.yaml` の設定項目については <https://github.com/Songmu/podbard/blob/main/schema> を参照してください。
-
-
-
+Podbardの設定は`podbard.yaml`に記述します。`podbard.yaml` の設定項目については <https://github.com/Songmu/podbard/blob/main/schema.yaml> を参照してください。
