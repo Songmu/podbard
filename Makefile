@@ -56,3 +56,17 @@ sync:
 	cp testdata/dev/static/css/style.css docs/ja/static/css/style.css
 	cp -r testdata/dev/template/ internal/cast/testdata/init/template/
 	cp -r testdata/dev/static/ internal/cast/testdata/init/static/
+
+.PHONY: sync-starter
+sync-starter:
+	cp -r internal/cast/testdata/init/template/ ../podbard-starter/template/
+	cp -r internal/cast/testdata/init/static/ ../podbard-starter/static/
+	cp internal/cast/testdata/init/index.md ../podbard-starter/index.md
+	
+	cp -r internal/cast/testdata/init/template/ ../podbard-cloudflare-starter/template/
+	cp -r internal/cast/testdata/init/static/ ../podbard-cloudflare-starter/static/
+	cp internal/cast/testdata/init/index.md ../podbard-cloudflare-starter/index.md
+	
+	cp -r internal/cast/testdata/init/template/ ../podbard-private-podcast-starter/template/
+	cp -r internal/cast/testdata/init/static/ ../podbard-private-podcast-starter/static/
+	cp internal/cast/testdata/init/index.md ../podbard-private-podcast-starter/index.md
