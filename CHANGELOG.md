@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.9](https://github.com/Songmu/podbard/compare/v0.0.8...v0.0.9) - 2024-09-25
+- fix CDATA by @Songmu in https://github.com/Songmu/podbard/pull/61
+
 ## [v0.0.8](https://github.com/Songmu/podbard/compare/v0.0.7...v0.0.8) - 2024-09-25
 - retrieve chapter data from mp3 by @Songmu in https://github.com/Songmu/podbard/pull/55
 - Display chapter information in episode by @Songmu in https://github.com/Songmu/podbard/pull/57
