@@ -72,7 +72,7 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	epLink += "/"
 	item := &podcast.Item{
 		Title:       ep.Title,
-		Description: buildCData(ep.Body),
+		Description: buildCData(ep.Chapter + ep.Body),
 		Link:        epLink,
 		GUID:        epLink,
 		IExplicit:   fmt.Sprintf("%t", f.Channel.Explicit),
