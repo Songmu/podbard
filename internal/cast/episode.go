@@ -390,7 +390,7 @@ func (ep *Episode) init(loc *time.Location) error {
 
 const chaperTmpl = `<ul class="chapters">
 {{- range . -}}
-<li><time>{{ .Start }}</time> {{ .Title }}</li>
+<li>{{ .Start }} {{ .Title }}</li>
 {{- end -}}</ul>
 `
 
