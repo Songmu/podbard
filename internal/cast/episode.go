@@ -33,7 +33,7 @@ In any case, the audio files must exist under the audio placement directory.
 */
 func LoadEpisode(
 	rootDir, audioFile, body string, ignoreMissing, saveMeta bool,
-	pubDate time.Time, slug, title, description string, loc *time.Location) (string, bool, error) {
+	pubDate time.Time, slug, title, subtitle string, loc *time.Location) (string, bool, error) {
 
 	var (
 		audioPath       = filepath.ToSlash(audioFile)
@@ -176,8 +176,8 @@ func LoadEpisode(
 	if title == "" {
 		title = slug
 	}
-	if description == "" {
-		description = title
+	if subtitle == "" {
+		subtitle = title
 	}
 	if pubDate.IsZero() {
 		pubDate = time.Now()
@@ -188,10 +188,10 @@ func LoadEpisode(
 	}
 
 	epm := &EpisodeFrontMatter{
-		AudioFile:   audioName,
-		Title:       title,
-		Description: description,
-		Date:        pubDate.Format(time.RFC3339),
+		AudioFile: audioName,
+		Title:     title,
+		Subtitle:  subtitle,
+		Date:      pubDate.Format(time.RFC3339),
 	}
 	b, err := yaml.Marshal(epm)
 	if err != nil {
@@ -323,10 +323,10 @@ type Episode struct {
 }
 
 type EpisodeFrontMatter struct {
-	AudioFile   string `yaml:"audio"`
-	Title       string `yaml:"title"`
-	Date        string `yaml:"date"`
-	Description string `yaml:"description"`
+	AudioFile string `yaml:"audio"`
+	Title     string `yaml:"title"`
+	Date      string `yaml:"date"`
+	Subtitle  string `yaml:"subtitle"`
 
 	audio   *Audio
 	pubDate time.Time

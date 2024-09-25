@@ -70,10 +70,14 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	description := ep.Subtitle
+	if description == "" {
+		description = f.Channel.Description
+	}
 	epLink += "/"
 	item := &podcast.Item{
 		Title:       ep.Title,
-		Description: ep.Description,
+		Description: description,
 		Link:        epLink,
 		GUID:        epLink,
 		IExplicit:   fmt.Sprintf("%t", f.Channel.Explicit),
@@ -88,7 +92,8 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	}
 
 	// deprecated but used tags
-	item.AddSummary(ep.Description)
+	item.AddSummary(ep.Subtitle)
+	item.ISubtitle = ep.Subtitle
 	item.IAuthor = f.Channel.Author
 
 	// XXX: item.IEpisodeType = "full" // <itunes:episodeType> full, trailer or bonus.

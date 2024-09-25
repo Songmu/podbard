@@ -121,8 +121,8 @@ func splitFrontMatterAndBody(content string) (string, string, error) {
 }
 
 type EpisodeFrontMatter struct {
-	AudioFile   string `yaml:"audio"`
-	Title       string `yaml:"title"`
-	Date        string `yaml:"date"`
-	Description string `yaml:"description"`
+	AudioFile string `yaml:"audio"`
+	Title     string `yaml:"title"`
+	Date      string `yaml:"date"`
+	Subtitle  string `yaml:"subtitle"`
 }

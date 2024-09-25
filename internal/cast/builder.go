@@ -156,7 +156,7 @@ func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 		Title: ep.Title,
 		Page: &Page{
 			Title:       ep.Title,
-			Description: ep.Description,
+			Description: ep.Subtitle,
 			URL:         ep.URL,
 		},
 		Body:            template.HTML(ep.Body),

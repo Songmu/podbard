@@ -32,8 +32,8 @@ var commandEpisode = &cli.Command{
 			Usage: "title of the episode",
 		},
 		&cli.StringFlag{
-			Name:  "description",
-			Usage: "description of the episode",
+			Name:  "subtitle",
+			Usage: "subtitle of the episode",
 		},
 		&cli.BoolFlag{
 			Name:  "no-edit",
@@ -60,7 +60,7 @@ var commandEpisode = &cli.Command{
 		slug := c.String("slug")
 		date := c.String("date")
 		title := c.String("title")
-		description := c.String("description")
+		subtitle := c.String("subtitle")
 		noEdit := c.Bool("no-edit")
 		ignoreMissing := c.Bool("ignore-missing")
 		saveMeta := c.Bool("save-meta")
@@ -92,7 +92,7 @@ var commandEpisode = &cli.Command{
 		}
 		for _, audioFile := range audioFiles {
 			fpath, isNew, err := cast.LoadEpisode(
-				rootDir, audioFile, body, ignoreMissing, saveMeta, pubDate, slug, title, description, loc)
+				rootDir, audioFile, body, ignoreMissing, saveMeta, pubDate, slug, title, subtitle, loc)
 			if err != nil {
 				return err
 			}
