@@ -105,5 +105,5 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 }
 
 func buildCData(data string) string {
-	return "<![CDATA[" + data + "]]>"
+	return "<![CDATA[ " + data + "\n ]]>"
 }
