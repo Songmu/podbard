@@ -28,7 +28,7 @@ func Build(
 	if err := bdr.Build(); err != nil {
 		return err
 	}
-	log.Println("🎧️ Your podcast site has been generated and is ready to cast.")
+	log.Println("🎤 Your podcast site has been generated and is ready to cast.")
 	return nil
 }
 

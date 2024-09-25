@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/Songmu/go-httpdate"
@@ -313,9 +314,9 @@ func LoadEpisodes(
 
 type Episode struct {
 	EpisodeFrontMatter
-	Slug          string
-	RawBody, Body string
-	URL           *url.URL
+	Slug                   string
+	RawBody, Body, Chapter string
+	URL                    *url.URL
 
 	rootDir      string
 	audioBaseURL *url.URL
@@ -346,6 +347,38 @@ func (ep *Episode) init(loc *time.Location) error {
 		return err
 	}
 
+	if len(ep.audio.Chapters) > 0 {
+		tmpl, err := template.New("chapters").Parse(chaperTmpl)
+		if err != nil {
+			return err
+		}
+		data := []struct {
+			Title string
+			Start string
+		}{}
+		for _, ch := range ep.audio.Chapters {
+			seconds := ch.Start % 60
+			minutes := (ch.Start / 60) % 60
+			hours := ch.Start / 3600
+			start := fmt.Sprintf("%d:%02d", minutes, seconds)
+			if hours > 0 {
+				start = fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
+			}
+
+			data = append(data, struct {
+				Title string
+				Start string
+			}{
+				Title: ch.Title,
+				Start: start,
+			})
+		}
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, data); err != nil {
+			return err
+		}
+		ep.Chapter = buf.String()
+	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
 	if err := md.Convert([]byte(ep.RawBody), &buf); err != nil {
@@ -354,6 +387,12 @@ func (ep *Episode) init(loc *time.Location) error {
 	ep.Body = buf.String()
 	return nil
 }
+
+const chaperTmpl = `<ul class="chapters">
+{{- range . -}}
+<li>{{ .Start }} {{ .Title }}</li>
+{{- end -}}</ul>
+`
 
 func (epm *EpisodeFrontMatter) PubDate() time.Time {
 	return epm.pubDate
