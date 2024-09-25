@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.0.8](https://github.com/Songmu/podbard/compare/v0.0.7...v0.0.8) - 2024-09-25
+- retrieve chapter data from mp3 by @Songmu in https://github.com/Songmu/podbard/pull/55
+- Display chapter information in episode by @Songmu in https://github.com/Songmu/podbard/pull/57
+- rename description to subtitle in episode by @Songmu in https://github.com/Songmu/podbard/pull/58
+- full text in RSS using description field by @Songmu in https://github.com/Songmu/podbard/pull/59
+
 ## [v0.0.7](https://github.com/Songmu/podbard/compare/v0.0.6...v0.0.7) - 2024-09-22
 - Enhance log messages by @Songmu in https://github.com/Songmu/podbard/pull/49
 - update README.md by @Songmu in https://github.com/Songmu/podbard/pull/51
