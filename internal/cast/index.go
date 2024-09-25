@@ -52,6 +52,7 @@ func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error)
 
 func (idx *Index) build(cfg *Config, episodes []*Episode) error {
 	tmpl, err := template.New("index").Funcs(sprig.FuncMap()).
+		Funcs(template.FuncMap{"html": htmlFunc}).
 		Parse(idx.RawBody)
 	if err != nil {
 		return err
