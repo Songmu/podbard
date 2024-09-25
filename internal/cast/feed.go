@@ -69,10 +69,18 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	description := ep.Chapter + ep.Body
+	if description == "" {
+		description = ep.Subtitle
+	}
+	if description == "" {
+		description = ep.Title
+	}
 	epLink += "/"
 	item := &podcast.Item{
 		Title:       ep.Title,
-		Description: buildCData(ep.Chapter + ep.Body),
+		Description: description,
 		Link:        epLink,
 		GUID:        epLink,
 		IExplicit:   fmt.Sprintf("%t", f.Channel.Explicit),
@@ -102,8 +110,4 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	item.AddEnclosure(audioURL.String(), encType, ep.Audio().FileSize)
 
 	return f.Podcast.AddItem(*item)
-}
-
-func buildCData(data string) string {
-	return "<![CDATA[ " + data + "\n ]]>"
 }
