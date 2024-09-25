@@ -44,7 +44,6 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 
 	// deprecated but used tags
 	pd.ISubtitle = channel.Description
-	pd.AddSummary(channel.Description) // itunes:summary is deprecated but many apps still use it
 
 	// XXX: pd.IType = "eposodic" // <itunes:type> eposodic or serial. eduncan911/podcast does not support this
 
@@ -70,14 +69,10 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	description := ep.Subtitle
-	if description == "" {
-		description = f.Channel.Description
-	}
 	epLink += "/"
 	item := &podcast.Item{
 		Title:       ep.Title,
-		Description: description,
+		Description: buildCData(ep.Body),
 		Link:        epLink,
 		GUID:        epLink,
 		IExplicit:   fmt.Sprintf("%t", f.Channel.Explicit),
@@ -92,7 +87,6 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	}
 
 	// deprecated but used tags
-	item.AddSummary(ep.Subtitle)
 	item.ISubtitle = ep.Subtitle
 	item.IAuthor = f.Channel.Author
 
@@ -108,4 +102,8 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	item.AddEnclosure(audioURL.String(), encType, ep.Audio().FileSize)
 
 	return f.Podcast.AddItem(*item)
+}
+
+func buildCData(data string) string {
+	return "<![CDATA[" + data + "]]>"
 }
