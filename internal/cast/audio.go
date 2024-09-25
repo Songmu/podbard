@@ -10,18 +10,25 @@ import (
 	"time"
 
 	"github.com/abema/go-mp4"
+	"github.com/bogem/id3v2/v2"
 	"github.com/dhowden/tag"
 	"github.com/tcolgate/mp3"
 )
 
 type Audio struct {
-	Name     string `json:"-"`
-	Title    string `json:"title"`
-	FileSize int64  `json:"file_size"`
-	Duration uint64 `json:"duration"`
+	Name     string     `json:"-"`
+	Title    string     `json:"title"`
+	FileSize int64      `json:"file_size"`
+	Duration uint64     `json:"duration"`
+	Chapters []*Chapter `json:"chapters,omitempty"`
 
 	modTime   time.Time
 	mediaType MediaType
+}
+
+type Chapter struct {
+	Title string `json:"title"`
+	Start uint64 `json:"start"`
 }
 
 func LoadAudio(fname string) (*Audio, error) {
@@ -160,5 +167,25 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 		t = t + f.Duration().Seconds()
 	}
 	au.Duration = uint64(t)
+
+	r.Seek(0, 0)
+
+	tag, err := id3v2.ParseReader(r, id3v2.Options{Parse: true})
+	if err != nil {
+		return nil
+	}
+	for frameID, frames := range tag.AllFrames() {
+		if frameID == "CHAP" {
+			for _, frame := range frames {
+				chapterFrame, ok := frame.(id3v2.ChapterFrame)
+				if ok {
+					au.Chapters = append(au.Chapters, &Chapter{
+						Title: chapterFrame.Title.Text,
+						Start: uint64(chapterFrame.StartTime.Seconds()),
+					})
+				}
+			}
+		}
+	}
 	return nil
 }
