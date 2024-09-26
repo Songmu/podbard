@@ -314,12 +314,18 @@ func LoadEpisodes(
 
 type Episode struct {
 	EpisodeFrontMatter
-	Slug                   string
-	RawBody, Body, Chapter string
-	URL                    *url.URL
+	Slug          string
+	RawBody, Body string
+	URL           *url.URL
+	Chapter       *Chapter
 
 	rootDir      string
 	audioBaseURL *url.URL
+}
+
+type Chapter struct {
+	Segments []*ChapterSegment
+	Body     string
 }
 
 type EpisodeFrontMatter struct {
@@ -348,36 +354,13 @@ func (ep *Episode) init(loc *time.Location) error {
 	}
 
 	if len(ep.audio.Chapters) > 0 {
-		tmpl, err := template.New("chapters").Parse(chaperTmpl)
-		if err != nil {
+		chapter := &Chapter{
+			Segments: ep.audio.Chapters,
+		}
+		if err := chapter.init(); err != nil {
 			return err
 		}
-		data := []struct {
-			Title string
-			Start string
-		}{}
-		for _, ch := range ep.audio.Chapters {
-			seconds := ch.Start % 60
-			minutes := (ch.Start / 60) % 60
-			hours := ch.Start / 3600
-			start := fmt.Sprintf("%d:%02d", minutes, seconds)
-			if hours > 0 {
-				start = fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
-			}
-
-			data = append(data, struct {
-				Title string
-				Start string
-			}{
-				Title: ch.Title,
-				Start: start,
-			})
-		}
-		var buf bytes.Buffer
-		if err := tmpl.Execute(&buf, data); err != nil {
-			return err
-		}
-		ep.Chapter = buf.String()
+		ep.Chapter = chapter
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
@@ -385,6 +368,39 @@ func (ep *Episode) init(loc *time.Location) error {
 		return err
 	}
 	ep.Body = buf.String()
+	return nil
+}
+
+func (chap *Chapter) init() error {
+	tmpl, err := template.New("chapters").Parse(chaperTmpl)
+	if err != nil {
+		return err
+	}
+	data := []struct {
+		Title string
+		Start string
+	}{}
+	for _, ch := range chap.Segments {
+		seconds := ch.Start % 60
+		minutes := (ch.Start / 60) % 60
+		hours := ch.Start / 3600
+		start := fmt.Sprintf("%d:%02d", minutes, seconds)
+		if hours > 0 {
+			start = fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
+		}
+		data = append(data, struct {
+			Title string
+			Start string
+		}{
+			Title: ch.Title,
+			Start: start,
+		})
+	}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return err
+	}
+	chap.Body = buf.String()
 	return nil
 }
 

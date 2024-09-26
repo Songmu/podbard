@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -16,17 +17,17 @@ import (
 )
 
 type Audio struct {
-	Name     string     `json:"-"`
-	Title    string     `json:"title"`
-	FileSize int64      `json:"file_size"`
-	Duration uint64     `json:"duration"`
-	Chapters []*Chapter `json:"chapters,omitempty"`
+	Name     string            `json:"-"`
+	Title    string            `json:"title"`
+	FileSize int64             `json:"file_size"`
+	Duration uint64            `json:"duration"`
+	Chapters []*ChapterSegment `json:"chapters,omitempty"`
 
 	modTime   time.Time
 	mediaType MediaType
 }
 
-type Chapter struct {
+type ChapterSegment struct {
 	Title string `json:"title"`
 	Start uint64 `json:"start"`
 }
@@ -179,7 +180,7 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 			for _, frame := range frames {
 				chapterFrame, ok := frame.(id3v2.ChapterFrame)
 				if ok {
-					au.Chapters = append(au.Chapters, &Chapter{
+					au.Chapters = append(au.Chapters, &ChapterSegment{
 						Title: chapterFrame.Title.Text,
 						Start: uint64(chapterFrame.StartTime.Seconds()),
 					})
@@ -187,5 +188,8 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 			}
 		}
 	}
+	sort.Slice(au.Chapters, func(i, j int) bool {
+		return au.Chapters[i].Start < au.Chapters[j].Start
+	})
 	return nil
 }
