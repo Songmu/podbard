@@ -314,12 +314,18 @@ func LoadEpisodes(
 
 type Episode struct {
 	EpisodeFrontMatter
-	Slug                   string
-	RawBody, Body, Chapter string
-	URL                    *url.URL
+	Slug          string
+	RawBody, Body string
+	URL           *url.URL
+	Chapter       *Chapter
 
 	rootDir      string
 	audioBaseURL *url.URL
+}
+
+type Chapter struct {
+	Segments []*ChapterSegment
+	Body     string
 }
 
 type EpisodeFrontMatter struct {
@@ -348,6 +354,9 @@ func (ep *Episode) init(loc *time.Location) error {
 	}
 
 	if len(ep.audio.Chapters) > 0 {
+		chapter := &Chapter{
+			Segments: ep.audio.Chapters,
+		}
 		tmpl, err := template.New("chapters").Parse(chaperTmpl)
 		if err != nil {
 			return err
@@ -377,7 +386,8 @@ func (ep *Episode) init(loc *time.Location) error {
 		if err := tmpl.Execute(&buf, data); err != nil {
 			return err
 		}
-		ep.Chapter = buf.String()
+		chapter.Body = buf.String()
+		ep.Chapter = chapter
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
