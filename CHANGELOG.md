@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.11](https://github.com/Songmu/podbard/compare/v0.0.10...v0.0.11) - 2024-09-26
+- fix interface around chapter by @Songmu in https://github.com/Songmu/podbard/pull/64
+
 ## [v0.0.10](https://github.com/Songmu/podbard/compare/v0.0.9...v0.0.10) - 2024-09-25
 - fix description again by @Songmu in https://github.com/Songmu/podbard/pull/62
 
