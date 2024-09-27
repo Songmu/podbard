@@ -31,7 +31,7 @@ $ podbard episode audio/1.mp3
 # Build the site
 $ podbard build
 🔨 Generating a site under the "public" directrory
-🎧️ Your podcast site has been generated and is ready to cast.
+🎤 Your podcast site has been generated and is ready to cast.
 ```
 
 ## Description
