@@ -8,6 +8,9 @@
 - [ ] Refine RSS Feed
     - [ ] support major RSS 2.0 tags
 - [ ] taxonomy
+- [ ] private mode
+    - [ ] itunes:block
+    - [ ] noindex
 
 ## Nice to have
 - [ ] "params" property in frontmatter
