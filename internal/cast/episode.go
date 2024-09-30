@@ -406,7 +406,7 @@ func (chap *Chapter) init() error {
 
 const chaperTmpl = `<ul class="chapters">
 {{- range . -}}
-<li>{{ .Start }} {{ .Title }}</li>
+<li><time>{{ .Start }}</time> {{ .Title }}</li>
 {{- end -}}</ul>
 `
 
