@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.12](https://github.com/Songmu/podbard/compare/v0.0.11...v0.0.12) - 2024-09-30
+- time element in chapters by @Songmu in https://github.com/Songmu/podbard/pull/67
+
 ## [v0.0.11](https://github.com/Songmu/podbard/compare/v0.0.10...v0.0.11) - 2024-09-26
 - fix interface around chapter by @Songmu in https://github.com/Songmu/podbard/pull/64
 
