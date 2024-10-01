@@ -3,14 +3,15 @@
 ## Must
 - [ ] Document
 - [ ] Testing
-
-## Should
-- [ ] Refine RSS Feed
-    - [ ] support major RSS 2.0 tags
-- [ ] taxonomy
 - [ ] private mode
     - [ ] itunes:block
     - [ ] noindex
+
+## Should
+- [ ] Chapter editor
+- [ ] Refine RSS Feed
+    - [ ] support major RSS 2.0 tags
+- [ ] taxonomy
 
 ## Nice to have
 - [ ] "params" property in frontmatter
