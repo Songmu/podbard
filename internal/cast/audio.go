@@ -27,11 +27,6 @@ type Audio struct {
 	mediaType MediaType
 }
 
-type ChapterSegment struct {
-	Title string `json:"title"`
-	Start uint64 `json:"start"`
-}
-
 func LoadAudio(fname string) (*Audio, error) {
 	if _, err := os.Stat(fname); err == nil {
 		return readAudio(fname)

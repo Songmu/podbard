@@ -192,6 +192,7 @@ func LoadEpisode(
 		Title:     title,
 		Subtitle:  subtitle,
 		Date:      pubDate.Format(time.RFC3339),
+		Chapter:   au.Chapters,
 	}
 	b, err := yaml.Marshal(epm)
 	if err != nil {
@@ -323,16 +324,12 @@ type Episode struct {
 	audioBaseURL *url.URL
 }
 
-type Chapter struct {
-	Segments []*ChapterSegment
-	Body     string
-}
-
 type EpisodeFrontMatter struct {
-	AudioFile string `yaml:"audio"`
-	Title     string `yaml:"title"`
-	Date      string `yaml:"date"`
-	Subtitle  string `yaml:"subtitle"`
+	AudioFile string            `yaml:"audio"`
+	Title     string            `yaml:"title"`
+	Date      string            `yaml:"date"`
+	Subtitle  string            `yaml:"subtitle"`
+	Chapter   []*ChapterSegment `yaml:"chapter,omitempty"`
 
 	audio   *Audio
 	pubDate time.Time
@@ -361,6 +358,7 @@ func (ep *Episode) init(loc *time.Location) error {
 			return err
 		}
 		ep.Chapter = chapter
+		ep.EpisodeFrontMatter.Chapter = chapter.Segments
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
@@ -381,19 +379,12 @@ func (chap *Chapter) init() error {
 		Start string
 	}{}
 	for _, ch := range chap.Segments {
-		seconds := ch.Start % 60
-		minutes := (ch.Start / 60) % 60
-		hours := ch.Start / 3600
-		start := fmt.Sprintf("%d:%02d", minutes, seconds)
-		if hours > 0 {
-			start = fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
-		}
 		data = append(data, struct {
 			Title string
 			Start string
 		}{
 			Title: ch.Title,
-			Start: start,
+			Start: convertStartToString(ch.Start),
 		})
 	}
 	var buf bytes.Buffer
