@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -112,6 +114,49 @@ func (au *Audio) SaveMeta(rootDir string) error {
 	}
 	if mt := au.modTime; !mt.IsZero() {
 		return os.Chtimes(metaFilePath, mt, mt)
+	}
+	return nil
+}
+
+func (au *Audio) UpdateChapter(fpath string, chs []*ChapterSegment) error {
+	// XXX: check the fpath is valid
+	f, err := os.OpenFile(fpath, os.O_RDWR, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	tag, err := id3v2.ParseReader(f, id3v2.Options{Parse: true})
+	if err != nil {
+		log.Printf("failed to parse id3v2 tag: %s", err)
+		return nil
+	}
+
+	tag.DeleteFrames("CHAP")
+	for i, ch := range chs {
+		startTime := time.Duration(ch.Start) * time.Second
+		endTime := time.Duration(au.Duration) * time.Second
+		if i+1 < len(chs) {
+			endTime = time.Duration(chs[i+1].Start) * time.Second
+		}
+		tag.AddChapterFrame(id3v2.ChapterFrame{
+			ElementID:   fmt.Sprintf("chap%d", i),
+			StartTime:   startTime,
+			EndTime:     endTime,
+			StartOffset: math.MaxUint32,
+			EndOffset:   math.MaxUint32,
+			Title:       &id3v2.TextFrame{Encoding: id3v2.EncodingUTF8, Text: ch.Title},
+			Description: &id3v2.TextFrame{Encoding: id3v2.EncodingUTF8, Text: ""},
+		})
+	}
+	if err := tag.Save(); err != nil {
+		return err
+	}
+	au.Chapters = chs
+
+	metaFilePath := getMetaFilePath(filepath.Dir(fpath), filepath.Base(fpath))
+	if _, err := os.Stat(metaFilePath); err == nil {
+		return au.SaveMeta(filepath.Dir(fpath))
 	}
 	return nil
 }

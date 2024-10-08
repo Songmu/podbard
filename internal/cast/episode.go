@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,7 +16,9 @@ import (
 	"time"
 
 	"github.com/Songmu/go-httpdate"
+	"github.com/Songmu/prompter"
 	"github.com/goccy/go-yaml"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 /*
@@ -348,6 +351,53 @@ func (ep *Episode) init(loc *time.Location) error {
 	ep.pubDate, err = httpdate.Str2Time(ep.Date, loc)
 	if err != nil {
 		return err
+	}
+
+	if len(ep.EpisodeFrontMatter.Chapter) > 0 {
+		var (
+			updateChapter bool = true
+			audioPath          = filepath.Join(ep.rootDir, audioDir, ep.AudioFile)
+		)
+		var audioExists = func() bool {
+			_, err := os.Stat(audioPath)
+			return err == nil
+		}()
+		_, err := os.Stat(audioPath)
+		audioExists = err == nil
+
+		if len(ep.audio.Chapters) > 0 {
+			var metaChapters string
+			for _, ch := range ep.EpisodeFrontMatter.Chapter {
+				metaChapters += ch.String() + "\n"
+			}
+			var auChapters string
+			for _, ch := range ep.audio.Chapters {
+				auChapters += ch.String() + "\n"
+			}
+			if metaChapters == auChapters {
+				updateChapter = false
+			} else {
+				dmp := diffmatchpatch.New()
+				d := dmp.DiffPrettyText(dmp.DiffMain(auChapters, metaChapters, false))
+				if audioExists {
+					updateChapter = prompter.YN(
+						fmt.Sprintf("Update chapter information? diff:\n%s", d), true)
+				} else {
+					updateChapter = false
+					log.Printf("The following chapter differences have been detected, but the audio file does not exist, so it cannot be updated.\n%s", d)
+				}
+			}
+		}
+
+		if updateChapter {
+			if audioExists {
+				if err := ep.audio.UpdateChapter(audioPath, ep.EpisodeFrontMatter.Chapter); err != nil {
+					return err
+				}
+			} else {
+				log.Printf("The audio file does not exist, so the chapter information cannot be updated.")
+			}
+		}
 	}
 
 	if len(ep.audio.Chapters) > 0 {
