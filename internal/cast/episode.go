@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,7 +16,9 @@ import (
 	"time"
 
 	"github.com/Songmu/go-httpdate"
+	"github.com/Songmu/prompter"
 	"github.com/goccy/go-yaml"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 /*
@@ -192,6 +195,7 @@ func LoadEpisode(
 		Title:     title,
 		Subtitle:  subtitle,
 		Date:      pubDate.Format(time.RFC3339),
+		Chapters:  au.Chapters,
 	}
 	b, err := yaml.Marshal(epm)
 	if err != nil {
@@ -317,22 +321,18 @@ type Episode struct {
 	Slug          string
 	RawBody, Body string
 	URL           *url.URL
-	Chapter       *Chapter
+	ChaptersBody  string
 
 	rootDir      string
 	audioBaseURL *url.URL
 }
 
-type Chapter struct {
-	Segments []*ChapterSegment
-	Body     string
-}
-
 type EpisodeFrontMatter struct {
-	AudioFile string `yaml:"audio"`
-	Title     string `yaml:"title"`
-	Date      string `yaml:"date"`
-	Subtitle  string `yaml:"subtitle"`
+	AudioFile string     `yaml:"audio"`
+	Title     string     `yaml:"title"`
+	Date      string     `yaml:"date"`
+	Subtitle  string     `yaml:"subtitle"`
+	Chapters  []*Chapter `yaml:"chapters,omitempty"`
 
 	audio   *Audio
 	pubDate time.Time
@@ -353,14 +353,59 @@ func (ep *Episode) init(loc *time.Location) error {
 		return err
 	}
 
-	if len(ep.audio.Chapters) > 0 {
-		chapter := &Chapter{
-			Segments: ep.audio.Chapters,
+	if len(ep.EpisodeFrontMatter.Chapters) > 0 {
+		var (
+			updateChapter bool = true
+			audioPath          = filepath.Join(ep.rootDir, audioDir, ep.AudioFile)
+		)
+		var audioExists = func() bool {
+			_, err := os.Stat(audioPath)
+			return err == nil
+		}()
+		_, err := os.Stat(audioPath)
+		audioExists = err == nil
+
+		if len(ep.audio.Chapters) > 0 {
+			var metaChapters string
+			for _, ch := range ep.EpisodeFrontMatter.Chapters {
+				metaChapters += ch.String() + "\n"
+			}
+			var auChapters string
+			for _, ch := range ep.audio.Chapters {
+				auChapters += ch.String() + "\n"
+			}
+			if metaChapters == auChapters {
+				updateChapter = false
+			} else {
+				dmp := diffmatchpatch.New()
+				d := dmp.DiffPrettyText(dmp.DiffMain(auChapters, metaChapters, false))
+				if audioExists {
+					updateChapter = prompter.YN(
+						fmt.Sprintf("Update chapter information? diff:\n%s", d), true)
+				} else {
+					updateChapter = false
+					log.Printf("The following chapter differences have been detected, but the audio file does not exist, so it cannot be updated.\n%s", d)
+				}
+			}
 		}
-		if err := chapter.init(); err != nil {
+
+		if updateChapter {
+			if audioExists {
+				if err := ep.audio.UpdateChapter(audioPath, ep.EpisodeFrontMatter.Chapters); err != nil {
+					return err
+				}
+			} else {
+				log.Printf("The audio file does not exist, so the chapter information cannot be updated.")
+			}
+		}
+	}
+
+	if len(ep.audio.Chapters) > 0 {
+		ep.ChaptersBody, err = buildChaptersBody(ep.audio.Chapters)
+		if err != nil {
 			return err
 		}
-		ep.Chapter = chapter
+		ep.EpisodeFrontMatter.Chapters = ep.audio.Chapters
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
@@ -371,44 +416,36 @@ func (ep *Episode) init(loc *time.Location) error {
 	return nil
 }
 
-func (chap *Chapter) init() error {
-	tmpl, err := template.New("chapters").Parse(chaperTmpl)
-	if err != nil {
-		return err
-	}
+const chaperTmplStr = `<ul class="chapters">
+{{- range . -}}
+<li><time>{{ .Start }}</time> {{ .Title }}</li>
+{{- end -}}</ul>
+`
+
+var chapterTmpl = template.Must(template.New("chapters").Parse(chaperTmplStr))
+
+func buildChaptersBody(chapters []*Chapter) (string, error) {
 	data := []struct {
 		Title string
 		Start string
 	}{}
-	for _, ch := range chap.Segments {
-		seconds := ch.Start % 60
-		minutes := (ch.Start / 60) % 60
-		hours := ch.Start / 3600
-		start := fmt.Sprintf("%d:%02d", minutes, seconds)
-		if hours > 0 {
-			start = fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
-		}
+
+	for _, ch := range chapters {
 		data = append(data, struct {
 			Title string
 			Start string
 		}{
 			Title: ch.Title,
-			Start: start,
+			Start: convertStartToString(ch.Start),
 		})
 	}
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
-		return err
-	}
-	chap.Body = buf.String()
-	return nil
-}
 
-const chaperTmpl = `<ul class="chapters">
-{{- range . -}}
-<li><time>{{ .Start }}</time> {{ .Title }}</li>
-{{- end -}}</ul>
-`
+	var buf bytes.Buffer
+	if err := chapterTmpl.Execute(&buf, data); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
 
 func (epm *EpisodeFrontMatter) PubDate() time.Time {
 	return epm.pubDate

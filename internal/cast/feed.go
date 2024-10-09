@@ -69,10 +69,7 @@ func (f *Feed) AddEpisode(ep *Episode, audioBaseURL *url.URL) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	chapterBody := ""
-	if ep.Chapter != nil {
-		chapterBody = ep.Chapter.Body
-	}
+	chapterBody := ep.ChaptersBody
 	description := chapterBody + ep.Body
 	if description == "" {
 		description = ep.Subtitle

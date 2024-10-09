@@ -13,6 +13,7 @@ require (
 	github.com/goccy/go-yaml v1.12.0
 	github.com/mattn/go-isatty v0.0.14
 	github.com/otiai10/copy v1.14.0
+	github.com/sergi/go-diff v1.3.1
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	github.com/urfave/cli/v2 v2.27.4
 	github.com/yuin/goldmark v1.7.4
