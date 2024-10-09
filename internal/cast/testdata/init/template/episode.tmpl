@@ -5,10 +5,10 @@
   <audio controls src="{{.Episode.AudioURL}}"></audio>
 </figure>
 
-{{if .Episode.Chapter -}}
+{{if ne .Episode.ChaptersBody "" -}}
 <aside class="chapters">
   <h2>Chapters</h2>
-  {{.Episode.Chapter.Body | html}}
+  {{.Episode.ChaptersBody | html}}
 </aside>
 {{end}}
 

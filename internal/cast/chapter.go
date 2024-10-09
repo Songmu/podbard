@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type Chapter struct {
-	Segments []*ChapterSegment
-	Body     string
-}
-
 type ChapterSegment struct {
 	Title string `json:"title"`
 	Start uint64 `json:"start"`

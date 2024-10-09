@@ -321,7 +321,7 @@ type Episode struct {
 	Slug          string
 	RawBody, Body string
 	URL           *url.URL
-	Chapter       *Chapter
+	ChaptersBody  string
 
 	rootDir      string
 	audioBaseURL *url.URL
@@ -401,14 +401,11 @@ func (ep *Episode) init(loc *time.Location) error {
 	}
 
 	if len(ep.audio.Chapters) > 0 {
-		chapter := &Chapter{
-			Segments: ep.audio.Chapters,
-		}
-		if err := chapter.init(); err != nil {
+		ep.ChaptersBody, err = buildChaptersBody(ep.audio.Chapters)
+		if err != nil {
 			return err
 		}
-		ep.Chapter = chapter
-		ep.EpisodeFrontMatter.Chapters = chapter.Segments
+		ep.EpisodeFrontMatter.Chapters = ep.audio.Chapters
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
@@ -419,16 +416,21 @@ func (ep *Episode) init(loc *time.Location) error {
 	return nil
 }
 
-func (chap *Chapter) init() error {
-	tmpl, err := template.New("chapters").Parse(chaperTmpl)
-	if err != nil {
-		return err
-	}
+const chaperTmplStr = `<ul class="chapters">
+{{- range . -}}
+<li><time>{{ .Start }}</time> {{ .Title }}</li>
+{{- end -}}</ul>
+`
+
+var chaptertmpl = template.Must(template.New("chapters").Parse(chaperTmplStr))
+
+func buildChaptersBody(chapters []*ChapterSegment) (string, error) {
 	data := []struct {
 		Title string
 		Start string
 	}{}
-	for _, ch := range chap.Segments {
+
+	for _, ch := range chapters {
 		data = append(data, struct {
 			Title string
 			Start string
@@ -437,19 +439,13 @@ func (chap *Chapter) init() error {
 			Start: convertStartToString(ch.Start),
 		})
 	}
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
-		return err
-	}
-	chap.Body = buf.String()
-	return nil
-}
 
-const chaperTmpl = `<ul class="chapters">
-{{- range . -}}
-<li><time>{{ .Start }}</time> {{ .Title }}</li>
-{{- end -}}</ul>
-`
+	var buf bytes.Buffer
+	if err := chaptertmpl.Execute(&buf, chapters); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
 
 func (epm *EpisodeFrontMatter) PubDate() time.Time {
 	return epm.pubDate
