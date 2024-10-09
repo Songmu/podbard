@@ -195,7 +195,7 @@ func LoadEpisode(
 		Title:     title,
 		Subtitle:  subtitle,
 		Date:      pubDate.Format(time.RFC3339),
-		Chapter:   au.Chapters,
+		Chapters:  au.Chapters,
 	}
 	b, err := yaml.Marshal(epm)
 	if err != nil {
@@ -332,7 +332,7 @@ type EpisodeFrontMatter struct {
 	Title     string            `yaml:"title"`
 	Date      string            `yaml:"date"`
 	Subtitle  string            `yaml:"subtitle"`
-	Chapter   []*ChapterSegment `yaml:"chapter,omitempty"`
+	Chapters  []*ChapterSegment `yaml:"chapters,omitempty"`
 
 	audio   *Audio
 	pubDate time.Time
@@ -353,7 +353,7 @@ func (ep *Episode) init(loc *time.Location) error {
 		return err
 	}
 
-	if len(ep.EpisodeFrontMatter.Chapter) > 0 {
+	if len(ep.EpisodeFrontMatter.Chapters) > 0 {
 		var (
 			updateChapter bool = true
 			audioPath          = filepath.Join(ep.rootDir, audioDir, ep.AudioFile)
@@ -367,7 +367,7 @@ func (ep *Episode) init(loc *time.Location) error {
 
 		if len(ep.audio.Chapters) > 0 {
 			var metaChapters string
-			for _, ch := range ep.EpisodeFrontMatter.Chapter {
+			for _, ch := range ep.EpisodeFrontMatter.Chapters {
 				metaChapters += ch.String() + "\n"
 			}
 			var auChapters string
@@ -391,7 +391,7 @@ func (ep *Episode) init(loc *time.Location) error {
 
 		if updateChapter {
 			if audioExists {
-				if err := ep.audio.UpdateChapter(audioPath, ep.EpisodeFrontMatter.Chapter); err != nil {
+				if err := ep.audio.UpdateChapter(audioPath, ep.EpisodeFrontMatter.Chapters); err != nil {
 					return err
 				}
 			} else {
@@ -408,7 +408,7 @@ func (ep *Episode) init(loc *time.Location) error {
 			return err
 		}
 		ep.Chapter = chapter
-		ep.EpisodeFrontMatter.Chapter = chapter.Segments
+		ep.EpisodeFrontMatter.Chapters = chapter.Segments
 	}
 	md := NewMarkdown()
 	var buf bytes.Buffer
