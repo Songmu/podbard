@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.13](https://github.com/Songmu/podbard/compare/v0.0.12...v0.0.13) - 2024-10-09
+- support chapter in frontmatter by @Songmu in https://github.com/Songmu/podbard/pull/69
+- configuration for private podcast by @Songmu in https://github.com/Songmu/podbard/pull/70
+
 ## [v0.0.12](https://github.com/Songmu/podbard/compare/v0.0.11...v0.0.12) - 2024-09-30
 - time element in chapters by @Songmu in https://github.com/Songmu/podbard/pull/67
 
