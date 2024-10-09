@@ -19,11 +19,11 @@ import (
 )
 
 type Audio struct {
-	Name     string            `json:"-"`
-	Title    string            `json:"title"`
-	FileSize int64             `json:"file_size"`
-	Duration uint64            `json:"duration"`
-	Chapters []*ChapterSegment `json:"chapters,omitempty"`
+	Name     string     `json:"-"`
+	Title    string     `json:"title"`
+	FileSize int64      `json:"file_size"`
+	Duration uint64     `json:"duration"`
+	Chapters []*Chapter `json:"chapters,omitempty"`
 
 	rawDuration time.Duration
 	modTime     time.Time
@@ -119,7 +119,7 @@ func (au *Audio) SaveMeta(rootDir string) error {
 	return nil
 }
 
-func (au *Audio) UpdateChapter(fpath string, chs []*ChapterSegment) error {
+func (au *Audio) UpdateChapter(fpath string, chs []*Chapter) error {
 	// XXX: check the fpath is valid
 	f, err := os.OpenFile(fpath, os.O_RDWR, 0666)
 	if err != nil {
@@ -226,7 +226,7 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 	for _, frame := range tag.GetFrames("CHAP") {
 		chapterFrame, ok := frame.(id3v2.ChapterFrame)
 		if ok {
-			au.Chapters = append(au.Chapters, &ChapterSegment{
+			au.Chapters = append(au.Chapters, &Chapter{
 				Title: chapterFrame.Title.Text,
 				Start: uint64(chapterFrame.StartTime.Seconds()),
 			})

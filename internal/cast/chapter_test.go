@@ -13,13 +13,13 @@ func TestChapterSegment_MarshalYAML(t *testing.T) {
 	tests := []struct {
 		name    string
 		chapter struct {
-			Segment *cast.ChapterSegment
+			Segment *cast.Chapter
 		}
 		want string
 	}{{
 		name: "simple",
-		chapter: struct{ Segment *cast.ChapterSegment }{
-			Segment: &cast.ChapterSegment{
+		chapter: struct{ Segment *cast.Chapter }{
+			Segment: &cast.Chapter{
 				Title: "Chapter 1",
 				Start: 0,
 			},
@@ -27,8 +27,8 @@ func TestChapterSegment_MarshalYAML(t *testing.T) {
 		want: "segment: 0:00 Chapter 1\n",
 	}, {
 		name: "with hours",
-		chapter: struct{ Segment *cast.ChapterSegment }{
-			Segment: &cast.ChapterSegment{
+		chapter: struct{ Segment *cast.Chapter }{
+			Segment: &cast.Chapter{
 				Title: "Chapter 2",
 				Start: 3600,
 			},
@@ -55,19 +55,19 @@ func TestChapterSegment_UnmarshalYAML(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    cast.ChapterSegment
+		want    cast.Chapter
 		wantErr bool
 	}{{
 		name:  "simple",
 		input: "0:00 Chapter 1",
-		want: cast.ChapterSegment{
+		want: cast.Chapter{
 			Title: "Chapter 1",
 			Start: 0,
 		},
 	}, {
 		name:  "with hours",
 		input: "1:00:00 Chapter 2",
-		want: cast.ChapterSegment{
+		want: cast.Chapter{
 			Title: "Chapter 2",
 			Start: 3600,
 		},
@@ -95,7 +95,7 @@ func TestChapterSegment_UnmarshalYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var got cast.ChapterSegment
+			var got cast.Chapter
 			err := yaml.Unmarshal([]byte(tt.input), &got)
 			if err != nil {
 				if !tt.wantErr {

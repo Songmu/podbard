@@ -328,11 +328,11 @@ type Episode struct {
 }
 
 type EpisodeFrontMatter struct {
-	AudioFile string            `yaml:"audio"`
-	Title     string            `yaml:"title"`
-	Date      string            `yaml:"date"`
-	Subtitle  string            `yaml:"subtitle"`
-	Chapters  []*ChapterSegment `yaml:"chapters,omitempty"`
+	AudioFile string     `yaml:"audio"`
+	Title     string     `yaml:"title"`
+	Date      string     `yaml:"date"`
+	Subtitle  string     `yaml:"subtitle"`
+	Chapters  []*Chapter `yaml:"chapters,omitempty"`
 
 	audio   *Audio
 	pubDate time.Time
@@ -422,9 +422,9 @@ const chaperTmplStr = `<ul class="chapters">
 {{- end -}}</ul>
 `
 
-var chaptertmpl = template.Must(template.New("chapters").Parse(chaperTmplStr))
+var chapterTmpl = template.Must(template.New("chapters").Parse(chaperTmplStr))
 
-func buildChaptersBody(chapters []*ChapterSegment) (string, error) {
+func buildChaptersBody(chapters []*Chapter) (string, error) {
 	data := []struct {
 		Title string
 		Start string
@@ -441,7 +441,7 @@ func buildChaptersBody(chapters []*ChapterSegment) (string, error) {
 	}
 
 	var buf bytes.Buffer
-	if err := chaptertmpl.Execute(&buf, chapters); err != nil {
+	if err := chapterTmpl.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

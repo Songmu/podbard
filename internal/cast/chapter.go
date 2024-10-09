@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type ChapterSegment struct {
+type Chapter struct {
 	Title string `json:"title"`
 	Start uint64 `json:"start"`
 }
@@ -34,11 +34,11 @@ func convertStringToStart(str string) (uint64, error) {
 	return h*3600 + m*60 + s, nil
 }
 
-func (chs *ChapterSegment) String() string {
+func (chs *Chapter) String() string {
 	return fmt.Sprintf("%s %s", convertStartToString(chs.Start), chs.Title)
 }
 
-func (chs *ChapterSegment) UnmarshalYAML(b []byte) error {
+func (chs *Chapter) UnmarshalYAML(b []byte) error {
 	str := strings.TrimSpace(string(b))
 	stuff := strings.SplitN(str, " ", 2)
 	if len(stuff) != 2 {
@@ -48,13 +48,13 @@ func (chs *ChapterSegment) UnmarshalYAML(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("invalid chapter format: %s, %w", str, err)
 	}
-	*chs = ChapterSegment{
+	*chs = Chapter{
 		Title: stuff[1],
 		Start: start,
 	}
 	return nil
 }
 
-func (chs *ChapterSegment) MarshalYAML() ([]byte, error) {
+func (chs *Chapter) MarshalYAML() ([]byte, error) {
 	return []byte(chs.String()), nil
 }
