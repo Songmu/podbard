@@ -25,8 +25,9 @@ type Audio struct {
 	Duration uint64            `json:"duration"`
 	Chapters []*ChapterSegment `json:"chapters,omitempty"`
 
-	modTime   time.Time
-	mediaType MediaType
+	rawDuration time.Duration
+	modTime     time.Time
+	mediaType   MediaType
 }
 
 func LoadAudio(fname string) (*Audio, error) {
@@ -135,14 +136,17 @@ func (au *Audio) UpdateChapter(fpath string, chs []*ChapterSegment) error {
 	tag.DeleteFrames("CHAP")
 	for i, ch := range chs {
 		startTime := time.Duration(ch.Start) * time.Second
-		endTime := time.Duration(au.Duration) * time.Second
+		endTime := au.rawDuration
 		if i+1 < len(chs) {
 			endTime = time.Duration(chs[i+1].Start) * time.Second
 		}
 		tag.AddChapterFrame(id3v2.ChapterFrame{
-			ElementID:   fmt.Sprintf("chap%d", i),
-			StartTime:   startTime,
-			EndTime:     endTime,
+			ElementID: fmt.Sprintf("chap%d", i),
+			StartTime: startTime,
+			EndTime:   endTime,
+			// If these bytes are all set to 0xFF then the value should be ignored and
+			// the start/end time value should be utilized.
+			// cf. https://id3.org/id3v2-chapters-1.0
 			StartOffset: math.MaxUint32,
 			EndOffset:   math.MaxUint32,
 			Title:       &id3v2.TextFrame{Encoding: id3v2.EncodingUTF8, Text: ch.Title},
@@ -194,7 +198,7 @@ var skipped int = 0
 
 func (au *Audio) readMP3(r io.ReadSeeker) error {
 	var (
-		t float64
+		t time.Duration
 		f mp3.Frame
 		d = mp3.NewDecoder(r)
 	)
@@ -205,9 +209,10 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 			}
 			return err
 		}
-		t = t + f.Duration().Seconds()
+		t = t + f.Duration()
 	}
-	au.Duration = uint64(t)
+	au.Duration = uint64(t.Seconds())
+	au.rawDuration = t
 
 	r.Seek(0, 0)
 
@@ -215,17 +220,13 @@ func (au *Audio) readMP3(r io.ReadSeeker) error {
 	if err != nil {
 		return nil
 	}
-	for frameID, frames := range tag.AllFrames() {
-		if frameID == "CHAP" {
-			for _, frame := range frames {
-				chapterFrame, ok := frame.(id3v2.ChapterFrame)
-				if ok {
-					au.Chapters = append(au.Chapters, &ChapterSegment{
-						Title: chapterFrame.Title.Text,
-						Start: uint64(chapterFrame.StartTime.Seconds()),
-					})
-				}
-			}
+	for _, frame := range tag.GetFrames("CHAP") {
+		chapterFrame, ok := frame.(id3v2.ChapterFrame)
+		if ok {
+			au.Chapters = append(au.Chapters, &ChapterSegment{
+				Title: chapterFrame.Title.Text,
+				Start: uint64(chapterFrame.StartTime.Seconds()),
+			})
 		}
 	}
 	sort.Slice(au.Chapters, func(i, j int) bool {
