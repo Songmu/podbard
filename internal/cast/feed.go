@@ -41,6 +41,9 @@ func NewFeed(generator string, channel *ChannelConfig, pubDate, lastBuildDate ti
 	if channel.Copyright != "" {
 		pd.Copyright = fmt.Sprintf("&#xA9; 2024 %s", channel.Author) // XXX: year is hardcoded
 	}
+	if channel.Private {
+		pd.IBlock = "yes"
+	}
 
 	// deprecated but used tags
 	pd.ISubtitle = channel.Description
