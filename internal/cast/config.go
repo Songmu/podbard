@@ -104,6 +104,7 @@ type ChannelConfig struct {
 	Artwork     string     `yaml:"artwork"`
 	Copyright   string     `yaml:"copyright"`
 	Explicit    bool       `yaml:"explicit"`
+	Private     bool       `yaml:"private"`
 }
 
 func (cfg *Config) init() error {

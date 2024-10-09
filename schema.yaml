@@ -67,3 +67,7 @@ properties:
         type: string
         description: |
           Optional setting item for copyright notice. If not set, "© 2024 $author" is used by default.
+      private:
+        type: boolean
+        description: "Private podcast or not. Default is false."
+        default: false
