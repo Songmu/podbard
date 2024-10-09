@@ -140,8 +140,11 @@ func (au *Audio) UpdateChapter(fpath string, chs []*ChapterSegment) error {
 		if i+1 < len(chs) {
 			endTime = time.Duration(chs[i+1].Start) * time.Second
 		}
+		if startTime > endTime {
+			return fmt.Errorf("invalid chapter start time: %s", ch.Title)
+		}
 		tag.AddChapterFrame(id3v2.ChapterFrame{
-			ElementID: fmt.Sprintf("chap%d", i),
+			ElementID: fmt.Sprintf("chp%d", i),
 			StartTime: startTime,
 			EndTime:   endTime,
 			// If these bytes are all set to 0xFF then the value should be ignored and
