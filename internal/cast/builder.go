@@ -280,7 +280,11 @@ func (bdr *Builder) buildPage(pagePath string) error {
 		return err
 	}
 	arg := newPageArg(bdr.Config, bdr.Episodes, page)
-	f, err := os.Create(pagePath)
+	htmlPath := filepath.Join(
+		bdr.BuildDir,
+		strings.TrimSuffix(filepath.Base(pagePath), ".md"),
+		"index.html")
+	f, err := os.Create(htmlPath)
 	if err != nil {
 		return err
 	}
