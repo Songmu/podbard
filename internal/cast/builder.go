@@ -183,7 +183,7 @@ func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 	}
 	defer f.Close()
 
-	return bdr.template.execute(f, "layout", "episode", arg)
+	return bdr.template.Execute(f, "layout", "episode", arg)
 }
 
 type PageInfo struct {
@@ -226,7 +226,7 @@ func (bdr *Builder) buildIndex() error {
 	}
 	defer f.Close()
 
-	return bdr.template.execute(f, "layout", "index", arg)
+	return bdr.template.Execute(f, "layout", "index", arg)
 }
 
 func (bdr *Builder) copyAudio() error {
@@ -291,7 +291,7 @@ func (bdr *Builder) buildPage(pagePath string) error {
 	defer f.Close()
 
 	// use index template for pages for now, we would need to arrange the templates
-	return bdr.template.execute(f, "layout", "index", arg)
+	return bdr.template.Execute(f, "layout", "index", arg)
 }
 
 func (bdr *Builder) buildStatic() error {
