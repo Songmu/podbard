@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.14](https://github.com/Songmu/podbard/compare/v0.0.13...v0.0.14) - 2024-11-21
+- Fix typo. by @toohsk in https://github.com/Songmu/podbard/pull/72
+- support standalone pages by @Songmu in https://github.com/Songmu/podbard/pull/71
+
 ## [v0.0.13](https://github.com/Songmu/podbard/compare/v0.0.12...v0.0.13) - 2024-10-09
 - support chapter in frontmatter by @Songmu in https://github.com/Songmu/podbard/pull/69
 - configuration for private podcast by @Songmu in https://github.com/Songmu/podbard/pull/70
