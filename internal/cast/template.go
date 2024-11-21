@@ -31,7 +31,7 @@ func htmlFunc(html string) template.HTML {
 	return template.HTML(html)
 }
 
-func (ct *castTemplate) execute(w io.Writer, layout, name string, data interface{}) error {
+func (ct *castTemplate) Execute(w io.Writer, layout, name string, data interface{}) error {
 	return template.Must(template.Must(
 		ct.Lookup(layout).Clone()).
 		Funcs(sprig.FuncMap()).

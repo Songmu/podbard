@@ -24,7 +24,10 @@ func Build(
 			return err
 		}
 	}
-	bdr := NewBuilder(cfg, episodes, rootDir, generator, destination, parents, buildDate)
+	bdr, err := NewBuilder(cfg, episodes, rootDir, generator, destination, parents, buildDate)
+	if err != nil {
+		return err
+	}
 	if err := bdr.Build(); err != nil {
 		return err
 	}
@@ -33,9 +36,14 @@ func Build(
 }
 
 func NewBuilder(
-	cfg *Config, episodes []*Episode, rootDir, generator, dest string, parents bool, buildDate time.Time) *Builder {
+	cfg *Config, episodes []*Episode, rootDir, generator, dest string, parents bool, buildDate time.Time) (*Builder, error) {
 
 	buildDir := getBuildDir(rootDir, cfg.Channel.Link.Path, dest, parents)
+
+	tmpl, err := loadTemplate(rootDir)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Builder{
 		Config:    cfg,
@@ -44,7 +52,9 @@ func NewBuilder(
 		Generator: generator,
 		BuildDir:  buildDir,
 		BuildDate: buildDate,
-	}
+
+		template: tmpl,
+	}, nil
 }
 
 type Builder struct {
@@ -54,6 +64,8 @@ type Builder struct {
 	Generator string
 	BuildDir  string
 	BuildDate time.Time
+
+	template *castTemplate
 }
 
 func getDestDir(rootDir, dest string) string {
@@ -95,6 +107,11 @@ func (bdr *Builder) Build() error {
 		if err := bdr.buildEpisode(ep, prev, next); err != nil {
 			return err
 		}
+	}
+
+	log.Println("Build pages...")
+	if err := bdr.buildPages(); err != nil {
+		return err
 	}
 
 	log.Println("Copying static files...")
@@ -139,14 +156,9 @@ func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 		return err
 	}
 
-	tmpl, err := loadTemplate(bdr.RootDir)
-	if err != nil {
-		return err
-	}
-
 	arg := struct {
 		Title           string
-		Page            *Page
+		Page            *PageInfo
 		Body            template.HTML
 		Episode         *Episode
 		PreviousEpisode *Episode
@@ -154,7 +166,7 @@ func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 		Channel         *ChannelConfig
 	}{
 		Title: ep.Title,
-		Page: &Page{
+		Page: &PageInfo{
 			Title:       ep.Title,
 			Description: ep.Subtitle,
 			URL:         ep.URL,
@@ -171,13 +183,33 @@ func (bdr *Builder) buildEpisode(ep, prev, next *Episode) error {
 	}
 	defer f.Close()
 
-	return tmpl.execute(f, "layout", "episode", arg)
+	return bdr.template.Execute(f, "layout", "episode", arg)
 }
 
-type Page struct {
+type PageInfo struct {
 	Title       string
 	Description string
 	URL         *url.URL
+}
+
+type PageArg struct {
+	Page     *PageInfo
+	Body     template.HTML
+	Episodes []*Episode
+	Channel  *ChannelConfig
+}
+
+func newPageArg(cfg *Config, episodes []*Episode, page *Page) *PageArg {
+	return &PageArg{
+		Page: &PageInfo{
+			Title:       cfg.Channel.Title,
+			Description: cfg.Channel.Description,
+			URL:         cfg.Channel.Link.URL,
+		},
+		Body:     template.HTML(page.Body),
+		Episodes: episodes,
+		Channel:  cfg.Channel,
+	}
 }
 
 func (bdr *Builder) buildIndex() error {
@@ -187,33 +219,14 @@ func (bdr *Builder) buildIndex() error {
 	}
 	indexPath := filepath.Join(bdr.BuildDir, "index.html")
 
-	tmpl, err := loadTemplate(bdr.RootDir)
-	if err != nil {
-		return err
-	}
-
-	arg := struct {
-		Page     *Page
-		Body     template.HTML
-		Episodes []*Episode
-		Channel  *ChannelConfig
-	}{
-		Page: &Page{
-			Title:       bdr.Config.Channel.Title,
-			Description: bdr.Config.Channel.Description,
-			URL:         bdr.Config.Channel.Link.URL,
-		},
-		Body:     template.HTML(idx.Body),
-		Episodes: bdr.Episodes,
-		Channel:  bdr.Config.Channel,
-	}
+	arg := newPageArg(bdr.Config, bdr.Episodes, idx)
 	f, err := os.Create(indexPath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	return tmpl.execute(f, "layout", "index", arg)
+	return bdr.template.Execute(f, "layout", "index", arg)
 }
 
 func (bdr *Builder) copyAudio() error {
@@ -235,6 +248,50 @@ func (bdr *Builder) copyAudio() error {
 			return skip, nil
 		},
 	})
+}
+
+func (bdr *Builder) buildPages() error {
+	pdir := filepath.Join(bdr.RootDir, pageDir)
+	if _, err := os.Stat(pdir); err != nil {
+		return nil
+	}
+	dir, err := os.ReadDir(pdir)
+	if err != nil {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	for _, fi := range dir {
+		if fi.IsDir() || !strings.HasSuffix(fi.Name(), ".md") {
+			continue
+		}
+		pagePath := filepath.Join(bdr.BuildDir, fi.Name())
+		if err := bdr.buildPage(pagePath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (bdr *Builder) buildPage(pagePath string) error {
+	page, err := LoadPage(pagePath, bdr.Config, bdr.Episodes)
+	if err != nil {
+		return err
+	}
+	arg := newPageArg(bdr.Config, bdr.Episodes, page)
+	htmlPath := filepath.Join(
+		bdr.BuildDir,
+		strings.TrimSuffix(filepath.Base(pagePath), ".md"),
+		"index.html")
+	f, err := os.Create(htmlPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// use index template for pages for now, we would need to arrange the templates
+	return bdr.template.Execute(f, "layout", "index", arg)
 }
 
 func (bdr *Builder) buildStatic() error {

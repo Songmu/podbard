@@ -17,6 +17,7 @@ import (
 const (
 	episodeDir = "episode"
 	audioDir   = "audio"
+	pageDir    = "page"
 	staticDir  = "static"
 
 	configFile = "podbard.yaml"

@@ -10,36 +10,34 @@ import (
 	"github.com/Masterminds/sprig/v3"
 )
 
-type Index struct {
+type Page struct {
 	RawFrontmatter, RawBody string
 
 	Body string
 }
 
-func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error) {
-	idxMD := filepath.Join(rootDir, "index.md")
-
-	if _, err := os.Stat(idxMD); err != nil {
+func LoadPage(mdPath string, cfg *Config, episodes []*Episode) (*Page, error) {
+	if _, err := os.Stat(mdPath); err != nil {
 		if os.IsNotExist(err) {
-			return &Index{}, nil
+			return &Page{}, nil
 		}
 		return nil, err
 	}
-	bs, err := os.ReadFile(idxMD)
+	bs, err := os.ReadFile(mdPath)
 	if err != nil {
 		return nil, err
 	}
 	content := strings.ReplaceAll(strings.TrimSpace(string(bs)), "\r\n", "\n")
 
-	var idx *Index
+	var idx *Page
 	if !strings.HasPrefix(content, "---\n") {
-		idx = &Index{RawBody: content}
+		idx = &Page{RawBody: content}
 	} else {
 		frontmater, body, err := splitFrontMatterAndBody(content)
 		if err != nil {
 			return nil, err
 		}
-		idx = &Index{
+		idx = &Page{
 			RawFrontmatter: frontmater,
 			RawBody:        body,
 		}
@@ -50,7 +48,12 @@ func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Index, error)
 	return idx, nil
 }
 
-func (idx *Index) build(cfg *Config, episodes []*Episode) error {
+func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Page, error) {
+	idxMD := filepath.Join(rootDir, "index.md")
+	return LoadPage(idxMD, cfg, episodes)
+}
+
+func (idx *Page) build(cfg *Config, episodes []*Episode) error {
 	tmpl, err := template.New("index").Funcs(sprig.FuncMap()).
 		Funcs(template.FuncMap{"html": htmlFunc}).
 		Parse(idx.RawBody)

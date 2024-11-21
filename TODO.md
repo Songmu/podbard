@@ -3,12 +3,8 @@
 ## Must
 - [ ] Document
 - [ ] Testing
-- [ ] private mode
-    - [ ] itunes:block
-    - [ ] noindex
 
 ## Should
-- [ ] Chapter editor
 - [ ] Refine RSS Feed
     - [ ] support major RSS 2.0 tags
 - [ ] taxonomy
