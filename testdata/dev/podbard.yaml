@@ -4,7 +4,7 @@ channel:
   title: sample
   description: sample description
   language: ja-JP
-  category: "Techlogy"
+  category: "Technology"
   author: Songmu
   email: y.songmu@gmail.com
   artwork: "images/artwork.jpg" # url or path
