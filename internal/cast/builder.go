@@ -263,24 +263,27 @@ func (bdr *Builder) buildPages() error {
 		if fi.IsDir() || !strings.HasSuffix(fi.Name(), ".md") {
 			continue
 		}
-		pagePath := filepath.Join(bdr.BuildDir, fi.Name())
-		if err := bdr.buildPage(pagePath); err != nil {
+		mdPath := filepath.Join(pdir, fi.Name())
+		if err := bdr.buildPage(mdPath); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (bdr *Builder) buildPage(pagePath string) error {
-	page, err := LoadPage(pagePath, bdr.Config, bdr.Episodes)
+func (bdr *Builder) buildPage(mdPath string) error {
+	page, err := LoadPage(mdPath, bdr.Config, bdr.Episodes)
 	if err != nil {
 		return err
 	}
 	arg := newPageArg(bdr.Config, bdr.Episodes, page)
 	htmlPath := filepath.Join(
 		bdr.BuildDir,
-		strings.TrimSuffix(filepath.Base(pagePath), ".md"),
+		strings.TrimSuffix(filepath.Base(mdPath), ".md"),
 		"index.html")
+	if err := os.MkdirAll(filepath.Dir(htmlPath), os.ModePerm); err != nil {
+		return err
+	}
 	f, err := os.Create(htmlPath)
 	if err != nil {
 		return err
