@@ -4,3 +4,5 @@ testdata/public
 go.work
 go.work.sum
 podbard
+
+testdata/dev/audio/.1.mp3.json
