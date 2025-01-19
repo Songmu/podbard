@@ -29,23 +29,23 @@ func LoadPage(mdPath string, cfg *Config, episodes []*Episode) (*Page, error) {
 	}
 	content := strings.ReplaceAll(strings.TrimSpace(string(bs)), "\r\n", "\n")
 
-	var idx *Page
+	var page *Page
 	if !strings.HasPrefix(content, "---\n") {
-		idx = &Page{RawBody: content}
+		page = &Page{RawBody: content}
 	} else {
 		frontmater, body, err := splitFrontMatterAndBody(content)
 		if err != nil {
 			return nil, err
 		}
-		idx = &Page{
+		page = &Page{
 			RawFrontmatter: frontmater,
 			RawBody:        body,
 		}
 	}
-	if err := idx.build(cfg, episodes); err != nil {
+	if err := page.build(cfg, episodes); err != nil {
 		return nil, err
 	}
-	return idx, nil
+	return page, nil
 }
 
 func LoadIndex(rootDir string, cfg *Config, episodes []*Episode) (*Page, error) {
