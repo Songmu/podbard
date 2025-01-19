@@ -259,9 +259,6 @@ func (bdr *Builder) buildPages() error {
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 	for _, fi := range dir {
 		if fi.IsDir() || !strings.HasSuffix(fi.Name(), ".md") {
 			continue
