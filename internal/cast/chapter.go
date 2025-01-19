@@ -2,7 +2,10 @@ package cast
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+
+	"github.com/goccy/go-yaml/token"
 )
 
 type Chapter struct {
@@ -39,7 +42,7 @@ func (chs *Chapter) String() string {
 }
 
 func (chs *Chapter) UnmarshalYAML(b []byte) error {
-	str := strings.TrimSpace(string(b))
+	str := unquote(strings.TrimSpace(string(b)))
 	stuff := strings.SplitN(str, " ", 2)
 	if len(stuff) != 2 {
 		return fmt.Errorf("invalid chapter format: %s", str)
@@ -55,6 +58,26 @@ func (chs *Chapter) UnmarshalYAML(b []byte) error {
 	return nil
 }
 
+func unquote(s string) string {
+	if len(s) <= 1 {
+		return s
+	}
+	if s[0] == '\'' && s[len(s)-1] == '\'' {
+		return s[1 : len(s)-1]
+	}
+	if s[0] == '"' {
+		str, err := strconv.Unquote(s)
+		if err == nil {
+			return str
+		}
+	}
+	return s
+}
+
 func (chs *Chapter) MarshalYAML() ([]byte, error) {
-	return []byte(chs.String()), nil
+	s := chs.String()
+	if token.IsNeedQuoted(s) {
+		s = strconv.Quote(s)
+	}
+	return []byte(s), nil
 }

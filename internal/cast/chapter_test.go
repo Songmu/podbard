@@ -34,6 +34,16 @@ func TestChapterSegment_MarshalYAML(t *testing.T) {
 			},
 		},
 		want: "segment: 1:00:00 Chapter 2\n",
+	}, {
+
+		name: "quoted",
+		chapter: struct{ Segment *cast.Chapter }{
+			Segment: &cast.Chapter{
+				Title: "Chapter 2:",
+				Start: 3600,
+			},
+		},
+		want: `segment: "1:00:00 Chapter 2:"` + "\n",
 	}}
 
 	for _, tt := range tests {
@@ -69,6 +79,20 @@ func TestChapterSegment_UnmarshalYAML(t *testing.T) {
 		input: "1:00:00 Chapter 2",
 		want: cast.Chapter{
 			Title: "Chapter 2",
+			Start: 3600,
+		},
+	}, {
+		name:  "with hours",
+		input: `"1:00:00 Chapter 2:"`,
+		want: cast.Chapter{
+			Title: "Chapter 2:",
+			Start: 3600,
+		},
+	}, {
+		name:  "with hours",
+		input: `'1:00:00 Chapter 二 あいう'`,
+		want: cast.Chapter{
+			Title: "Chapter 二 あいう",
 			Start: 3600,
 		},
 	}, {
