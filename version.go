@@ -1,5 +1,5 @@
 package podbard
 
-const version = "0.0.14"
+const version = "0.0.15"
 
 var revision = "HEAD"
