@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.16](https://github.com/Songmu/podbard/compare/v0.0.15...v0.0.16) - 2025-01-19
+- fix page handling by @Songmu in https://github.com/Songmu/podbard/pull/78
+- update deps by @Songmu in https://github.com/Songmu/podbard/pull/79
+
 ## [v0.0.15](https://github.com/Songmu/podbard/compare/v0.0.14...v0.0.15) - 2025-01-19
 - fix chapter handling with caring quotes by @Songmu in https://github.com/Songmu/podbard/pull/75
 
