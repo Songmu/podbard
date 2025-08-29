@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.0.17](https://github.com/Songmu/podbard/compare/v0.0.16...v0.0.17) - 2025-08-29
+- set id3v2 version to 2.4 and set default encoding as utf8 explicitly by @Songmu in https://github.com/Songmu/podbard/pull/80
+- update deps by @Songmu in https://github.com/Songmu/podbard/pull/82
+- feat: append .mp3 ext when there is no ext for audio files by @Songmu in https://github.com/Songmu/podbard/pull/83
+- Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/84
+- Bump codecov/codecov-action from 4 to 5 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/86
+- Bump actions/upload-pages-artifact from 3 to 4 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/85
+
 ## [v0.0.16](https://github.com/Songmu/podbard/compare/v0.0.15...v0.0.16) - 2025-01-19
 - fix page handling by @Songmu in https://github.com/Songmu/podbard/pull/78
 - update deps by @Songmu in https://github.com/Songmu/podbard/pull/79
