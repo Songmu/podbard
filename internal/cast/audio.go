@@ -132,6 +132,8 @@ func (au *Audio) UpdateChapter(fpath string, chs []*Chapter) error {
 		log.Printf("failed to parse id3v2 tag: %s", err)
 		return nil
 	}
+	tag.SetVersion(4)
+	tag.SetDefaultEncoding(id3v2.EncodingUTF8)
 
 	tag.DeleteFrames("CHAP")
 	for i, ch := range chs {
