@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"github.com/Songmu/go-httpdate"
@@ -91,6 +92,9 @@ var commandEpisode = &cli.Command{
 			editor = ""
 		}
 		for _, audioFile := range audioFiles {
+			if ext := filepath.Ext(audioFile); ext == "" {
+				audioFile = audioFile + ".mp3"
+			}
 			fpath, isNew, err := cast.LoadEpisode(
 				rootDir, audioFile, body, ignoreMissing, saveMeta, pubDate, slug, title, subtitle, loc)
 			if err != nil {
