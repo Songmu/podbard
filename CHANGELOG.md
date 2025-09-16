@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.0.18](https://github.com/Songmu/podbard/compare/v0.0.17...v0.0.18) - 2025-09-16
+- Bump actions/setup-go from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/87
+- Bump golang.org/x/text from 0.28.0 to 0.29.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/88
+- Bump golang.org/x/tools from 0.36.0 to 0.37.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/89
+
 ## [v0.0.17](https://github.com/Songmu/podbard/compare/v0.0.16...v0.0.17) - 2025-08-29
 - set id3v2 version to 2.4 and set default encoding as utf8 explicitly by @Songmu in https://github.com/Songmu/podbard/pull/80
 - update deps by @Songmu in https://github.com/Songmu/podbard/pull/82
