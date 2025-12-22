@@ -10,7 +10,7 @@ require (
 	github.com/bogem/id3v2/v2 v2.1.4
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/eduncan911/podcast v1.4.2
-	github.com/goccy/go-yaml v1.19.0
+	github.com/goccy/go-yaml v1.19.1
 	github.com/mattn/go-isatty v0.0.20
 	github.com/otiai10/copy v1.14.1
 	github.com/sergi/go-diff v1.4.0
