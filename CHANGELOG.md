@@ -1,5 +1,22 @@
 # Changelog
 
+## [v0.0.18](https://github.com/Songmu/podbard/compare/v0.0.17...v0.0.18) - 2026-01-14
+- Bump actions/setup-go from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/87
+- Bump golang.org/x/text from 0.28.0 to 0.29.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/88
+- Bump golang.org/x/tools from 0.36.0 to 0.37.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/89
+- Bump golang.org/x/text from 0.29.0 to 0.31.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/94
+- Bump golang.org/x/tools from 0.37.0 to 0.39.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/93
+- Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/95
+- Bump golang.org/x/text from 0.31.0 to 0.32.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/97
+- Bump github.com/goccy/go-yaml from 1.18.0 to 1.19.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/96
+- Bump golang.org/x/tools from 0.39.0 to 0.40.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/98
+- Bump github.com/goccy/go-yaml from 1.19.0 to 1.19.1 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/99
+- Bump github.com/yuin/goldmark from 1.7.13 to 1.7.15 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/100
+- Bump github.com/yuin/goldmark from 1.7.15 to 1.7.16 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/103
+- Bump golang.org/x/tools from 0.40.0 to 0.41.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/102
+- Bump github.com/goccy/go-yaml from 1.19.1 to 1.19.2 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/101
+- Bump golang.org/x/text from 0.32.0 to 0.33.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/104
+
 ## [v0.0.17](https://github.com/Songmu/podbard/compare/v0.0.16...v0.0.17) - 2025-08-29
 - set id3v2 version to 2.4 and set default encoding as utf8 explicitly by @Songmu in https://github.com/Songmu/podbard/pull/80
 - update deps by @Songmu in https://github.com/Songmu/podbard/pull/82
