@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/Songmu/go-httpdate v1.0.0
 	github.com/Songmu/prompter v0.5.1
-	github.com/abema/go-mp4 v1.4.1
+	github.com/abema/go-mp4 v1.5.0
 	github.com/bogem/id3v2/v2 v2.1.4
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/eduncan911/podcast v1.4.2
