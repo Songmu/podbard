@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.0.19](https://github.com/Songmu/podbard/compare/v0.0.18...v0.0.19) - 2026-03-17
+- Bump golang.org/x/text from 0.33.0 to 0.34.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/106
+- Bump golang.org/x/tools from 0.41.0 to 0.42.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/105
+- Bump github.com/abema/go-mp4 from 1.4.1 to 1.5.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/109
+- Bump golang.org/x/tools from 0.42.0 to 0.43.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/110
+
 ## [v0.0.18](https://github.com/Songmu/podbard/compare/v0.0.17...v0.0.18) - 2026-01-14
 - Bump actions/setup-go from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/87
 - Bump golang.org/x/text from 0.28.0 to 0.29.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/88
