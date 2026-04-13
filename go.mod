@@ -11,7 +11,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/eduncan911/podcast v1.4.2
 	github.com/goccy/go-yaml v1.19.2
-	github.com/mattn/go-isatty v0.0.20
+	github.com/mattn/go-isatty v0.0.21
 	github.com/otiai10/copy v1.14.1
 	github.com/sergi/go-diff v1.4.0
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
