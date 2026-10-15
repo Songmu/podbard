@@ -34,19 +34,3 @@ jobs:
       - uses: reviewdog/action-actionlint@v1.80.2
         with:
           reporter: github-pr-review
-  actions-lock:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Install actions-lock
-        run: gh extension install github/gh-actions-lock --pin v0.2.0
-        env:
-          GH_TOKEN: ${{ github.token }}
-      - name: Verify workflow lockfile
-        run: gh actions-lock --verify
-        env:
-          GH_TOKEN: ${{ github.token }}

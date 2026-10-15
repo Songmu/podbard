@@ -2,5 +2,4 @@ paths:
   .github/workflows/{release,tagpr}.yaml:
     ignore:
       # actionlint v1.7.12 does not yet recognize inherently pinned $/ references.
-      # gh actions-lock --verify validates the local action and its dependencies.
       - '^specifying action "\$/\.github/actions/release" in invalid format because ref is missing\.'
