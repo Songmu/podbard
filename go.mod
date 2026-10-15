@@ -2,6 +2,8 @@ module github.com/Songmu/podbard
 
 go 1.26.0
 
+toolchain go1.27.2
+
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/Songmu/go-httpdate v1.0.0
