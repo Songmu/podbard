@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.0.19](https://github.com/Songmu/podbard/compare/v0.0.18...v0.0.19) - 2026-10-15
+
+- Bump golang.org/x/text from 0.33.0 to 0.34.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/106
+- Bump golang.org/x/tools from 0.41.0 to 0.42.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/105
+- Bump github.com/abema/go-mp4 from 1.4.1 to 1.5.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/109
+- Bump golang.org/x/tools from 0.42.0 to 0.43.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/110
+- Bump codecov/codecov-action from 5 to 7 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/124
+- Bump actions/deploy-pages from 4 to 5 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/113
+- Bump actions/configure-pages from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/114
+- Bump actions/upload-pages-artifact from 4 to 5 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/116
+- Fix audio loading from metadata-only files by @Songmu in https://github.com/Songmu/podbard/pull/125
+- Bump github.com/yuin/goldmark from 1.7.16 to 1.8.2 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/115
+- Bump github.com/abema/go-mp4 from 1.5.0 to 1.6.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/123
+- Bump golang.org/x/tools from 0.43.0 to 0.45.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/122
+
 ## [v0.0.18](https://github.com/Songmu/podbard/compare/v0.0.17...v0.0.18) - 2026-01-14
 - Bump actions/setup-go from 5 to 6 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/87
 - Bump golang.org/x/text from 0.28.0 to 0.29.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/88
