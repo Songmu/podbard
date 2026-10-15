@@ -103,6 +103,18 @@ $ podbard episode [-slug=hoge -date=2024-09-01 -title=title] audio/1.mp3
 
 create a new epoisode page with the specified audio file.
 
+To save audio metadata alongside an episode:
+
+```console
+$ podbard episode --no-edit --save-meta audio/1.mp3
+```
+
+This writes `audio/.1.mp3.json` with the title, file size, duration, and
+embedded chapters. The same option refreshes metadata for an existing episode.
+If audio is hosted separately, upload it first and set `audio_bucket_url` in
+`podbard.yaml`. You can then build using only the metadata files, without local
+MP3 or M4A files. Keep the episode's `audio` field set to the original filename.
+
 ### build
 
 ```

@@ -171,7 +171,11 @@ func (au *Audio) UpdateChapter(fpath string, chs []*Chapter) error {
 }
 
 func loadAudioMeta(metaPath string) (*Audio, error) {
-	au := &Audio{}
+	name := strings.TrimPrefix(strings.TrimSuffix(filepath.Base(metaPath), ".json"), ".")
+	au, err := NewAudio(name)
+	if err != nil {
+		return nil, err
+	}
 	f, err := os.Open(metaPath)
 	if err != nil {
 		return nil, err
@@ -180,7 +184,6 @@ func loadAudioMeta(metaPath string) (*Audio, error) {
 	if err := json.NewDecoder(f).Decode(au); err != nil {
 		return nil, err
 	}
-	au.Name = strings.TrimPrefix(".", strings.TrimSuffix(filepath.Base(metaPath), ".json"))
 	fi, err := f.Stat()
 	if err != nil {
 		return nil, err
