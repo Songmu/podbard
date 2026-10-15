@@ -4,11 +4,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     groups:
-      github-actions:
+      actions:
         patterns:
-          - "*"
+          - "actions/*"
