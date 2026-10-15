@@ -15,18 +15,18 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/configure-pages@v6
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/configure-pages@v6.0.0
       id: pages
-    - uses: actions/setup-go@v6
+    - uses: actions/setup-go@v7.0.0
       with:
         go-version: stable
     - name: build pages
       run: |
         make build
         ./podbard -C docs/ja build
-    - uses: actions/upload-pages-artifact@v5
+    - uses: actions/upload-pages-artifact@v5.0.0
       with:
         path: docs/ja/public
-    - uses: actions/deploy-pages@v5
+    - uses: actions/deploy-pages@v5.0.1
       id: deployment

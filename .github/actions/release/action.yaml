@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
   - name: setup go
-    uses: actions/setup-go@v5
+    uses: actions/setup-go@v7.0.0
     with:
       go-version: stable
   - name: release
@@ -20,7 +20,7 @@ runs:
     shell: bash
     env:
       GITHUB_TOKEN: ${{ inputs.token }}
-  - uses: haya14busa/action-update-semver@v1
+  - uses: haya14busa/action-update-semver@v1.5.1
     with:
       tag: ${{ inputs.tag }}
       major_version_tag_only: true

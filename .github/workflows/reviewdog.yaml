@@ -5,10 +5,10 @@ jobs:
     name: staticcheck
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.1
       with:
         persist-credentials: false
-    - uses: reviewdog/action-staticcheck@v1
+    - uses: reviewdog/action-staticcheck@v1.33.0
       with:
         reporter: github-pr-review
         fail_on_error: true
@@ -16,11 +16,11 @@ jobs:
     name: misspell
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.1
       with:
         persist-credentials: false
     - name: misspell
-      uses: reviewdog/action-misspell@v1
+      uses: reviewdog/action-misspell@v1.30.2
       with:
         reporter: github-pr-review
         level: warning
@@ -28,9 +28,9 @@ jobs:
   actionlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: reviewdog/action-actionlint@v1
+      - uses: reviewdog/action-actionlint@v1.80.2
         with:
           reporter: github-pr-review

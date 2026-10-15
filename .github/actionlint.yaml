@@ -1,0 +1,5 @@
+paths:
+  .github/workflows/{release,tagpr}.yaml:
+    ignore:
+      # actionlint v1.7.12 does not yet recognize inherently pinned $/ references.
+      - '^specifying action "\$/\.github/actions/release" in invalid format because ref is missing\.'
