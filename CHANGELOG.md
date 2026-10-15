@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.20](https://github.com/Songmu/podbard/compare/v0.0.19...v0.0.20) - 2026-10-15
+
+- Update GitHub Actions and adopt workflow lockfiles by @Songmu in https://github.com/Songmu/podbard/pull/126
+
 ## [v0.0.19](https://github.com/Songmu/podbard/compare/v0.0.18...v0.0.19) - 2026-10-15
 
 - Bump golang.org/x/text from 0.33.0 to 0.34.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/106
