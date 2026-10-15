@@ -123,15 +123,6 @@ $ podbard build
 
 build the site and output to the `public` directory.
 
-## Workflow dependencies
-
-GitHub Actions dependencies are pinned in `.github/workflows/actions.lock`.
-After changing a workflow or a local action, run `gh actions-lock` to regenerate
-the lockfile and commit it together with the workflow changes. Install the CLI
-extension with `gh extension install github/gh-actions-lock` if needed.
-Run `gh actions-lock --verify` to check the lockfile without changing it.
-Dependabot updates Actions and their lockfile entries weekly.
-
 ## Author
 
 [Songmu](https://github.com/Songmu)
