@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.0.20](https://github.com/Songmu/podbard/compare/v0.0.19...v0.0.20) - 2026-10-27
+
+- Update GitHub Actions and adopt workflow lockfiles by @Songmu in https://github.com/Songmu/podbard/pull/126
+- Bump reviewdog/action-actionlint from 1.80.2 to 1.80.4 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/130
+- Bump github.com/Songmu/prompter from 0.5.1 to 1.0.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/129
+- Bump Songmu/tagpr from 1.21.2 to 1.21.3 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/131
+
 ## [v0.0.19](https://github.com/Songmu/podbard/compare/v0.0.18...v0.0.19) - 2026-10-15
 
 - Bump golang.org/x/text from 0.33.0 to 0.34.0 by @dependabot[bot] in https://github.com/Songmu/podbard/pull/106
