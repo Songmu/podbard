@@ -10,8 +10,8 @@ github.com/Songmu/go-httpdate v1.0.0 h1:39S00oyg9q+kMso2ahhK4pvD4EXk4zQWzt/AMqGl
 github.com/Songmu/go-httpdate v1.0.0/go.mod h1:QPvdlIAR7M8UtklJx5CMOOCIq7hbx2QdxyEPvTF5QVs=
 github.com/Songmu/prompter v1.0.0 h1:dW2BBACHBxukpIIALBOCxIsdQOFgAYXSjBy24kPOgEU=
 github.com/Songmu/prompter v1.0.0/go.mod h1:skvsmWqB3131LtocK6gRSEqRkZZndyyZDIQlFPGoij0=
-github.com/abema/go-mp4 v1.7.3 h1:Aap+2vZl5KQrSGD9quYhLu4pWGXelFVUeFCa8IJaRXY=
-github.com/abema/go-mp4 v1.7.3/go.mod h1:vPl9t5ZK7K0x68jh12/+ECWBCXoWuIDtNgPtU2f04ws=
+github.com/abema/go-mp4 v1.7.4 h1:MztDjMx3nac+Lktig9wrUa962Mnyi4+ZtDtpbHuckww=
+github.com/abema/go-mp4 v1.7.4/go.mod h1:vPl9t5ZK7K0x68jh12/+ECWBCXoWuIDtNgPtU2f04ws=
 github.com/bogem/id3v2/v2 v2.1.4 h1:CEwe+lS2p6dd9UZRlPc1zbFNIha2mb2qzT1cCEoNWoI=
 github.com/bogem/id3v2/v2 v2.1.4/go.mod h1:l+gR8MZ6rc9ryPTPkX77smS5Me/36gxkMgDayZ9G1vY=
 github.com/cpuguy83/go-md2man/v2 v2.0.7 h1:zbFlGlXEAKlwXpmvle3d8Oe3YnkKIK4xSRTd3sHPnBo=
