@@ -18,7 +18,7 @@ require (
 	github.com/sergi/go-diff v1.4.0
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	github.com/urfave/cli/v2 v2.27.7
-	github.com/yuin/goldmark v1.8.6
+	github.com/yuin/goldmark v1.8.7
 	golang.org/x/text v0.43.0
 	golang.org/x/tools v0.52.0
 )
