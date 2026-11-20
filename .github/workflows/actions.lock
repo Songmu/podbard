@@ -7,7 +7,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.1'
-        - 'actions/setup-go@v7.0.0'
+        - 'actions/setup-go@v7.1.0'
         - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/release.yaml':
         - 'actions/checkout@v7.0.1'
@@ -21,11 +21,12 @@ workflows:
     '.github/workflows/tagpr.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-go@v7.0.0'
+        - 'actions/setup-go@v7.1.0'
         - 'haya14busa/action-update-semver@v1.5.1'
         - 'songmu/tagpr@v1.21.3'
     '.github/workflows/test.yaml':
         - 'actions/checkout@v7.0.1'
-        - 'actions/setup-go@v7.0.0'
+        - 'actions/setup-go@v7.1.0'
         - 'codecov/codecov-action@v7.1.1'
 dependencies:
     'actions/checkout@v7.0.1':
@@ -51,6 +52,11 @@ dependencies:
     'actions/setup-go@v7.0.0':
         ref: 'v7.0.0'
         commit: 'sha1-b7ad1dad31e06c5925ef5d2fc7ad053ef454303e'
+        owner_id: 44036562
+        repo_id: 192624594
+    'actions/setup-go@v7.1.0':
+        ref: 'v7.1.0'
+        commit: 'sha1-d8cbb8045d7f43706b9177cceb36c1f91a6644d5'
         owner_id: 44036562
         repo_id: 192624594
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
